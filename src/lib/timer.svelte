@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import { time } from './stores';
 	import type { Unsubscriber } from 'svelte/store';
 	import { formatTime } from './utils';
