@@ -25,7 +25,10 @@
 		try editing <strong>src/routes/+page.svelte</strong>
 	</h2>
 
-	<Counter />
+	<div class="row_section">
+		<Counter />
+		<Counter />
+	</div>
 </section>
 
 <style>
@@ -47,6 +50,12 @@
 		width: 100%;
 		height: 0;
 		padding: 0 0 calc(100% * 495 / 2048) 0;
+	}
+
+	.row_section {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
 	}
 
 	.welcome img {
