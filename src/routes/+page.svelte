@@ -26,7 +26,6 @@
 		try editing <strong>src/routes/+page.svelte</strong>
 	</h2>
 
-
 	<div class="row_section">
 		<Counter />
 		<Counter />
