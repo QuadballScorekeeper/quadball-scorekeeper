@@ -1,6 +1,7 @@
 <script>
 	import Counter from '$lib/Counter.svelte';
 	import Timer from '$lib/Timer.svelte';
+	import FlagCatch from '$lib/flag-catch.svelte';
 </script>
 
 <svelte:head>
@@ -9,6 +10,7 @@
 </svelte:head>
 
 <section>
+	<FlagCatch />
 	<Timer />
 	<Counter />
 	<Counter />
