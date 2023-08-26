@@ -1,22 +1,15 @@
-# create-svelte
+# Quadball scorekeeper web app
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+This is a web app for keeping track of game states in a quadball game.
+Test it at _url-to-page_
 
-## Creating a project
+Currently supporting:
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+- IQA 2023-2024 rulebook
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Once you've cloned the repository, install dependencies with `npm install` (or `pnpm install` or `yarn`), then start a development server:
 
 ```bash
 npm run dev
@@ -27,7 +20,7 @@ npm run dev -- --open
 
 ## Building
 
-To create a production version of your app:
+To create a production version of the app:
 
 ```bash
 npm run build
