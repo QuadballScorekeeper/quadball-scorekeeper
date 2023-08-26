@@ -1,17 +1,18 @@
 <script>
-	let gameIsOver = false;
-	let timeIsStopped = true;
+	let flagCaught = false;
+	let timeIsStopped = false;
 	let isOvertime = false;
 	let winningMessage = '';
 	let score = {
-		A: 100,
-		B: 10
+		A: 30,
+		B: 0
 	};
 
 	function flagCatch(teamCatching) {
+		flagCaught = true;
 		score[teamCatching] += 30;
 		updateDisplayedMessage();
-		checkGameIsOver(teamCatching);
+		checkIsOvertime(teamCatching);
 	}
 
 	function updateDisplayedMessage() {
@@ -20,10 +21,9 @@
 		if (score['A'] === score['B']) return (winningMessage = 'Its a tie ohshit!');
 	}
 
-	function checkGameIsOver(teamCatching) {
-		if (teamCatching === 'A' && score['A'] > score['B']) return (gameIsOver = true);
-		if (teamCatching === 'B' && score['B'] > score['A']) return (gameIsOver = true);
-		isOvertime = true;
+	function checkIsOvertime(teamCatching) {
+		if (teamCatching === 'A' && score['A'] <= score['B']) return (isOvertime = true);
+		if (teamCatching === 'B' && score['B'] <= score['A']) return (isOvertime = true);
 	}
 
 	function toggleFeature() {
@@ -40,16 +40,24 @@
 </button>
 
 <p>{score['A']}-{score['B']}</p>
+{#if !timeIsStopped}
+	<p>Pretent like time is running now.</p>
+	<p>Flag catch stuff is not shown.</p>
+{/if}
+
 {#if timeIsStopped}
 	<div>
-		<button on:click={() => flagCatch('A')} disabled={gameIsOver || isOvertime}>Flag Catch team A</button>
-		<button on:click={() => flagCatch('B')} disabled={gameIsOver || isOvertime}>Flag Catch team B</button>
+		<button on:click={() => flagCatch('A')} disabled={flagCaught || isOvertime}>Catch Team A</button
+		>
+		<button on:click={() => flagCatch('B')} disabled={flagCaught || isOvertime}>Catch Team B</button
+		>
 	</div>
-{/if}
-<p>{winningMessage}</p>
-{#if gameIsOver}
-	<p>Game is over!</p>
-{/if}
-{#if isOvertime}
-	<p>Is overtime!</p>
+	<p>{winningMessage}</p>
+	{#if flagCaught}
+		{#if isOvertime}
+			<p>Is overtime!</p>
+		{:else}
+			<p>Game is over!</p>
+		{/if}
+	{/if}
 {/if}
