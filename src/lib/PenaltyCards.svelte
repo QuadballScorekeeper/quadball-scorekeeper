@@ -27,6 +27,7 @@
 			<button on:click={() => (examplePrompt = 'Blue Card Selected')}>Blue Card</button>
 			<button on:click={() => (examplePrompt = 'Yellow Card Selected')}>Yellow Card</button>
 			<button on:click={() => (examplePrompt = 'Red Card Selected')}>Red Card</button>
+			<button on:click={() => (examplePrompt = 'Ejection Selected')}>Ejection Card</button>
 		</div>
 	</div>
 {/if}
