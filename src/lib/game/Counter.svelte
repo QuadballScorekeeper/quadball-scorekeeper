@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Writable } from 'svelte/store';
+	import { mdiChevronUp, mdiChevronDown } from '@mdi/js';
 
 	// import { spring } from 'svelte/motion';
 	export let score: Writable<number>;
@@ -17,83 +18,52 @@
 </script>
 
 <div class="counter">
-	<button on:click={annulGoal} aria-label="Decrease the counter">
-		<svg aria-hidden="true" viewBox="0 0 1 1">
-			<path d="M0,0.5 L1,0.5" />
+	<button on:click={scoreGoal} aria-label="Decrease the counter">
+		<svg aria-hidden="true" viewBox="0 0 24 24">
+			<path d={mdiChevronUp} />
 		</svg>
 	</button>
 
 	<div class="counter-viewport">
-		<div class="counter-digits">
-			<strong>{$score}</strong>
-		</div>
+		<strong>{$score}</strong>
 	</div>
 
-	<button on:click={scoreGoal} aria-label="Increase the counter">
-		<svg aria-hidden="true" viewBox="0 0 1 1">
-			<path d="M0,0.5 L1,0.5 M0.5,0 L0.5,1" />
-		</svg>
-	</button>
+	<button hidden={!$score} on:click={annulGoal} aria-label="Increase the counter">
+		<svg aria-hidden="true" viewBox="0 0 24 24">
+			<path d={mdiChevronDown} />
+		</svg></button
+	>
 </div>
 
 <style>
 	.counter {
 		display: flex;
-		border-top: 1px solid rgba(0, 0, 0, 0.1);
-		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-		margin: 1rem 0;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.counter button {
-		width: 2em;
-		padding: 0;
-		display: flex;
+		width: 8vh;
 		align-items: center;
 		justify-content: center;
 		border: 0;
 		background-color: transparent;
 		touch-action: manipulation;
-		font-size: 2rem;
+	}
+
+	.counter svg {
+		top: 0.125em;
+		position: relative;
 	}
 
 	.counter button:hover {
 		background-color: var(--color-bg-1);
 	}
 
-	svg {
-		width: 25%;
-		height: 25%;
-	}
-
-	path {
-		vector-effect: non-scaling-stroke;
-		stroke-width: 2px;
-		stroke: #444;
-	}
-
 	.counter-viewport {
-		width: 8em;
-		height: 4em;
-		overflow: hidden;
+		width: 100%;
+		font-size: 5vh;
 		text-align: center;
 		position: relative;
-	}
-
-	.counter-viewport strong {
-		position: absolute;
-		display: flex;
-		width: 100%;
-		height: 100%;
-		font-weight: 400;
-		color: var(--color-theme-1);
-		font-size: 4rem;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.counter-digits {
-		position: absolute;
-		width: 100%;
-		height: 100%;
 	}
 </style>

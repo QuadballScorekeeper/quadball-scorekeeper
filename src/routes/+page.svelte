@@ -13,18 +13,55 @@
 </svelte:head>
 
 <section>
-	<FlagCatch />
-	<Timer {...game} />
-	<Counter score={game.scoreA} />
-	<Counter score={game.scoreB} />
+	<gamesection>
+		<Timer {...game} />
+		<div class="flex-row">
+			<div class="team-column">
+				<input class="team-name" placeholder="Team A" />
+				<Counter score={game.scoreA} />
+			</div>
+			<div class="team-column">
+				<input class="team-name" placeholder="Team B" />
+				<Counter score={game.scoreB} />
+			</div>
+		</div>
+	</gamesection>
+	<!-- <FlagCatch /> -->
 </section>
 
 <style>
 	section {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
 		align-items: center;
-		flex: 0.6;
+		gap: 1rem;
+		min-height: 100vh;
+	}
+
+	gamesection {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		height: 70vh;
+	}
+
+	.flex-row {
+		display: flex;
+		flex-direction: row;
+		gap: 2rem;
+		flex: 1;
+		align-items: start;
+	}
+
+	.team-name {
+		display: flex;
+		flex: 1;
+	}
+	.team-column {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+		flex: 1;
+		align-items: center;
 	}
 </style>
