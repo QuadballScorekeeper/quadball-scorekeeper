@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { isOvertime } from './flag-catch';
 	import { formatTime } from './utils';
 
 	let timeIsStopped = false;
@@ -20,9 +21,6 @@
 		overtime = isOvertime(scoreA, scoreB);
 	}
 
-	const isOvertime = (scoreCatchingTeam: number, scoreOtherTeam: number): boolean =>
-		scoreCatchingTeam <= scoreOtherTeam;
-
 	function start() {
 		timeIsStopped = false;
 	}
@@ -41,10 +39,10 @@
 
 <p>{scoreA}-{scoreB}</p>
 <div>
-	<button on:click={() => flagCatchA} hidden={!timeIsStopped} disabled={flagCaught}
+	<button on:click={() => flagCatchA()} hidden={!timeIsStopped} disabled={flagCaught}
 		>Catch Team A</button
 	>
-	<button on:click={() => flagCatchB} hidden={!timeIsStopped} disabled={flagCaught}
+	<button on:click={() => flagCatchB()} hidden={!timeIsStopped} disabled={flagCaught}
 		>Catch Team B</button
 	>
 </div>
