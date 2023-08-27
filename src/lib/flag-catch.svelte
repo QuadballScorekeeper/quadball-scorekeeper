@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatTime, isOvertime } from './utils';
+	import { formatTime } from './utils';
 
 	let timeIsStopped = false;
 	let flagCaught = false;
@@ -19,6 +19,9 @@
 		flagCaught = true;
 		overtime = isOvertime(scoreA, scoreB);
 	}
+
+	const isOvertime = (scoreCatchingTeam: number, scoreOtherTeam: number): boolean =>
+		scoreCatchingTeam <= scoreOtherTeam;
 
 	function start() {
 		timeIsStopped = false;
