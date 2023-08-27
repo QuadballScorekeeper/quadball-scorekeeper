@@ -1,35 +1,25 @@
 <script>
-	import { formatTime } from './utils';
+	import { formatTime, checkIsOvertime } from './utils';
 
-	let flagCaught = false;
 	let timeIsStopped = false;
-
+	let flagCaught = false;
 	let isOvertime = false;
-	let gameIsOver = false;
-	let winningTeam = '';
 
 	let score = {
 		A: 30,
 		B: 10
 	};
 
-	function flagCatch(teamCatching) {
+	function flagCatchA() {
+		score['A'] += 30;
 		flagCaught = true;
-		score[teamCatching] += 30;
-		checkIsOvertime(teamCatching);
-		setGameWinner();
+		isOvertime = checkIsOvertime(score, 'A', 'B');
 	}
 
-	function setGameWinner() {
-		if (isOvertime) return;
-		if (score['A'] > score['B']) return (winningTeam = 'A');
-		if (score['B'] > score['A']) return (winningTeam = 'B');
-	}
-
-	function checkIsOvertime(teamCatching) {
-		if (teamCatching === 'A' && score['A'] <= score['B']) return (isOvertime = true);
-		if (teamCatching === 'B' && score['B'] <= score['A']) return (isOvertime = true);
-		gameIsOver = true;
+	function flagCatchB() {
+		flagCaught = true;
+		score['A'] += 30;
+		isOvertime = checkIsOvertime(score, 'A', 'B');
 	}
 
 	function start() {
@@ -51,19 +41,17 @@
 <p>{score['A']}-{score['B']}</p>
 {#if timeIsStopped}
 	<div>
-		<button on:click={() => flagCatch('A')} disabled={flagCaught}>Catch Team A</button>
-		<button on:click={() => flagCatch('B')} disabled={flagCaught}>Catch Team B</button>
+		<button on:click={() => flagCatchA} disabled={flagCaught}>Catch Team A</button>
+		<button on:click={() => flagCatchB} disabled={flagCaught}>Catch Team B</button>
 	</div>
 {/if}
 
-{#if isOvertime}
+{#if flagCaught && isOvertime}
 	<p>Overtime</p>
 {/if}
-{#if gameIsOver}
+{#if flagCaught && !isOvertime}
 	<p>Game is over</p>
-	<p>Winner is: {winningTeam}</p>
 {/if}
-
 
 <style>
 	.timer {
