@@ -13,4 +13,4 @@ export const isOvertime = (
 	score: { [key: string]: number },
 	catchingTeamName: string,
 	otherTeamName: string
-) => score[catchingTeamName] <= score[otherTeamName];
+): boolean => score[catchingTeamName] <= score[otherTeamName];
