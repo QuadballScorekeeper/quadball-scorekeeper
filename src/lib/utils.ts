@@ -10,7 +10,6 @@ export function formatTime(milliseconds: number) {
 }
 
 export const isOvertime = (
-	score: { [key: string]: number },
-	catchingTeamName: string,
-	otherTeamName: string
-): boolean => score[catchingTeamName] <= score[otherTeamName];
+	scoreCatchingTeam: number,
+	scoreOtherTeam: number,
+): boolean => scoreCatchingTeam <= scoreOtherTeam;

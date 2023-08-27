@@ -5,21 +5,19 @@
 	let flagCaught = false;
 	let overtime = false;
 
-	let score = {
-		A: 30,
-		B: 10
-	};
+	let scoreA = 30;
+	let scoreB = 10;
 
 	function flagCatchA() {
-		score['A'] += 30;
+		scoreA += 30;
 		flagCaught = true;
-		overtime = isOvertime(score, 'A', 'B');
+		overtime = isOvertime(scoreA, scoreB);
 	}
 
 	function flagCatchB() {
+		scoreB += 30;
 		flagCaught = true;
-		score['A'] += 30;
-		overtime = isOvertime(score, 'A', 'B');
+		overtime = isOvertime(scoreA, scoreB);
 	}
 
 	function start() {
@@ -38,10 +36,14 @@
 	</div>
 </div>
 
-<p>{score['A']}-{score['B']}</p>
+<p>{scoreA}-{scoreB}</p>
 <div>
-	<button on:click={() => flagCatchA} hidden={!timeIsStopped} disabled={flagCaught}>Catch Team A</button>
-	<button on:click={() => flagCatchB} hidden={!timeIsStopped} disabled={flagCaught}>Catch Team B</button>
+	<button on:click={() => flagCatchA} hidden={!timeIsStopped} disabled={flagCaught}
+		>Catch Team A</button
+	>
+	<button on:click={() => flagCatchB} hidden={!timeIsStopped} disabled={flagCaught}
+		>Catch Team B</button
+	>
 </div>
 
 {#if flagCaught}
