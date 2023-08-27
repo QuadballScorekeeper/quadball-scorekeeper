@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { formatTime, isOvertime } from './utils';
 
 	let timeIsStopped = false;
