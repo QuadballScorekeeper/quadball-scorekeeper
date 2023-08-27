@@ -1,12 +1,13 @@
 <script lang="ts">
-	// import { spring } from 'svelte/motion';
-	import { writable } from 'svelte/store';
+	import type { Game } from './game';
 
-	let counter = writable(0);
+	// import { spring } from 'svelte/motion';
+	export let game: Game;
+	const score = game.scoreA;
 </script>
 
 <div class="counter">
-	<button on:click={() => counter.update((n) => n && n - 10)} aria-label="Decrease the counter">
+	<button on:click={() => game.annulGoal('A')} aria-label="Decrease the counter">
 		<svg aria-hidden="true" viewBox="0 0 1 1">
 			<path d="M0,0.5 L1,0.5" />
 		</svg>
@@ -14,11 +15,11 @@
 
 	<div class="counter-viewport">
 		<div class="counter-digits">
-			<strong>{$counter}</strong>
+			<strong>{$score}</strong>
 		</div>
 	</div>
 
-	<button on:click={() => counter.update((n) => n + 10)} aria-label="Increase the counter">
+	<button on:click={() => game.scoreGoal('A')} aria-label="Increase the counter">
 		<svg aria-hidden="true" viewBox="0 0 1 1">
 			<path d="M0,0.5 L1,0.5 M0.5,0 L0.5,1" />
 		</svg>
