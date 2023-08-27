@@ -39,12 +39,10 @@
 </div>
 
 <p>{score['A']}-{score['B']}</p>
-{#if timeIsStopped}
-	<div>
-		<button on:click={() => flagCatchA} disabled={flagCaught}>Catch Team A</button>
-		<button on:click={() => flagCatchB} disabled={flagCaught}>Catch Team B</button>
-	</div>
-{/if}
+<div>
+	<button on:click={() => flagCatchA} hidden={!timeIsStopped} disabled={flagCaught}>Catch Team A</button>
+	<button on:click={() => flagCatchB} hidden={!timeIsStopped} disabled={flagCaught}>Catch Team B</button>
+</div>
 
 {#if flagCaught}
 	<p hidden={!overtime}>Overtime</p>
