@@ -9,7 +9,5 @@ export function formatTime(milliseconds: number) {
 	return `${mm}:${ss}`;
 }
 
-export const isOvertime = (
-	scoreCatchingTeam: number,
-	scoreOtherTeam: number,
-): boolean => scoreCatchingTeam <= scoreOtherTeam;
+export const isOvertime = (scoreCatchingTeam: number, scoreOtherTeam: number): boolean =>
+	scoreCatchingTeam <= scoreOtherTeam;
