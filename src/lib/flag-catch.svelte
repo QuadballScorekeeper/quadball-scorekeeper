@@ -1,9 +1,9 @@
 <script>
-	import { formatTime, checkIsOvertime } from './utils';
+	import { formatTime, isOvertime } from './utils';
 
 	let timeIsStopped = false;
 	let flagCaught = false;
-	let isOvertime = false;
+	let overtime = false;
 
 	let score = {
 		A: 30,
@@ -13,13 +13,13 @@
 	function flagCatchA() {
 		score['A'] += 30;
 		flagCaught = true;
-		isOvertime = checkIsOvertime(score, 'A', 'B');
+		overtime = isOvertime(score, 'A', 'B');
 	}
 
 	function flagCatchB() {
 		flagCaught = true;
 		score['A'] += 30;
-		isOvertime = checkIsOvertime(score, 'A', 'B');
+		overtime = isOvertime(score, 'A', 'B');
 	}
 
 	function start() {
@@ -46,11 +46,9 @@
 	</div>
 {/if}
 
-{#if flagCaught && isOvertime}
-	<p>Overtime</p>
-{/if}
-{#if flagCaught && !isOvertime}
-	<p>Game is over</p>
+{#if flagCaught}
+	<p hidden={!overtime}>Overtime</p>
+	<p hidden={overtime}>Game is over</p>
 {/if}
 
 <style>

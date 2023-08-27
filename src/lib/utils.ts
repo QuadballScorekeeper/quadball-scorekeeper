@@ -9,7 +9,7 @@ export function formatTime(milliseconds: number) {
 	return `${mm}:${ss}`;
 }
 
-export const checkIsOvertime = (
+export const isOvertime = (
 	score: { [key: string]: number },
 	catchingTeamName: string,
 	otherTeamName: string
