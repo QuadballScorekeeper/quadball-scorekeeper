@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { formatTime } from '$lib/common/utils';
 	import { isOvertime } from './flag-catch';
-	import { formatTime } from './utils';
 
 	let timeIsStopped = false;
 	let flagCaught = false;

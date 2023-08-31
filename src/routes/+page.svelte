@@ -1,7 +1,10 @@
-<script>
-	import Counter from '$lib/Counter.svelte';
-	import Timer from '$lib/Timer.svelte';
-	import FlagCatch from '$lib/flag-catch.svelte';
+<script lang="ts">
+	import Counter from '$lib/game/Counter.svelte';
+	import Timer from '$lib/game/Timer.svelte';
+	import FlagCatch from '$lib/game/flag-catch.svelte';
+	import { Game } from '$lib/game/game';
+
+	const game = new Game();
 </script>
 
 <svelte:head>
@@ -11,9 +14,9 @@
 
 <section>
 	<FlagCatch />
-	<Timer />
-	<Counter />
-	<Counter />
+	<Timer {...game} />
+	<Counter score={game.scoreA} />
+	<Counter score={game.scoreB} />
 </section>
 
 <style>
