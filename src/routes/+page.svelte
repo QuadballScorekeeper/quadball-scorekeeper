@@ -1,67 +1,90 @@
-<script lang="ts">
-	import Counter from '$lib/game/Counter.svelte';
-	import Timer from '$lib/game/Timer.svelte';
-	import FlagCatch from '$lib/game/flag-catch.svelte';
-	import { Game } from '$lib/game/game';
-
-	const game = new Game();
+<script>
+	import { mdiMenu } from '@mdi/js';
 </script>
 
 <svelte:head>
-	<title>Quadball</title>
+	<title>Roarball</title>
 	<meta name="description" content="Quadball Score Tracking" />
 </svelte:head>
 
-<section>
-	<div class="game-section">
-		<Timer {...game} />
-		<div class="flex-row">
-			<div class="team-column">
-				<input class="team-name" placeholder="Team A" />
-				<Counter score={game.scoreA} />
-			</div>
-			<div class="team-column">
-				<input class="team-name" placeholder="Team B" />
-				<Counter score={game.scoreB} />
-			</div>
-		</div>
-	</div>
-	<!-- <FlagCatch /> -->
-</section>
+<div class="layout">
+	<header>
+		<h1 class="title">Roarball.no</h1>
+		<nav class="burger-menu-container">
+			<svg class="burger-menu" viewBox="0 0 24 24"><path d={mdiMenu} /></svg>
+		</nav>
+	</header>
+	<main>
+		<h2>Welcome to Roarball 🥳</h2>
+		<nav class="main-menu">
+			<a class="button" href="/game" style="background-color: #006684;">Start a game</a>
+			<button class="button" style="background-color: #FB8500;">View tournaments</button>
+			<button class="button" style="background-color: #219EBC;">Plan tournament</button>
+		</nav>
+	</main>
+</div>
 
 <style>
-	section {
+	.layout {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
+		height: 100vh;
+		height: 100svh;
+		width: 100vw;
+		width: 100svw;
+	}
+
+	header {
+		display: flex;
+		justify-content: space-between;
+		min-height: 76px;
+		height: 10%;
+		background-color: #006684;
+		color: #ffffff;
+	}
+
+	.title {
+		margin: auto 0 auto 5%;
+	}
+
+	.burger-menu-container {
+		margin: auto 2.5% auto 0;
+	}
+
+	.burger-menu {
+		width: 48px;
+		height: 48px;
+		fill: white;
+	}
+
+	main {
+		height: 100%;
+		max-width: 1024px;
+
+		margin: 5% auto 0 auto;
+
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+		justify-content: start;
+	}
+
+	.main-menu {
+		display: flex;
+		flex-direction: column;
 		gap: 1rem;
-		min-height: 100vh;
 	}
 
-	.game-section {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		height: 70vh;
-	}
+	.button {
+		border: 0px;
+		border-radius: 5px;
 
-	.flex-row {
-		display: flex;
-		flex-direction: row;
-		gap: 2rem;
-		flex: 1;
-		align-items: start;
-	}
+		padding: 0.5em;
 
-	.team-name {
-		display: flex;
-		flex: 1;
-	}
-	.team-column {
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-		flex: 1;
-		align-items: center;
+		color: white;
+		text-align: center;
+		font-size: large;
+		font-weight: bold;
+		text-decoration: none;
 	}
 </style>
