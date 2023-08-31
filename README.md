@@ -1,5 +1,9 @@
 # Quadball scorekeeper web app
 
+[![Build](https://github.com/QuadballScorekeeper/quadball-scorekeeper/actions/workflows/build.yml/badge.svg)](https://github.com/QuadballScorekeeper/quadball-scorekeeper/actions/workflows/build.yml)
+[![Test](https://github.com/QuadballScorekeeper/quadball-scorekeeper/actions/workflows/test.yml/badge.svg)](https://github.com/QuadballScorekeeper/quadball-scorekeeper/actions/workflows/test.yml)
+[![Lint](https://github.com/QuadballScorekeeper/quadball-scorekeeper/actions/workflows/lint.yml/badge.svg)](https://github.com/QuadballScorekeeper/quadball-scorekeeper/actions/workflows/lint.yml)
+
 This is a web app for keeping track of game states in a quadball game.
 Test it at _url-to-page_
 
