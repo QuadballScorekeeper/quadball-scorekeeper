@@ -3,6 +3,7 @@
 	import { onDestroy } from 'svelte';
 	import { get, type Unsubscriber, type Writable } from 'svelte/store';
 	import { time } from './stores';
+	import { mdiPlayOutline, mdiPause } from '@mdi/js';
 
 	export let duration: Writable<number>;
 	export let started: Writable<boolean>;
@@ -50,16 +51,41 @@
 <div class="timer">
 	<h1>{formatTime($duration)}</h1>
 	<div>
-		<button on:click={start} hidden={$started}>Start</button>
-		<button on:click={pause} hidden={$paused || !$started}>Pause</button>
-		<button on:click={resume} hidden={!$paused}>Resume</button>
+		<button on:click={start} hidden={$started}>
+			<svg viewBox="0 0 24 24">
+				<path d={mdiPlayOutline} />
+			</svg>
+		</button>
+		<button on:click={pause} hidden={$paused || !$started}>
+			<svg aria-hidden="true" viewBox="0 0 24 24">
+				<path d={mdiPause} />
+			</svg>
+		</button>
+		<button on:click={resume} hidden={!$paused}>
+			<svg viewBox="0 0 24 24">
+				<path d={mdiPlayOutline} />
+			</svg>
+		</button>
 	</div>
 </div>
 
 <style>
 	.timer {
 		display: flex;
-		flex-direction: column;
+		flex: 1;
+		flex-direction: row;
 		align-items: center;
+		font-size: 7vh;
+	}
+	.timer button {
+		width: 14vh;
+		border: 0;
+		background-color: transparent;
+		touch-action: manipulation;
+	}
+
+	.timer svg {
+		top: 1vh;
+		position: relative;
 	}
 </style>
