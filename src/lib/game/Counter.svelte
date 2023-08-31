@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type Writable } from 'svelte/store';
+	import type { Writable } from 'svelte/store';
 
 	// import { spring } from 'svelte/motion';
 	export let score: Writable<number>;
