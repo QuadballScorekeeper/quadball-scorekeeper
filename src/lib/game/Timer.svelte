@@ -1,26 +1,50 @@
 <script lang="ts">
 	import { formatTime } from '$lib/common/utils';
 	import { onDestroy } from 'svelte';
-	import type { Game } from './game';
+	import { get, type Unsubscriber, type Writable } from 'svelte/store';
+	import { time } from './stores';
 
-	export let game: Game;
-	const duration = game.duration;
-	const started = game.started;
-	const paused = game.paused;
+	export let duration: Writable<number>;
+	export let started: Writable<boolean>;
+	export let paused: Writable<boolean>;
+
+	let previousDuration = 0;
+	let unsubscribe: Unsubscriber | undefined;
 
 	function start() {
-		game.start();
+		if (get(started)) {
+			//throw error
+		}
+
+		console.log('starting game');
+		unsubscribe = time.subscribe((value) => duration.set(value));
+		started.set(true);
 	}
 
 	function pause() {
-		game.pause();
+		if (!unsubscribe) {
+			console.log('could not pause game as it is already paused');
+			return;
+		}
+
+		console.log('pausing game');
+		previousDuration = get(duration);
+		unsubscribe();
+		unsubscribe = undefined;
+		paused.set(true);
 	}
 
 	function resume() {
-		game.resume();
+		if (get(started)) {
+			//throw error
+		}
+
+		console.log('resuming game');
+		unsubscribe = time.subscribe((value) => duration.set(value + previousDuration));
+		paused.set(false);
 	}
 
-	onDestroy(() => game.pause());
+	onDestroy(() => unsubscribe?.call({}));
 </script>
 
 <div class="timer">

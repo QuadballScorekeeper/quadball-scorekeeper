@@ -13,10 +13,10 @@
 </svelte:head>
 
 <section>
-	<FlagCatch {game} />
-	<Timer {game} />
-	<Counter {game} />
-	<Counter {game} />
+	<FlagCatch />
+	<Timer {...game} />
+	<Counter score={game.scoreA} />
+	<Counter score={game.scoreB} />
 </section>
 
 <style>

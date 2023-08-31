@@ -1,9 +1,6 @@
 <script lang="ts">
 	import { formatTime } from '$lib/common/utils';
 	import { isOvertime } from './flag-catch';
-	import type { Game } from './game';
-
-	export let game: Game;
 
 	let timeIsStopped = false;
 	let flagCaught = false;
