@@ -13,7 +13,7 @@
 </svelte:head>
 
 <section>
-	<gamesection>
+	<div class="game-section">
 		<Timer {...game} />
 		<div class="flex-row">
 			<div class="team-column">
@@ -25,7 +25,7 @@
 				<Counter score={game.scoreB} />
 			</div>
 		</div>
-	</gamesection>
+	</div>
 	<!-- <FlagCatch /> -->
 </section>
 
@@ -38,7 +38,7 @@
 		min-height: 100vh;
 	}
 
-	gamesection {
+	.game-section {
 		display: flex;
 		flex-direction: column;
 		align-items: center;

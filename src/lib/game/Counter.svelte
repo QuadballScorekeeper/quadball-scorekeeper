@@ -25,10 +25,12 @@
 	</button>
 
 	<div class="counter-viewport">
-		<strong>{$score}</strong>
+		<div class="counter-digits">
+			<strong>{$score}</strong>
+		</div>
 	</div>
 
-	<button hidden={!$score} on:click={annulGoal} aria-label="Increase the counter">
+	<button disabled={!$score} on:click={annulGoal} aria-label="Increase the counter">
 		<svg aria-hidden="true" viewBox="0 0 24 24">
 			<path d={mdiChevronDown} />
 		</svg></button
@@ -43,7 +45,7 @@
 	}
 
 	.counter button {
-		width: 8vh;
+		width: 9vh;
 		align-items: center;
 		justify-content: center;
 		border: 0;
@@ -52,18 +54,26 @@
 	}
 
 	.counter svg {
-		top: 0.125em;
 		position: relative;
+		fill: #006684;
 	}
 
-	.counter button:hover {
-		background-color: var(--color-bg-1);
+	.counter button:disabled svg {
+		fill: #aaa;
 	}
 
 	.counter-viewport {
+		display: flex;
+		flex: 1;
 		width: 100%;
-		font-size: 5vh;
-		text-align: center;
+		font-size: 8vh;
 		position: relative;
+		flex-basis: auto;
+	}
+
+	.counter-digits {
+		text-align: center;
+		font-size: 8vh;
+		width: 100%;
 	}
 </style>
