@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { formatTime } from '$lib/common/utils';
+	import { mdiPause, mdiPlayOutline } from '@mdi/js';
 	import { onDestroy } from 'svelte';
 	import { get, type Unsubscriber, type Writable } from 'svelte/store';
 	import { time } from './stores';
-	import { mdiPlayOutline, mdiPause } from '@mdi/js';
 
 	export let duration: Writable<number>;
 	export let started: Writable<boolean>;
@@ -74,18 +74,23 @@
 		display: flex;
 		flex: 1;
 		flex-direction: row;
+		justify-content: center;
 		align-items: center;
-		font-size: 7vh;
+		font-size: 3.5rem;
+		padding: 0 10px 0 10px;
 	}
+
+	.timer > div {
+		height: 100%;
+		display: flex;
+		align-content: center;
+	}
+
 	.timer button {
-		width: 14vh;
+		width: 100px;
+		max-width: 100%;
 		border: 0;
 		background-color: transparent;
 		touch-action: manipulation;
-	}
-
-	.timer svg {
-		top: 1vh;
-		position: relative;
 	}
 </style>

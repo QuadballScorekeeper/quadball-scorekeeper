@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 	import type { Writable } from 'svelte/store';
-	import { mdiChevronUp, mdiChevronDown } from '@mdi/js';
 
 	// import { spring } from 'svelte/motion';
 	export let score: Writable<number>;
@@ -24,10 +24,8 @@
 		</svg>
 	</button>
 
-	<div class="counter-viewport">
-		<div class="counter-digits">
-			<strong>{$score}</strong>
-		</div>
+	<div class="counter-digits">
+		<strong>{$score}</strong>
 	</div>
 
 	<button disabled={!$score} on:click={annulGoal} aria-label="Increase the counter">
@@ -45,16 +43,13 @@
 	}
 
 	.counter button {
-		width: 9vh;
-		align-items: center;
-		justify-content: center;
+		width: 100px;
+		max-width: 100%;
 		border: 0;
 		background-color: transparent;
-		touch-action: manipulation;
 	}
 
 	.counter svg {
-		position: relative;
 		fill: #006684;
 	}
 
@@ -62,18 +57,8 @@
 		fill: #aaa;
 	}
 
-	.counter-viewport {
-		display: flex;
-		flex: 1;
-		width: 100%;
-		font-size: 8vh;
-		position: relative;
-		flex-basis: auto;
-	}
-
 	.counter-digits {
 		text-align: center;
-		font-size: 8vh;
-		width: 100%;
+		font-size: 4.5rem;
 	}
 </style>
