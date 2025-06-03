@@ -1,0 +1,19 @@
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+dialog {
+    border-radius: 10px
+}
+
+dialog::backdrop {
+    background: rgb(0 /10%);
+}
