@@ -17,7 +17,14 @@
 {/if}
 
 <dialog bind:this={dialog}>
-	<h1>Give out a penalty</h1>
+	<h1>Penalty</h1>
+	<input type="number" placeholder="Player number" />
+	<div class="flex-row">
+		<button>Blue</button>
+		<button>Yellow</button>
+		<button>Red</button>
+		<button>Ejection</button>
+	</div>
 	<button onclick={closeDialog}>Close</button>
 </dialog>
 
@@ -31,6 +38,10 @@
 		text-align: center;
 		color: white;
 		background-color: #006684;
+	}
+	.flex-row {
+		display: flex;
+		flex-direction: row;
 	}
 	button:hover {
 		background-color: #117795;

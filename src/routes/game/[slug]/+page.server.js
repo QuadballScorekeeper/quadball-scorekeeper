@@ -4,10 +4,9 @@ export function load({ params }) {
     let game;
 
     if (params.slug == "new") {
+        game = new Game("Team 1", "Team 2")
         return {
-
-            teamA: "Team A",
-            teamB: "Team B",
+            ...game
         }
     }
 
@@ -19,7 +18,6 @@ export function load({ params }) {
         game = new Game("Team 1", "Team 2")
     }
     return {
-        teamA: game.teamA,
-        teamB: game.teamB,
+        ...game
     };
 }

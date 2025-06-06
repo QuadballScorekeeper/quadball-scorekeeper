@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { mdiChevronLeft, mdiMenu } from '@mdi/js';
 	import { goto } from '$app/navigation';
+	import Menu from './Menu.svelte';
 
 	const goBack = () => {
 		goto('/');
@@ -14,13 +15,7 @@
 			<path d={mdiChevronLeft} />
 		</svg>
 	</button>
-	<nav>
-		<button aria-label="burger menu">
-			<svg aria-hidden="true" viewBox="0 0 24 24">
-				<path d={mdiMenu} />
-			</svg>
-		</button>
-	</nav>
+	<Menu />
 </header>
 
 <main>
@@ -33,7 +28,6 @@
 		justify-content: space-between;
 		align-items: center;
 
-		min-height: 2rem;
 		height: 3rem;
 		box-sizing: border-box;
 		padding: 1rem;
@@ -56,5 +50,6 @@
 		background-color: transparent;
 		border: 0;
 		font-weight: bold;
+		cursor: pointer;
 	}
 </style>

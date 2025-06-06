@@ -19,9 +19,7 @@
 		</svg>
 	</button>
 
-	<div class="counter-digits">
-		<strong>{score}</strong>
-	</div>
+	<p>{score}</p>
 
 	<button disabled={!score} onclick={annulGoal} aria-label="Increase the counter">
 		<svg aria-hidden="true" viewBox="0 7 24 10">
@@ -37,26 +35,28 @@
 		align-items: center;
 	}
 
-	.counter button {
+	button {
 		width: 5rem;
 		max-width: 100%;
 		border: 0;
 		padding: 0;
 		margin: 0;
 		background-color: transparent;
+		cursor: pointer;
 	}
 
-	.counter button svg {
+	button svg {
 		fill: #006684;
 	}
 
-	.counter button:disabled svg {
+	button:disabled svg {
 		fill: #aaa;
 	}
 
-	.counter-digits {
+	p {
 		text-align: center;
 		font-size: 5rem;
+		font-weight: bold;
 		margin: 10px;
 		min-width: 8rem;
 	}

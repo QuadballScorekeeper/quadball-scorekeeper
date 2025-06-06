@@ -7,7 +7,7 @@
 
 	let { data } = $props();
 	console.log(data);
-	let game = new Game(data.teamA, data.teamB);
+	let game = Game.fromParams(data);
 </script>
 
 <Timer {game} />
