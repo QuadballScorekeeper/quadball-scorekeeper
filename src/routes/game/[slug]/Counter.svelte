@@ -1,31 +1,32 @@
 <script lang="ts">
-	import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
+	import { GoalEvent } from '$lib/GameEvent';
+	import { AngleDownOutline, AngleUpOutline } from 'flowbite-svelte-icons';
 
-	let { score } = $props();
+	let { team, game } = $props();
 
 	function scoreGoal() {
-		score++;
+		team.score++;
+		game.events.push(new GoalEvent(game.gameTime, team));
 	}
 
 	function annulGoal() {
-		score = Math.max(0, score - 1);
+		team.score = Math.max(0, team.score - 1);
+		// remove last goal by this team
 	}
 </script>
 
 <div class="counter">
-	<button onclick={scoreGoal} aria-label="Decrease the counter">
-		<svg aria-hidden="true" viewBox="0 7 24 10">
-			<path d={mdiChevronUp} />
-		</svg>
-	</button>
+	<AngleUpOutline
+		onclick={scoreGoal}
+		class="text-primary-700 dark:text-primary-600 h-14 w-14 cursor-pointer"
+	/>
 
-	<p>{score}</p>
+	<strong class="font-mono text-5xl">{team.score}</strong>
 
-	<button disabled={!score} onclick={annulGoal} aria-label="Increase the counter">
-		<svg aria-hidden="true" viewBox="0 7 24 10">
-			<path d={mdiChevronDown} />
-		</svg>
-	</button>
+	<AngleDownOutline
+		onclick={annulGoal}
+		class="text-primary-700 dark:text-primary-600 h-14 w-14 cursor-pointer"
+	/>
 </div>
 
 <style>
@@ -33,31 +34,5 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-	}
-
-	button {
-		width: 5rem;
-		max-width: 100%;
-		border: 0;
-		padding: 0;
-		margin: 0;
-		background-color: transparent;
-		cursor: pointer;
-	}
-
-	button svg {
-		fill: #006684;
-	}
-
-	button:disabled svg {
-		fill: #aaa;
-	}
-
-	p {
-		text-align: center;
-		font-size: 5rem;
-		font-weight: bold;
-		margin: 10px;
-		min-width: 8rem;
 	}
 </style>

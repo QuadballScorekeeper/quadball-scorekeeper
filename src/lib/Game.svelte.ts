@@ -1,48 +1,55 @@
-interface GameParams {
-    teamA: string;
-    teamB: string;
+import type { GameEventType } from "./GameEvent";
+
+export interface GameParams {
+    nameA: string;
     scoreA: number;
+    nameB: string;
     scoreB: number;
-    events: Array<number>;
     gameTime: number;
     running: boolean;
 }
+
+export const newGameParams: GameParams = {
+    nameA: "Team A",
+    nameB: "Team B",
+    scoreA: 0,
+    scoreB: 0,
+    gameTime: 0,
+    running: false,
+}
+
 export class Game {
-    teamA: string;
-    scoreA: number;
-
-    teamB: string;
-    scoreB: number;
-
-    events: Array<number>;
+    teamA: Team;
+    teamB: Team;
     gameTime: number;
     running: boolean;
+    events: Array<GameEventType>;
 
-    constructor(teamA: string, teamB: string, scoreA: number = 0, scoreB: number = 0, events: Array<number> = [], gameTime: number = 0, running: boolean = false) {
-        this.teamA = $state(teamA);
-        this.teamB = $state(teamB);
+    constructor(teamA: string, teamB: string, scoreA: number = 0, scoreB: number = 0, gameTime: number = 0, running: boolean = false) {
+        this.teamA = new Team(teamA, scoreA)
+        this.teamB = new Team(teamB, scoreB)
 
-        this.scoreA = $state(scoreA);
-        this.scoreB = $state(scoreB);
-
-        this.events = $state(events);
         this.gameTime = $state(gameTime);
         this.running = $state(running);
+        this.events = $state([]);
     }
 
     static fromParams(params: GameParams) {
-        const { teamA, teamB, scoreA, scoreB, events, gameTime, running } = params
-        return new Game(teamA, teamB, scoreA, scoreB, events, gameTime, running)
+        const { nameA, nameB, scoreA, scoreB, gameTime, running } = params
+        return new Game(nameA, nameB, scoreA, scoreB, gameTime, running)
     }
+
     toggleRunning() {
         this.running = !this.running
     }
 }
 
-class Team {
+export class Team {
     name: string;
+    score: number;
 
-    constructor(name: string) {
+    constructor(name: string, score: number) {
         this.name = name
+        this.score = $state(score)
     }
 }

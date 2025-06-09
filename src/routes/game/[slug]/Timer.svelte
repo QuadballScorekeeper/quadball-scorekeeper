@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { formatTime } from '$lib/utils';
-	import { mdiPause, mdiPlay, mdiPlayOutline } from '@mdi/js';
-	import { fade } from 'svelte/transition';
+	import { PauseSolid, PlaySolid } from 'flowbite-svelte-icons';
 
 	let { game } = $props();
 
-	function start() {
+	function toggleTimer() {
 		game.toggleRunning();
 	}
 
@@ -14,7 +13,7 @@
 			const freq = 100;
 			const interval = setInterval(() => {
 				game.gameTime += freq;
-			}, 100);
+			}, freq);
 			return () => {
 				clearInterval(interval);
 			};
@@ -23,17 +22,13 @@
 </script>
 
 <div class="timer">
-	<h1>{formatTime(game.gameTime)}</h1>
+	<strong class="font-mono text-5xl">{formatTime(game.gameTime)}</strong>
 	<div>
-		<button onclick={start} aria-label="play/pause button">
-			<svg viewBox="0 0 24 24">
-				{#if game.running}
-					<path transition:fade={{ duration: 100 }} d={mdiPause} />
-				{:else}
-					<path transition:fade={{ duration: 100 }} d={mdiPlayOutline} />
-				{/if}
-			</svg>
-		</button>
+		{#if game.running}
+			<PauseSolid onclick={toggleTimer} class="h-14 w-14 cursor-pointer dark:text-gray-200" />
+		{:else}
+			<PlaySolid onclick={toggleTimer} class="h-14 w-14 cursor-pointer dark:text-gray-200" />
+		{/if}
 	</div>
 </div>
 
@@ -43,20 +38,11 @@
 		flex-direction: row;
 		justify-content: center;
 		align-items: center;
-		font-size: 3rem;
 	}
 
 	.timer > div {
 		height: 100%;
 		display: flex;
 		align-content: center;
-	}
-
-	.timer button {
-		width: 8rem;
-		max-width: 100%;
-		border: 0;
-		background-color: transparent;
-		touch-action: manipulation;
 	}
 </style>

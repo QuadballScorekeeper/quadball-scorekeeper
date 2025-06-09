@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mdiClose, mdiMenu } from '@mdi/js';
+	import { BurgerSolid, CloseOutline } from 'flowbite-svelte-icons';
 	import { cubicOut } from 'svelte/easing';
 	import { fade, slide } from 'svelte/transition';
 
@@ -12,13 +12,11 @@
 
 <nav>
 	<button aria-label="burger menu" onclick={toggleMenu}>
-		<svg aria-hidden="true" viewBox="0 0 24 24">
-			{#if open}
-				<path d={mdiClose} />
-			{:else}
-				<path d={mdiMenu} />
-			{/if}
-		</svg>
+		{#if open}
+			<CloseOutline />
+		{:else}
+			<BurgerSolid />
+		{/if}
 	</button>
 </nav>
 

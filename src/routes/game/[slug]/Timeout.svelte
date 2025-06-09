@@ -1,45 +1,47 @@
 <script lang="ts">
+	import { TimeOutEvent } from '$lib/GameEvent';
 	import { formatTime } from '$lib/utils';
-	import { onMount } from 'svelte';
-	import { fade } from 'svelte/transition';
+	import { Button, Modal } from 'flowbite-svelte';
 
 	let { team, game } = $props();
 
-	let timeoutAvailable: boolean = $state(true);
-	let dialogOpen: boolean = $state(false);
+	const MINUTE = 1000 * 60;
+	let open: boolean = $state(false);
 	let running: boolean = $state(false);
-	let remainingTime: number = $state(1000 * 60);
+	let remainingTime: number = $state(MINUTE);
+	let timeoutAvailable: boolean = $derived(remainingTime > 0);
 
-	let dialog: HTMLDialogElement;
-
-	const useTimeout = () => {
-		timeoutAvailable = false;
+	const startTimeout = () => {
 		running = true;
+		game.events.push(new TimeOutEvent(game.gameTime, team));
 	};
 
 	const showDialog = () => {
-		dialog.showModal();
+		open = true;
 	};
 
 	const cancelTimeout = () => {
-		timeoutAvailable = true;
 		running = false;
-		remainingTime = 1000 * 60;
-		dialog.close();
+		open = false;
+		remainingTime = MINUTE;
 	};
 
 	const endTimeout = () => {
 		running = false;
+		open = false;
 		remainingTime = 0;
-		dialog.close();
 	};
 
 	$effect(() => {
 		if (running) {
-			const freq = 100;
+			const freq = 1000;
 			const interval = setInterval(() => {
 				remainingTime -= freq;
-			}, 100);
+				if (remainingTime <= 0) {
+					running = false;
+					// Create a popup if dialog is not open saying that the timer is done
+				}
+			}, freq);
 			return () => {
 				clearInterval(interval);
 			};
@@ -48,39 +50,20 @@
 </script>
 
 {#if timeoutAvailable && !game.running}
-	<button transition:fade={{ duration: 100 }} onclick={showDialog}>Timeout</button>
+	<Button class="w-20" onclick={showDialog}>Timeout</Button>
 {/if}
 
-<dialog bind:this={dialog} open={dialogOpen}>
-	<h1>Timeout for {team}?</h1>
+<Modal bind:open>
+	<h1>Timeout for {team.name}</h1>
 	<p>Time is {formatTime(game.gameTime)}</p>
-	<p>Score is {game.scoreA}-{game.scoreB}</p>
+	<p>Score is {game.teamA.score}-{game.teamB.score}</p>
 	<h2>{formatTime(remainingTime)}</h2>
-
-	<button onclick={cancelTimeout}>Cancel</button>
-	{#if !running}
-		<button onclick={useTimeout}>Start</button>
-	{:else}
-		<button onclick={endTimeout}>End</button>
-	{/if}
-</dialog>
-
-<style>
-	button {
-		width: 4rem;
-		border: none;
-		border-radius: 5px;
-		padding: 6px 8px;
-		display: table-cell;
-		text-align: center;
-		color: white;
-		background-color: #006684;
-	}
-	button:hover {
-		background-color: #117795;
-	}
-
-	button:active {
-		background-color: aqua;
-	}
-</style>
+	{#snippet footer()}
+		{#if running}
+			<Button onclick={endTimeout}>End</Button>
+		{:else}
+			<Button onclick={startTimeout}>Start</Button>
+		{/if}
+		<Button onclick={cancelTimeout} color="alternative">Cancel</Button>
+	{/snippet}
+</Modal>
