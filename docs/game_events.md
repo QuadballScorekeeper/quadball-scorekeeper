@@ -3,25 +3,13 @@
 Here is a list of all event that can happen during a game
 They are used to build up the logical structure of games
 
-## GameStart \[\]
-
-Marks start of a game
-
-## GamePaused \[timestamp\]
-
-Event for when the game timer is paused
-
-## GameResumed \[timestamp\]
-
-Event for when the game timer is restarted after a pause
-
 ## GoalScored \[timestamp, team, number?\]
 
 Goal scored for **team**, potentially with **number** of scoring player
 
-## Penalty \[timestamp, type, number\]
+## Penalty \[timestamp, team, type, number\]
 
-Penalty of **type** \{blue | yellow | red | ejection\} given to player **number**
+Penalty of **type** \{blue | yellow | red | ejection\} given to player **number** on team **team**
 
 ## PenaltyRelease \[**number**\]
 
