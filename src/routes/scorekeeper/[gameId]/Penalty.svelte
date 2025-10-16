@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { PenaltyEvent, PenaltyTypes } from '$lib/GameEvent';
+	import type { PenaltyType } from '$lib/models/GameEvent.svelte';
+	import type { Team } from '$lib/models/Team.svelte';
 	import { Button, Input, Modal, Radio } from 'flowbite-svelte';
 
-	let { team, game } = $props();
-	let penaltyType: PenaltyTypes = $state(PenaltyTypes.BLUE);
+	const penalties: PenaltyType[] = ['blue_card', 'yellow_card', 'red_card', 'ejection'];
+	let { team }: { team: Team } = $props();
+	let penaltyType: PenaltyType = $state(penalties[0]);
 	let playerNumber: number | undefined = $state();
 
 	let open: boolean = $state(false);
@@ -11,26 +13,27 @@
 		open = true;
 	};
 	const closeModal = () => {
-		penaltyType = PenaltyTypes.BLUE;
+		penaltyType = penalties[0];
 		playerNumber = undefined;
 		open = false;
 	};
 	const submitPenalty = () => {
-		game.events.push(new PenaltyEvent(game.gameTime, team, playerNumber!.toString(), penaltyType));
+		team.addPenalty(playerNumber!, penaltyType!);
+		console.log('push penalty event');
 		closeModal();
 	};
 </script>
 
-{#if !game.running}
+<!-- {#if !game.running} -->
+{#if true}
 	<Button class="w-20" onclick={openModal}>Penalty</Button>
 {/if}
 
 <Modal bind:open>
 	<form onsubmit={submitPenalty} method="dialog">
-		<Radio value={PenaltyTypes.BLUE} bind:group={penaltyType}>Blue</Radio>
-		<Radio value={PenaltyTypes.YELLOW} bind:group={penaltyType}>Yellow</Radio>
-		<Radio value={PenaltyTypes.RED} bind:group={penaltyType}>Red</Radio>
-		<Radio value={PenaltyTypes.EJECTION} bind:group={penaltyType}>Ejection</Radio>
+		{#each penalties as penalty}
+			<Radio value={penalty} bind:group={penaltyType}>{penalty}</Radio>
+		{/each}
 		<Input type="number" placeholder="Player number" bind:value={playerNumber} required />
 
 		<Button type="submit">Submit</Button>
