@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Game } from '$lib/models/Game.svelte';
 	import { formatGameTime } from '$lib/utils';
-	import { PauseSolid, PlaySolid } from 'flowbite-svelte-icons';
+	import { PauseSolid, PlayOutline, PlaySolid } from 'flowbite-svelte-icons';
 
 	let { game }: { game: Game } = $props();
 
@@ -21,7 +21,14 @@
 <div class="timer">
 	<strong class="font-mono text-5xl">{formatGameTime(game.gameTime)}</strong>
 	<div>
-		{#if game.running}
+		{#if game.status == 'scheduled'}
+			<PlayOutline
+				onclick={() => {
+					game.startGame();
+				}}
+				class="h-14 w-14 cursor-pointer dark:text-gray-200"
+			/>
+		{:else if game.running}
 			<PauseSolid
 				onclick={() => {
 					game.pauseGame();

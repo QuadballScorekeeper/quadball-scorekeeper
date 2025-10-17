@@ -34,11 +34,12 @@ export function gameAndTeamsFromEvents(
 				game.totalPauseTime += eventRow.timestamp.getTime() - game.currentPauseStart;
 				game.currentPauseStart = null;
 				break;
-
 			case 'goal':
 				getEventTeam(eventRow).goals++;
+				break;
 			case 'catch':
 				getEventTeam(eventRow).catch = true;
+				break;
 			// Check if the team wins?
 
 			case 'blue_card':
@@ -56,9 +57,11 @@ export function gameAndTeamsFromEvents(
 		game.events.push(event);
 	}
 
-	const lastEvent = sortedEvents[sortedEvents.length - 1];
-	game.gameTime = game.translateRealTime(new Date());
-	game.nextEvent = lastEvent.eventNum + 1;
+	if (sortedEvents.length) {
+		const lastEvent = sortedEvents[sortedEvents.length - 1];
+		game.gameTime = game.translateRealTime(new Date());
+		game.nextEvent = lastEvent.eventNum + 1;
+	}
 
 	return {
 		game,

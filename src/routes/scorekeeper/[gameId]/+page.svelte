@@ -17,6 +17,8 @@
 
 	const { game, homeTeam, awayTeam }: { game: Game; homeTeam: Team; awayTeam: Team } =
 		gameAndTeamsFromEvents(gameRow, homeTeamRow, awayTeamRow, gameEvents);
+	console.log('home:', homeTeam);
+	console.log('away:', awayTeam);
 </script>
 
 {#snippet teamColumn(team: Team)}

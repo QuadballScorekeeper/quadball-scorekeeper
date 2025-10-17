@@ -12,7 +12,7 @@
 		open = false;
 	};
 	const gotoGame = () => {
-		goto(`/game/${gameNumber}`);
+		goto(`scorekeeper/${gameNumber}`);
 	};
 </script>
 

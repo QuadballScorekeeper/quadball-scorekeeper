@@ -5,6 +5,7 @@ export class Game {
 	// gameRow: SelectGame;
 	id: SelectGame['id'];
 	start: SelectGame['start'];
+	status: SelectGame['status'];
 	homeTeam: SelectGame["homeTeam"];
 	awayTeam: SelectGame["awayTeam"];
 	events: GameEvent[];
@@ -18,12 +19,13 @@ export class Game {
 	constructor(gameRow: SelectGame) {
 		this.id = gameRow.id;
 		this.start = gameRow.start;
+		this.status = $state(gameRow.status);
 		this.homeTeam = gameRow.homeTeam;
 		this.awayTeam = gameRow.awayTeam;
 		this.events = $state([]);
 		this.gameTime = $state(0);
 		this.totalPauseTime = 0;
-		this.currentPauseStart = $state(null);
+		this.currentPauseStart = $state(this.start.getTime());
 		this.running = $derived(this.currentPauseStart == null);
 		this.runnerCaught = $state(false);
 		this.nextEvent = 0;
@@ -78,6 +80,19 @@ export class Game {
 			body: JSON.stringify({ game: this.id, eventNum })
 		});
 		console.log('result from event', res);
+	}
+
+	public async startGame() {
+		this.currentPauseStart = null;
+		this.start = new Date();
+		this.status = "live";
+		const res = await fetch(`/api/games/${this.id}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ start: this.start, status: this.status })
+		});
+		console.log('result from updating game', res);
+		this.addEvent('resume');
 	}
 
 	public resumeGame() {
