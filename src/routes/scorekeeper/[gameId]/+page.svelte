@@ -4,7 +4,6 @@
 	import Penalty from './Penalty.svelte';
 	import Timeout from './Timeout.svelte';
 	import type { Game } from '$lib/models/Game.svelte';
-	import type { Team } from '$lib/models/Team.svelte';
 	import { gameAndTeamsFromEvents } from '$lib/buildModels.svelte';
 	import EventsWindow from '../../tournaments/[tournamentId]/games/[gameId]/EventsWindow.svelte';
 	import Catch from './Catch.svelte';
@@ -15,27 +14,29 @@
 	const homeTeamRow = gameWithTeams[0].homeTeam;
 	const awayTeamRow = gameWithTeams[0].awayTeam;
 
-	const { game, homeTeam, awayTeam }: { game: Game; homeTeam: Team; awayTeam: Team } =
-		gameAndTeamsFromEvents(gameRow, homeTeamRow, awayTeamRow, gameEvents);
-	console.log('home:', homeTeam);
-	console.log('away:', awayTeam);
+	const { game }: { game: Game } = gameAndTeamsFromEvents(
+		gameRow,
+		homeTeamRow,
+		awayTeamRow,
+		gameEvents
+	);
 </script>
 
-{#snippet teamColumn(team: Team)}
+{#snippet teamColumn(game: Game, home: boolean)}
 	<div class="team-column">
-		<h1>{team.name}</h1>
-		<Counter {team} />
-		<Penalty {team} />
-		<Timeout {team} />
-		<Catch {team} />
+		<h1>{home ? game.homeTeam.name : game.awayTeam.name}</h1>
+		<Counter {game} {home} />
+		<Penalty {game} {home} />
+		<Timeout {game} {home} />
+		<Catch {game} {home} />
 	</div>
 {/snippet}
 
 <main>
 	<Timer {game} />
 	<div class="flex">
-		{@render teamColumn(homeTeam)}
-		{@render teamColumn(awayTeam)}
+		{@render teamColumn(game, true)}
+		{@render teamColumn(game, false)}
 	</div>
 	<EventsWindow {game} class="h-80 w-80 overflow-auto" />
 </main>

@@ -1,6 +1,5 @@
 import type { SelectTeam } from '$lib/server/db/schema';
-import type { Game } from './Game.svelte';
-import type { GameEvent, PenaltyType } from './GameEvent.svelte';
+import type { GameEvent } from './GameEvent.svelte';
 
 
 export class Team {
@@ -11,41 +10,14 @@ export class Team {
 	score: number;
 	timeout: undefined | GameEvent;
 	timeoutAvailable: boolean;
-	game: Game;
 
-	constructor(teamRow: SelectTeam, game: Game) {
+	constructor(teamRow: SelectTeam) {
 		this.id = teamRow.id;
 		this.name = teamRow.name;
 		this.goals = $state(0);
 		this.catch = $state(false);
 		this.timeoutAvailable = $state(true);
-		this.game = game;
 		this.score = $derived(this.catch ? this.goals + 3 : this.goals)
-	}
-
-	public useTimeout() {
-		this.timeoutAvailable = false;
-		this.game.running = false;
-		this.game.addEvent("timeout", null, this.id);
-	}
-
-	public addCatch(player: number | null) {
-		this.catch = true;
-		this.game.addEvent("catch", player, this.id);
-	}
-
-	public cancelTimeout() {
-		this.timeoutAvailable = true;
-		// Fjern timeoutevent
-	}
-
-	public async addGoal(player: number | null) {
-		this.goals++;
-		this.game.addEvent('goal', player, this.id);
-	}
-
-	public async addPenalty(player: number, penaltyType: PenaltyType) {
-		this.game.addEvent(penaltyType, player, this.id);
 	}
 
 	public removeLastGoal() {

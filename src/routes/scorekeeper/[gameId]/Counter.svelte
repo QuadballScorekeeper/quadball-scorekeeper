@@ -1,15 +1,16 @@
 <script lang="ts">
-	import type { Team } from '$lib/models/Team.svelte';
+	import type { Game } from '$lib/models/Game.svelte';
 	import { AngleDownOutline, AngleUpOutline } from 'flowbite-svelte-icons';
 
-	let { team }: { team: Team } = $props();
+	let { game, home }: { game: Game; home: boolean } = $props();
+	const team = home ? game.homeTeam : game.awayTeam;
 
 	function scoreGoal() {
-		team.addGoal(null);
+		game.addGoal(home, null);
 	}
 
 	function annulGoal() {
-		team.removeLastGoal();
+		game.removeLastGoal(home);
 	}
 </script>
 

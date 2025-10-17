@@ -9,9 +9,9 @@ export function gameAndTeamsFromEvents(
 	awayTeamRow: SelectTeam,
 	gameEventRows: SelectGameEvent[]
 ) {
-	const game = new Game(gameRow);
-	const homeTeam = new Team(homeTeamRow, game);
-	const awayTeam = new Team(awayTeamRow, game);
+	const homeTeam = new Team(homeTeamRow);
+	const awayTeam = new Team(awayTeamRow);
+	const game = new Game(gameRow, homeTeam, awayTeam);
 
 	function getEventTeam(event: SelectGameEvent) {
 		if (event.team == homeTeam.id) return homeTeam;
@@ -65,7 +65,5 @@ export function gameAndTeamsFromEvents(
 
 	return {
 		game,
-		homeTeam,
-		awayTeam
 	};
 }

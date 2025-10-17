@@ -1,9 +1,10 @@
 <script lang="ts">
-	import type { Team } from '$lib/models/Team.svelte';
+	import type { Game } from '$lib/models/Game.svelte';
 	import { formatGameTime } from '$lib/utils';
 	import { Button, Modal } from 'flowbite-svelte';
 
-	let { team }: { team: Team } = $props();
+	let { game, home }: { game: Game; home: boolean } = $props();
+	const team = home ? game.homeTeam : game.awayTeam;
 
 	const MINUTE = 1000 * 60;
 	let open: boolean = $state(false);
@@ -13,7 +14,7 @@
 
 	const startTimeout = () => {
 		running = true;
-		team.useTimeout();
+		game.useTimeout(home);
 	};
 
 	const showDialog = () => {
@@ -49,12 +50,14 @@
 	});
 </script>
 
-{#if remainingTime && !team.game.running}
+{#if remainingTime && !game.running}
 	<Button class="w-20" onclick={showDialog}>Timeout</Button>
 {/if}
 
 <Modal bind:open>
 	<h1>Timeout for {team.name}</h1>
+	<!-- <h1>Time is {game.gameTime}</h1>
+	<h1>Score is {game.homeTeam.score}-{game.awayTeam.score}</h1> -->
 	<h2>{formatGameTime(remainingTime)}</h2>
 	{#snippet footer()}
 		{#if running}

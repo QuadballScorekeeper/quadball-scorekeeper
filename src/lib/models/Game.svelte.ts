@@ -1,13 +1,14 @@
 import type { SelectGame, SelectGameEvent } from '../server/db/schema';
-import { GameEvent } from './GameEvent.svelte';
+import { GameEvent, type PenaltyType } from './GameEvent.svelte';
+import type { Team } from './Team.svelte';
 
 export class Game {
 	// gameRow: SelectGame;
 	id: SelectGame['id'];
 	start: SelectGame['start'];
 	status: SelectGame['status'];
-	homeTeam: SelectGame["homeTeam"];
-	awayTeam: SelectGame["awayTeam"];
+	homeTeam: Team;
+	awayTeam: Team;
 	events: GameEvent[];
 	gameTime: number;
 	totalPauseTime: number;
@@ -16,12 +17,13 @@ export class Game {
 	runnerCaught: boolean;
 	nextEvent: number;
 
-	constructor(gameRow: SelectGame) {
+
+	constructor(gameRow: SelectGame, homeTeam: Team, awayTeam: Team) {
 		this.id = gameRow.id;
 		this.start = gameRow.start;
 		this.status = $state(gameRow.status);
-		this.homeTeam = gameRow.homeTeam;
-		this.awayTeam = gameRow.awayTeam;
+		this.homeTeam = homeTeam;
+		this.awayTeam = awayTeam;
 		this.events = $state([]);
 		this.gameTime = $state(0);
 		this.totalPauseTime = 0;
@@ -39,11 +41,10 @@ export class Game {
 	public async addEvent(
 		eventType: SelectGameEvent['eventType'],
 		player?: SelectGameEvent['player'],
-		team?: SelectGameEvent['team']
+		team?: SelectGameEvent["team"]
 	) {
 		console.log('adding event');
 		const timestamp = Date.now();
-
 		const newEvent = new GameEvent({
 			game: this.id,
 			eventNum: this.nextEvent,
@@ -103,5 +104,51 @@ export class Game {
 	public pauseGame() {
 		this.currentPauseStart = Date.now();
 		this.addEvent('pause');
+	}
+
+	public checkWinner() {
+		if (!this.runnerCaught) return false;
+	}
+
+	public useTimeout(home: boolean) {
+		const team = home ? this.homeTeam : this.awayTeam;
+		team.timeoutAvailable = false;
+		this.running = false;
+		this.addEvent("timeout", null, team.id);
+	}
+
+	public cancelTimeout(home: boolean) {
+		const team = home ? this.homeTeam : this.awayTeam;
+		team.timeoutAvailable = true;
+	}
+
+	public addCatch(home: boolean, player: number | null) {
+		const team = home ? this.homeTeam : this.awayTeam;
+		team.catch = true;
+		this.runnerCaught = true
+		this.addEvent("catch", player, team.id);
+	}
+
+	public addGoal(home: boolean, player: number | null) {
+		const team = home ? this.homeTeam : this.awayTeam;
+		team.goals++;
+		this.addEvent('goal', player, team.id);
+	}
+
+	public addPenalty(home: boolean, player: number, penaltyType: PenaltyType) {
+		const team = home ? this.homeTeam : this.awayTeam;
+		this.addEvent(penaltyType, player, team.id);
+	}
+
+	public removeLastGoal(home: boolean) {
+		const team = home ? this.homeTeam : this.awayTeam;
+		if (team.goals < 1) return;
+
+		team.goals--;
+		const lastGoal = this.events.findLast(
+			(event) => event.eventType == 'goal' && event.team == team.id
+		);
+		console.log('last goal by this team:', lastGoal);
+		this.removeEvent(lastGoal!.eventNum);
 	}
 }

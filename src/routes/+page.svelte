@@ -13,7 +13,7 @@
 <main>
 	<Button class="w-40" href="/scorekeeper">Start a game</Button>
 	<Button class="w-40" href="/tournaments" color="amber">View tournaments</Button>
-	<Button class="w-40" color="blue">Plan tournament</Button>
+	<!-- <Button class="w-40" color="blue">Plan tournament</Button> -->
 </main>
 
 <style>

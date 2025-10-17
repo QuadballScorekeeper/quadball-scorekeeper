@@ -13,8 +13,12 @@
 	const homeTeamRow = gameWithTeams[0].homeTeam;
 	const awayTeamRow = gameWithTeams[0].awayTeam;
 
-	const { game, homeTeam, awayTeam }: { game: Game; homeTeam: Team; awayTeam: Team } =
-		gameAndTeamsFromEvents(gameRow, homeTeamRow, awayTeamRow, gameEvents);
+	const { game }: { game: Game } = gameAndTeamsFromEvents(
+		gameRow,
+		homeTeamRow,
+		awayTeamRow,
+		gameEvents
+	);
 
 	$effect(() => {
 		if (game.running) {
@@ -35,8 +39,8 @@
 			game.events.push(event);
 			switch (event.eventType) {
 				case 'goal':
-					if (event.team == homeTeam.id) homeTeam.goals++;
-					if (event.team == awayTeam.id) awayTeam.goals++;
+					if (event.team == game.homeTeam.id) game.homeTeam.goals++;
+					if (event.team == game.awayTeam.id) game.awayTeam.goals++;
 					break;
 				case 'timeout':
 				case 'pause':
@@ -61,15 +65,15 @@
 
 <main>
 	<div class="flex gap-40">
-		<h1>{homeTeam.name}</h1>
-		<h1>{awayTeam.name}</h1>
+		<h1>{game.homeTeam.name}</h1>
+		<h1>{game.awayTeam.name}</h1>
 	</div>
 	<div class="flex flex-col items-center gap-1">
 		<strong class="font-mono text-2xl">{formatGameTime(game.gameTime)}</strong>
 		<div class="flex items-center gap-4">
-			{@render teamScore(homeTeam)}
+			{@render teamScore(game.homeTeam)}
 			<strong class="font-mono text-5xl">-</strong>
-			{@render teamScore(awayTeam)}
+			{@render teamScore(game.awayTeam)}
 		</div>
 	</div>
 

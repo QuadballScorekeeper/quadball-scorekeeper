@@ -15,8 +15,10 @@
 				<div class="grow basis-0 text-center">
 					{#if g.game.status == 'scheduled'}
 						{g.game.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-					{:else}
-						<strong>Calc score here!</strong>
+					{:else if g.game.status == 'live'}
+						<strong>Live</strong>
+					{:else if g.game.status == 'finished'}
+						<strong>Done</strong>
 					{/if}
 				</div>
 				<strong class=" grow-2 basis-0 text-right">
