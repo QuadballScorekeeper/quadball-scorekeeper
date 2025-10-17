@@ -39,7 +39,7 @@ export async function getGameTime(gameId: number): Promise<number> {
 		}
 	}
 
-	const now = pauseStart ? pauseStart : Date.now();
+	const now = pauseStart ?? Date.now();
 	let gameTime = now - startTime;
 	return Math.max(0, gameTime);
 }

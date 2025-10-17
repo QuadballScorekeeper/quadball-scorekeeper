@@ -16,6 +16,7 @@ export class Game {
 	running: boolean;
 	runnerCaught: boolean;
 	nextEvent: number;
+	setScore: number | undefined;
 
 
 	constructor(gameRow: SelectGame, homeTeam: Team, awayTeam: Team) {
@@ -29,7 +30,7 @@ export class Game {
 		this.totalPauseTime = 0;
 		this.currentPauseStart = $state(this.start.getTime());
 		this.running = $derived(this.currentPauseStart == null);
-		this.runnerCaught = $state(false);
+		this.runnerCaught = $derived(homeTeam.catch || awayTeam.catch);
 		this.nextEvent = 0;
 	}
 
@@ -49,8 +50,8 @@ export class Game {
 			game: this.id,
 			eventNum: this.nextEvent,
 			eventType: eventType,
-			team: team ? team : null,
-			player: player ? player : null,
+			team: team ?? null,
+			player: player ?? null,
 			timestamp: new Date(timestamp)
 		}, this.gameTime);
 
@@ -62,12 +63,9 @@ export class Game {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ newEvent })
 		});
-		console.log('result from event', res);
 	}
 
 	public async removeEvent(eventNum: SelectGameEvent['eventNum']) {
-		console.log('removing event');
-
 		const index = this.events.findIndex((event) => event.eventNum == eventNum);
 		if (index == -1) {
 			console.error('Trying to delete non-existent event??');
@@ -80,7 +78,6 @@ export class Game {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ game: this.id, eventNum })
 		});
-		console.log('result from event', res);
 	}
 
 	public async startGame() {
@@ -92,8 +89,18 @@ export class Game {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ start: this.start, status: this.status })
 		});
-		console.log('result from updating game', res);
 		this.addEvent('resume');
+	}
+
+	public async endGame() {
+		this.running = false;
+		this.addEvent('pause');
+		this.status = "finished";
+		const res = await fetch(`/api/games/${this.id}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ start: this.start, status: this.status })
+		});
 	}
 
 	public resumeGame() {
@@ -106,9 +113,6 @@ export class Game {
 		this.addEvent('pause');
 	}
 
-	public checkWinner() {
-		if (!this.runnerCaught) return false;
-	}
 
 	public useTimeout(home: boolean) {
 		const team = home ? this.homeTeam : this.awayTeam;
@@ -124,15 +128,22 @@ export class Game {
 
 	public addCatch(home: boolean, player: number | null) {
 		const team = home ? this.homeTeam : this.awayTeam;
+		const otherTeam = home ? this.awayTeam : this.homeTeam;
 		team.catch = true;
-		this.runnerCaught = true
 		this.addEvent("catch", player, team.id);
+
+		if (team.score > otherTeam.score) {
+			this.endGame();
+		} else {
+			this.setScore = otherTeam.score + 3;
+		}
 	}
 
 	public addGoal(home: boolean, player: number | null) {
 		const team = home ? this.homeTeam : this.awayTeam;
 		team.goals++;
 		this.addEvent('goal', player, team.id);
+		if (this.setScore && team.score >= this.setScore) this.endGame()
 	}
 
 	public addPenalty(home: boolean, player: number, penaltyType: PenaltyType) {
@@ -148,7 +159,6 @@ export class Game {
 		const lastGoal = this.events.findLast(
 			(event) => event.eventType == 'goal' && event.team == team.id
 		);
-		console.log('last goal by this team:', lastGoal);
 		this.removeEvent(lastGoal!.eventNum);
 	}
 }

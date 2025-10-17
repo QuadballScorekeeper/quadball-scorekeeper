@@ -20,14 +20,4 @@ export class Team {
 		this.score = $derived(this.catch ? this.goals + 3 : this.goals)
 	}
 
-	public removeLastGoal() {
-		if (this.goals < 1) return;
-		this.goals--;
-
-		const lastGoal = this.game.events.findLast(
-			(event) => event.eventType == 'goal' && event.team == this.id
-		);
-		console.log('last goal by this team:', lastGoal);
-		this.game.removeEvent(lastGoal!.eventNum);
-	}
 }
