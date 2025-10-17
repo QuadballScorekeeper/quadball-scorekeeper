@@ -1,42 +1,25 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { Button, Input, Modal } from 'flowbite-svelte';
+	import { Listgroup, ListgroupItem } from 'flowbite-svelte';
 
-	let open: boolean = $state(false);
-	let gameNumber: number | undefined = $state();
-
-	const openModal = () => {
-		open = true;
-	};
-	const closeModal = () => {
-		open = false;
-	};
-	const gotoGame = () => {
-		goto(`scorekeeper/${gameNumber}`);
-	};
+	let { data } = $props();
+	let { games } = data;
 </script>
 
-<main>
-	<h1>Start a game</h1>
-	<Button class="w-40" href={'/scorekeeper/new'}>New game</Button>
-	<Button class="w-40" onclick={openModal} color="amber">Game from code</Button>
+<main class="gap-4">
+	<h1>Select game to scorekeep:</h1>
+	<Listgroup class="w-80" active>
+		{#each games as g}
+			<ListgroupItem href="/scorekeeper/{g.game.id}">
+				<strong class="grow-2 basis-0">
+					{g.homeTeam.name}
+				</strong>
+				<div class="grow basis-0 text-center">
+					{g.game.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+				</div>
+				<strong class=" grow-2 basis-0 text-right">
+					{g.awayTeam.name}
+				</strong>
+			</ListgroupItem>
+		{/each}
+	</Listgroup>
 </main>
-
-<Modal bind:open>
-	<form onsubmit={gotoGame}>
-		<Input type="number" placeholder="Game number" bind:value={gameNumber} required />
-
-		<Button type="submit">Start game</Button>
-		<Button color="alternative" onclick={closeModal}>Cancel</Button>
-	</form>
-</Modal>
-
-<style>
-	main {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 1rem;
-		height: 100%;
-	}
-</style>
