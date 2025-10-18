@@ -7,9 +7,11 @@
 	import { gameAndTeamsFromEvents } from '$lib/buildModels.svelte';
 	import EventsWindow from '../../tournaments/[tournamentId]/games/[gameId]/EventsWindow.svelte';
 	import Catch from './Catch.svelte';
+	import { Button, Toggle } from 'flowbite-svelte';
 
 	let { data } = $props();
 	let { gameWithTeams, gameEvents } = data;
+	let flip = $state(true);
 	const gameRow = gameWithTeams[0].game;
 	const homeTeamRow = gameWithTeams[0].homeTeam;
 	const awayTeamRow = gameWithTeams[0].awayTeam;
@@ -34,11 +36,14 @@
 
 <main>
 	<Timer {game} />
-	<div class="flex">
-		{@render teamColumn(game, true)}
-		{@render teamColumn(game, false)}
-	</div>
-	<EventsWindow {game} class="h-80 w-80 overflow-auto" />
+	{#key flip}
+		<div class="flex">
+			{@render teamColumn(game, flip)}
+			{@render teamColumn(game, !flip)}
+		</div>
+		<EventsWindow {game} {flip} class="h-80 w-80 overflow-auto" />
+	{/key}
+	<Toggle bind:checked={flip}>Flip teams</Toggle>
 </main>
 
 <style>
