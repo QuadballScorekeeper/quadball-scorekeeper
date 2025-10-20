@@ -77,7 +77,7 @@
 		</div>
 	</div>
 
-	<EventsWindow {game} class="h-80 w-80 overflow-auto" />
+	<EventsWindow {game} flip={true} class="h-80 w-80 overflow-auto" />
 </main>
 
 <style>
