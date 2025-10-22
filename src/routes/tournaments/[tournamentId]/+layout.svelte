@@ -2,7 +2,7 @@
 	// `data` comes from the layout’s load function
 	import type { Snippet } from 'svelte';
 	import { page } from '$app/state';
-	import { DarkMode, Navbar, NavBrand, NavLi, NavUl } from 'flowbite-svelte';
+	import { DarkMode, Navbar, NavBrand, NavHamburger, NavLi, NavUl } from 'flowbite-svelte';
 
 	let {
 		data,
@@ -26,6 +26,7 @@
 		<h1>Scorekeeper</h1>
 	</NavBrand>
 	<h1>{data.tournament.name}</h1>
+	<NavHamburger />
 	<NavUl {activeUrl}>
 		<NavLi href="/tournaments">Tournaments</NavLi>
 		<NavLi href="/tournaments/{data.tournament.id}/games">Games</NavLi>
