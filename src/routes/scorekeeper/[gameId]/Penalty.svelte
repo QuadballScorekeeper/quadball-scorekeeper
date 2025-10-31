@@ -24,8 +24,7 @@
 	};
 </script>
 
-<!-- {#if !game.running} -->
-{#if true}
+{#if !game.running}
 	<Button class="w-20" onclick={openModal}>Penalty</Button>
 {/if}
 
