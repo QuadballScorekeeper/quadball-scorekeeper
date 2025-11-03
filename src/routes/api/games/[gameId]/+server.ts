@@ -11,7 +11,15 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 
     start = new Date(start)
     try {
-        await db.update(game).set({ start: start, status: status }).where(eq(game.id, Number(params.gameId)));
+        await db
+            .update(game)
+            .set({
+                start: start,
+                status: status,
+            })
+            .where(
+                eq(game.id, Number(params.gameId))
+            );
     } catch (error) {
         console.error(error);
         return json({ success: false, error: 'Error adding row' }, { status: 500 });

@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db/client';
-import { game, player, team, tournament } from '$lib/server/db/schema';
-import { asc, eq } from 'drizzle-orm';
+import { game, team, tournament } from '$lib/server/db/schema';
+import { and, asc, eq } from 'drizzle-orm';
 import type { Actions } from './$types';
 import { error } from '@sveltejs/kit';
 
@@ -28,11 +28,11 @@ export const load = async ({ params }) => {
 
 export const actions = {
     newGame: async ({ params, request }) => {
+        const tId: number = Number(params.tournamentId);
         const data = await request.formData();
         const homeTeam: number = Number(data.get("homeTeam"));
         const awayTeam: number = Number(data.get("awayTeam"));
-        const start: Date = new Date(Number(data.get("start")));
-        const tId = Number(params.tournamentId);
+        const start: Date = new Date(data.get("start")!.toString());
         await db
             .insert(game)
             .values({
@@ -41,5 +41,18 @@ export const actions = {
                 awayTeam: awayTeam,
                 tournament: tId,
             })
+    },
+    deleteGame: async ({ params, request }) => {
+        const data = await request.formData();
+        const gameId: number = Number(data.get("game"));
+        const tId: number = Number(params.tournamentId);
+        await db
+            .delete(game)
+            .where(
+                and(
+                    eq(game.id, gameId),
+                    eq(game.tournament, tId),
+                )
+            )
     },
 } satisfies Actions;
