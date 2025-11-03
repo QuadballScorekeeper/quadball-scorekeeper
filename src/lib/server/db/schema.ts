@@ -11,7 +11,7 @@ import {
 	primaryKey
 } from 'drizzle-orm/pg-core';
 
-export const gameStatusEnum = pgEnum('game_status', ['scheduled', 'live', 'finished']);
+export const gameStatusEnum = pgEnum('game_status', ['scheduled', 'live', 'finished', 'cancelled']);
 
 export const eventTypeEnum = pgEnum('event_type', [
 	'goal',
