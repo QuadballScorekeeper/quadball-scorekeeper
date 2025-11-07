@@ -36,7 +36,7 @@ export const DELETE: RequestHandler = async ({ request }) => {
 			.where(and(eq(gameEvent.game, game), eq(gameEvent.eventNum, eventNum)));
 	} catch (error) {
 		console.log(error);
-		return json({ success: false, error: 'Error adding row' }, { status: 500 });
+		return json({ success: false, error: 'Error deleting row' }, { status: 500 });
 	}
 
 	return json({ success: true }, { status: 200 });

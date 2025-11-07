@@ -1,17 +1,14 @@
 import { Game } from './models/Game.svelte';
 import { GameEvent } from './models/GameEvent.svelte';
 import { Team } from './models/Team.svelte';
-import type { SelectGame, SelectGameEvent, SelectTeam } from './server/db/schema';
+import type { SelectGameEvent } from './server/db/schema';
 
 export function gameAndTeamsFromEvents(
-	gameRow: SelectGame,
-	homeTeamRow: SelectTeam,
-	awayTeamRow: SelectTeam,
-	gameEventRows: SelectGameEvent[]
+	gameInfo: any
 ) {
-	const homeTeam = new Team(homeTeamRow);
-	const awayTeam = new Team(awayTeamRow);
-	const game = new Game(gameRow, homeTeam, awayTeam);
+	const homeTeam = new Team(gameInfo.homeTeam);
+	const awayTeam = new Team(gameInfo.awayTeam);
+	const game = new Game(gameInfo, homeTeam, awayTeam);
 
 	function getEventTeam(event: SelectGameEvent) {
 		if (event.team == homeTeam.id) return homeTeam;
@@ -19,7 +16,7 @@ export function gameAndTeamsFromEvents(
 		return awayTeam;
 	}
 
-	const sortedEvents = [...gameEventRows].sort((a, b) => a.eventNum - b.eventNum);
+	const sortedEvents = [...gameInfo.events].sort((a, b) => a.eventNum - b.eventNum);
 
 	for (const eventRow of sortedEvents) {
 		switch (eventRow.eventType) {
