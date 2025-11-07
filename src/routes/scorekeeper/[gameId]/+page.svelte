@@ -10,18 +10,10 @@
 	import { Button, Toggle } from 'flowbite-svelte';
 
 	let { data } = $props();
-	let { gameWithTeams, gameEvents } = data;
+	let { gameInfo } = data;
 	let flip = $state(true);
-	const gameRow = gameWithTeams[0].game;
-	const homeTeamRow = gameWithTeams[0].homeTeam;
-	const awayTeamRow = gameWithTeams[0].awayTeam;
 
-	const { game }: { game: Game } = gameAndTeamsFromEvents(
-		gameRow,
-		homeTeamRow,
-		awayTeamRow,
-		gameEvents
-	);
+	const { game }: { game: Game } = gameAndTeamsFromEvents(gameInfo);
 </script>
 
 {#snippet teamColumn(game: Game, home: boolean)}

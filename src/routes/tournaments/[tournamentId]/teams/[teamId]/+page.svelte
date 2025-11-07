@@ -1,26 +1,36 @@
 <script lang="ts">
-	import { Listgroup, ListgroupItem } from 'flowbite-svelte';
+	import {
+		Table,
+		TableBody,
+		TableBodyCell,
+		TableBodyRow,
+		TableHead,
+		TableHeadCell
+	} from 'flowbite-svelte';
 
-	let {
-		data
-	}: {
-		data: {
-			players: {
-				name: string;
-				number: number;
-			}[];
-		};
-	} = $props();
+	let { data } = $props();
+	let { players } = data;
 </script>
 
 <main>
-	<Listgroup>
-		{#each data.players as player}
-			<ListgroupItem>
-				{player.number}: {player.name}
-			</ListgroupItem>
-		{/each}
-	</Listgroup>
+	<Table>
+		<TableHead>
+			<TableHeadCell>Number</TableHeadCell>
+			<TableHeadCell>Name</TableHeadCell>
+		</TableHead>
+		<TableBody>
+			{#each players as player}
+				<TableBodyRow>
+					<TableBodyCell>
+						{player.number}
+					</TableBodyCell>
+					<TableBodyCell>
+						{player.name}
+					</TableBodyCell>
+				</TableBodyRow>
+			{/each}
+		</TableBody>
+	</Table>
 </main>
 
 <style>

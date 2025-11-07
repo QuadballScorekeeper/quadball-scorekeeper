@@ -8,17 +8,9 @@
 	import EventsWindow from './EventsWindow.svelte';
 
 	let { data, params } = $props();
-	let { gameWithTeams, gameEvents } = data;
-	const gameRow = gameWithTeams[0].game;
-	const homeTeamRow = gameWithTeams[0].homeTeam;
-	const awayTeamRow = gameWithTeams[0].awayTeam;
+	let { gameInfo } = data;
 
-	const { game }: { game: Game } = gameAndTeamsFromEvents(
-		gameRow,
-		homeTeamRow,
-		awayTeamRow,
-		gameEvents
-	);
+	const { game }: { game: Game } = gameAndTeamsFromEvents(gameInfo);
 
 	$effect(() => {
 		if (game.running) {

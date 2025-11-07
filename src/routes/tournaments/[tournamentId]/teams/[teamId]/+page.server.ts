@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db/client';
-import { player, team } from '$lib/server/db/schema';
+import { player } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
 import { asc, eq } from 'drizzle-orm';
 
@@ -8,11 +8,11 @@ export const load = async ({ params }) => {
 
 	if (Number.isNaN(teamId)) throw error(400, 'Invalid tournament id');
 
-	const players = await db
-		.select()
-		.from(player)
-		.orderBy(asc(player.number))
-		.where(eq(player.team, teamId));
+	const players = await db.query.player.findMany({
+		where: eq(player.team, teamId),
+		orderBy: asc(player.number)
+	})
+
 	return {
 		players
 	};
