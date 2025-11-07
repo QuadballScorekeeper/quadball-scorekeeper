@@ -126,11 +126,11 @@ export class Game {
 		team.timeoutAvailable = true;
 	}
 
-	public addCatch(home: boolean, player: number | null) {
+	public addCatch(home: boolean, player?: number) {
 		const team = home ? this.homeTeam : this.awayTeam;
 		const otherTeam = home ? this.awayTeam : this.homeTeam;
 		team.catch = true;
-		this.addEvent("catch", player, team.id);
+		this.addEvent("catch", player ?? null, team.id);
 
 		if (team.score > otherTeam.score) {
 			this.endGame();
@@ -139,10 +139,10 @@ export class Game {
 		}
 	}
 
-	public addGoal(home: boolean, player: number | null) {
+	public addGoal(home: boolean, player?: number) {
 		const team = home ? this.homeTeam : this.awayTeam;
 		team.goals++;
-		this.addEvent('goal', player, team.id);
+		this.addEvent('goal', player ?? null, team.id);
 		if (this.setScore && team.score >= this.setScore) this.endGame()
 	}
 

@@ -12,6 +12,7 @@
 	let { data } = $props();
 	let { gameInfo } = data;
 	let flip = $state(true);
+	let markNumbers = $state(true);
 
 	const { game }: { game: Game } = gameAndTeamsFromEvents(gameInfo);
 </script>
@@ -19,10 +20,10 @@
 {#snippet teamColumn(game: Game, home: boolean)}
 	<div class="team-column">
 		<h1>{home ? game.homeTeam.name : game.awayTeam.name}</h1>
-		<Counter {game} {home} />
+		<Counter {game} {home} {markNumbers} />
 		<Penalty {game} {home} />
 		<Timeout {game} {home} />
-		<Catch {game} {home} />
+		<Catch {game} {home} {markNumbers} />
 	</div>
 {/snippet}
 
@@ -36,6 +37,7 @@
 		<EventsWindow {game} {flip} class="h-80 w-80 overflow-auto" />
 	{/key}
 	<Toggle bind:checked={flip}>Flip teams</Toggle>
+	<Toggle bind:checked={markNumbers}>Player number on goals</Toggle>
 </main>
 
 <style>
