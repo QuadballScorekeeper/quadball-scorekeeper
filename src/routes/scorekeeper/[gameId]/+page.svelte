@@ -7,7 +7,7 @@
 	import { gameAndTeamsFromEvents } from '$lib/buildModels.svelte';
 	import EventsWindow from '../../tournaments/[tournamentId]/games/[gameId]/EventsWindow.svelte';
 	import Catch from './Catch.svelte';
-	import { Button, Toggle } from 'flowbite-svelte';
+	import { Toggle } from 'flowbite-svelte';
 
 	let { data } = $props();
 	let { gameInfo } = data;
@@ -27,17 +27,37 @@
 	</div>
 {/snippet}
 
-<main>
-	<Timer {game} />
-	{#key flip}
-		<div class="flex">
-			{@render teamColumn(game, flip)}
-			{@render teamColumn(game, !flip)}
+{#snippet finishedGame(game: Game)}
+	<h1>Game is finished</h1>
+	<strong class="font-mono text-5xl">{game.homeTeam.name} - {game.awayTeam.name}</strong>
+	<div class="flex">
+		<div class="flex items-start">
+			<strong class="font-mono text-5xl">{game.homeTeam.score}</strong>
+			<strong class="font-mono text-2xl">{game.homeTeam.catch ? '*' : ''}</strong>
 		</div>
-		<EventsWindow {game} {flip} class="h-80 w-80 overflow-auto" />
-	{/key}
-	<Toggle bind:checked={flip}>Flip teams</Toggle>
-	<Toggle bind:checked={markNumbers}>Player number on goals</Toggle>
+		<strong class="font-mono text-5xl">-</strong>
+		<div class="flex items-start">
+			<strong class="font-mono text-5xl">{game.awayTeam.score}</strong>
+			<strong class="font-mono text-2xl">{game.awayTeam.catch ? '*' : ''}</strong>
+		</div>
+	</div>
+{/snippet}
+
+<main>
+	{#if game.status == 'finished'}
+		{@render finishedGame(game)}
+	{:else}
+		<Timer {game} />
+		{#key flip}
+			<div class="flex">
+				{@render teamColumn(game, flip)}
+				{@render teamColumn(game, !flip)}
+			</div>
+			<EventsWindow {game} {flip} class="h-80 w-80 overflow-auto" />
+		{/key}
+		<Toggle bind:checked={flip}>Flip teams</Toggle>
+		<Toggle bind:checked={markNumbers}>Player number on goals</Toggle>
+	{/if}
 </main>
 
 <style>
