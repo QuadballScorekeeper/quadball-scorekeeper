@@ -45,7 +45,7 @@
 
 	<h1>Tournaments you can manage</h1>
 	<Listgroup active>
-		{#each tournaments as t}
+		{#each tournaments as t (t.id)}
 			<ListgroupItem href="/admin/{t.id}" class="flex flex-col">
 				<p>{t.name}</p>
 				<p>{t.start.toLocaleDateString([])} - {t.end.toLocaleDateString([])}</p>

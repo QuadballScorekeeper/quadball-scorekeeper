@@ -1,15 +1,13 @@
-import { db } from '$lib/server/db/client';
-import { tournament } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { getTournament } from '$lib/server/tournament';
+import type { LayoutServerLoad } from './$types';
 
-export const load = async ({ params }) => {
+export const load: LayoutServerLoad = async ({ params }) => {
 	const tournamentId = Number(params.tournamentId);
 	if (Number.isNaN(tournamentId)) throw error(400, 'Invalid tournament id');
 
-	const t = await db.select().from(tournament).where(eq(tournament.id, tournamentId)).limit(1);
+	const tournamentData = await getTournament(tournamentId);
+	if (!tournamentData) throw error(404, 'Tournament not found');
 
-	if (t.length === 0) throw error(404, 'Tournament not found');
-
-	return { tournament: t[0] };
+	return { tournamentData };
 };

@@ -1,4 +1,4 @@
-import { relations, type InferInsertModel, type InferModelFromColumns, type InferSelectModel } from 'drizzle-orm';
+import { relations, type InferInsertModel, type InferSelectModel } from 'drizzle-orm';
 import {
 	pgTable,
 	serial,
@@ -27,7 +27,7 @@ export const eventTypeEnum = pgEnum('event_type', [
 	'timeout',
 
 	'start',
-	'end',
+	'end'
 ]);
 
 export const tournament = pgTable('tournament', {
@@ -39,8 +39,8 @@ export const tournament = pgTable('tournament', {
 
 export const tournamentRelations = relations(tournament, ({ many }) => ({
 	teams: many(team),
-	games: many(game),
-}))
+	games: many(game)
+}));
 
 export type SelectTournament = InferSelectModel<typeof tournament>;
 
@@ -80,7 +80,7 @@ export const playerRelations = relations(player, ({ one }) => ({
 	team: one(team, { fields: [player.team], references: [team.id] })
 }));
 
-export type SelectPLayer = InferSelectModel<typeof player>;
+export type SelectPlayer = InferSelectModel<typeof player>;
 
 export const game = pgTable(
 	'game',
@@ -91,10 +91,10 @@ export const game = pgTable(
 			.notNull()
 			.references(() => tournament.id, { onDelete: 'cascade' }),
 		status: gameStatusEnum('scheduled').default('scheduled').notNull(),
-		homeTeam: integer()
+		homeTeamId: integer()
 			.notNull()
 			.references(() => team.id, { onDelete: 'cascade' }),
-		awayTeam: integer()
+		awayTeamId: integer()
 			.notNull()
 			.references(() => team.id, { onDelete: 'cascade' })
 	},
@@ -104,8 +104,8 @@ export const game = pgTable(
 export const gameRelations = relations(game, ({ one, many }) => ({
 	tournament: one(tournament, { fields: [game.tournament], references: [tournament.id] }),
 	events: many(gameEvent),
-	homeTeam: one(team, { fields: [game.homeTeam], references: [team.id] }),
-	awayTeam: one(team, { fields: [game.awayTeam], references: [team.id] }),
+	homeTeam: one(team, { fields: [game.homeTeamId], references: [team.id] }),
+	awayTeam: one(team, { fields: [game.awayTeamId], references: [team.id] })
 }));
 
 export type SelectGame = InferSelectModel<typeof game>;
@@ -128,7 +128,7 @@ export const gameEvent = pgTable(
 export const gameEventRelations = relations(gameEvent, ({ one }) => ({
 	game: one(game, { fields: [gameEvent.game], references: [game.id] }),
 	team: one(team, { fields: [gameEvent.team], references: [team.id] }),
-	player: one(player, { fields: [gameEvent.player], references: [player.id] }),
+	player: one(player, { fields: [gameEvent.player], references: [player.id] })
 }));
 
 export type SelectGameEvent = InferSelectModel<typeof gameEvent>;

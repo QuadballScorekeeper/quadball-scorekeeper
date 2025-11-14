@@ -15,8 +15,8 @@
 
 <main>
 	<Listgroup active>
-		{#each tournaments as t}
-			<ListgroupItem href="/tournaments/{t.id}/games" class="flex flex-col">
+		{#each tournaments as t (t.id)}
+			<ListgroupItem href="/tournaments/{t.id}" class="flex flex-col">
 				<p>{t.name}</p>
 				<p>{t.start.toLocaleDateString([])} - {t.end.toLocaleDateString([])}</p>
 			</ListgroupItem>

@@ -1,16 +1,13 @@
 <script lang="ts">
-	import { gameAndTeamsFromEvents } from '$lib/buildModels.svelte';
-	import type { Game } from '$lib/models/Game.svelte';
-	import { GameEvent } from '$lib/models/GameEvent.svelte.js';
-	import type { Team } from '$lib/models/Team.svelte';
 	import { formatGameTime } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import EventsWindow from './EventsWindow.svelte';
+	import { Team } from '$lib/client/Team.svelte';
+	import { Game } from '$lib/client/Game.svelte';
+	import type { GameEvent } from '$lib/client/GameEvent.svelte';
 
 	let { data, params } = $props();
-	let { gameInfo } = data;
-
-	const { game }: { game: Game } = gameAndTeamsFromEvents(gameInfo);
+	let game = new Game(data.gameInfo);
 
 	$effect(() => {
 		if (game.running) {
@@ -25,6 +22,7 @@
 	});
 
 	onMount(() => {
+		if (!game.running) return;
 		const eventSource = new EventSource(`/api/games/${params.gameId}/stream`);
 		eventSource.onmessage = (message) => {
 			const event: GameEvent = JSON.parse(message.data);
@@ -69,7 +67,7 @@
 		</div>
 	</div>
 
-	<EventsWindow {game} flip={true} class="h-80 w-80 overflow-auto" />
+	<EventsWindow {game} />
 </main>
 
 <style>

@@ -111,9 +111,9 @@ async function main() {
 			gameRows.push({
 				start: faker.date.between({ from: t.start, to: t.end }),
 				tournament: t.id,
-				status: 'scheduled' as const,
-				awayTeam: teams[0].id,
-				homeTeam: teams[1].id
+				status: 'finished' as const,
+				awayTeamId: teams[0].id,
+				homeTeamId: teams[1].id
 			});
 		}
 	}
@@ -125,7 +125,7 @@ async function main() {
 	for (const g of insertedGames) {
 		// pick a random team from the tournament that the game belongs to
 		const teamsInGame = insertedTeams.filter(
-			(team) => team.id == g.homeTeam || team.id == g.awayTeam
+			(team) => team.id == g.homeTeamId || team.id == g.awayTeamId
 		);
 
 		eventRows.push({

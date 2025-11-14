@@ -3,18 +3,15 @@
 	import Counter from './Counter.svelte';
 	import Penalty from './Penalty.svelte';
 	import Timeout from './Timeout.svelte';
-	import type { Game } from '$lib/models/Game.svelte';
-	import { gameAndTeamsFromEvents } from '$lib/buildModels.svelte';
-	import EventsWindow from '../../tournaments/[tournamentId]/games/[gameId]/EventsWindow.svelte';
 	import Catch from './Catch.svelte';
-	import { Button, Toggle } from 'flowbite-svelte';
+	import { Toggle } from 'flowbite-svelte';
+	import { Game } from '$lib/client/Game.svelte';
+	import EventsWindow from '../../tournaments/[tournamentId]/game/[gameId]/EventsWindow.svelte';
 
 	let { data } = $props();
-	let { gameInfo } = data;
+	let game = new Game(data.gameData);
 	let flip = $state(true);
 	let markNumbers = $state(true);
-
-	const { game }: { game: Game } = gameAndTeamsFromEvents(gameInfo);
 </script>
 
 {#snippet teamColumn(game: Game, home: boolean)}
@@ -34,7 +31,7 @@
 			{@render teamColumn(game, flip)}
 			{@render teamColumn(game, !flip)}
 		</div>
-		<EventsWindow {game} {flip} class="h-80 w-80 overflow-auto" />
+		<EventsWindow {game} />
 	{/key}
 	<Toggle bind:checked={flip}>Flip teams</Toggle>
 	<Toggle bind:checked={markNumbers}>Player number on goals</Toggle>
