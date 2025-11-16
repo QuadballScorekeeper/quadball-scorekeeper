@@ -1,7 +1,5 @@
 import type { SelectGameEvent } from '$lib/server/db/schema';
 
-export type PenaltyType = 'blue_card' | 'yellow_card' | 'red_card' | 'ejection';
-
 export type Score = {
 	home: number;
 	away: number;
@@ -27,5 +25,26 @@ export class GameEvent {
 		this.timestamp = gameEventRow.timestamp;
 		this.gameTime = gameTime;
 		this.score = score;
+	}
+
+	public getIcon() {
+		switch (this.eventType) {
+			case 'goal':
+				return '🏐';
+			case 'catch':
+				return '☄️';
+			case 'timeout':
+				return '⏸️';
+			case 'blue_card':
+				return '🟦';
+			case 'yellow_card':
+				return '🟨';
+			case 'red_card':
+				return '🟥';
+			case 'ejection':
+				return '🚫';
+			default:
+				return this.eventType;
+		}
 	}
 }

@@ -10,8 +10,7 @@ import {
 	game,
 	gameEvent,
 	user,
-	eventTypeEnum,
-	gameStatusEnum
+	eventTypeEnum
 } from '../lib/server/db/schema';
 import { sql } from 'drizzle-orm';
 
@@ -59,7 +58,7 @@ async function main() {
 	// ---- Tournaments
 	const tournamentRows: (typeof tournament.$inferInsert)[] = [];
 	for (let i = 0; i < NUM_TOURNAMENTS; i++) {
-		const start = faker.date.anytime();
+		const start = faker.date.past();
 		tournamentRows.push({
 			name: faker.location.city() + ' Cup',
 			start: start,

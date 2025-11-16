@@ -9,7 +9,7 @@ import type { GameEvent } from '$lib/models/GameEvent.svelte';
 export const POST: RequestHandler = async ({ request }) => {
 	const { newEvent }: { newEvent: GameEvent } = await request.json();
 
-	newEvent.timestamp = new Date(newEvent.timestamp)
+	newEvent.timestamp = new Date(newEvent.timestamp);
 	try {
 		await db.insert(gameEvent).values(newEvent);
 	} catch (error) {
@@ -29,7 +29,6 @@ export const DELETE: RequestHandler = async ({ request }) => {
 	}: { game: InsertGameEvent['game']; eventNum: InsertGameEvent['eventNum'] } =
 		await request.json();
 
-	console.log(game, eventNum);
 	try {
 		await db
 			.delete(gameEvent)

@@ -1,7 +1,9 @@
 import { SvelteDate } from 'svelte/reactivity';
 import type { SelectGame, SelectGameEvent } from '../server/db/schema';
-import { GameEvent, type PenaltyType, type Score } from './GameEvent.svelte';
+import { GameEvent, type Score } from './GameEvent.svelte';
 import { Team, type TeamData } from './Team.svelte';
+import type { PenaltyType } from './Penalty.svelte';
+import { formatGameTime } from '$lib/utils';
 
 export type GameData = SelectGame & {
 	homeTeam: TeamData;
@@ -12,14 +14,13 @@ export type GameData = SelectGame & {
 export class Game {
 	id: SelectGame['id'];
 	start: SelectGame['start'];
-	status: SelectGame['status'];
+	status: SelectGame['status'] | 'paused' | 'timeout';
 	homeTeam: Team;
 	awayTeam: Team;
 	events: GameEvent[];
 	score: Score;
 	gameStart: Date | undefined;
 	gameTime: number;
-	running: boolean;
 	runnerCaught: boolean;
 	nextEvent: number;
 	setScore: number | undefined;
@@ -30,9 +31,12 @@ export class Game {
 		this.status = $state(gameData.status);
 		this.homeTeam = new Team(gameData.homeTeam);
 		this.awayTeam = new Team(gameData.awayTeam);
+		// set colours manually for now!
+		this.homeTeam.color = '#FF0000';
+		this.awayTeam.color = '#0000FF';
+
 		this.events = $state([]);
 		this.gameTime = $state(0);
-		this.running = $state(false);
 		this.score = $derived({
 			home: this.homeTeam.score,
 			away: this.awayTeam.score,
@@ -50,42 +54,52 @@ export class Game {
 			if (teamId == this.awayTeam.id) return this.awayTeam;
 			throw Error('Invalid team ID: ' + teamId);
 		};
-		let totalPauseTime = 0;
-		let pauseStart: number | null = null;
+		const eventOtherTeam = (teamId: number) => {
+			if (teamId == this.awayTeam.id) return this.homeTeam;
+			if (teamId == this.homeTeam.id) return this.awayTeam;
+			throw Error('Invalid team ID: ' + teamId);
+		};
+
+		let lastEventTime = this.start.getTime();
 		for (const event of events) {
+			if (this.status == 'live') {
+				const elapsedTime = event.timestamp.getTime() - lastEventTime;
+				this.gameTime += elapsedTime;
+				this.homeTeam.removePenaltyTimes(elapsedTime);
+				this.awayTeam.removePenaltyTimes(elapsedTime);
+			}
+
 			switch (event.eventType) {
 				case 'timeout':
 					eventTeam(event.team!).timeoutAvailable = false;
-				// falls through
+					this.status = 'timeout';
+					break;
 				case 'pause':
-					if (!this.running) break;
-					this.running = false;
-					pauseStart = event.timestamp.getTime();
+					this.status = 'paused';
 					break;
 				case 'resume':
-					if (this.running || !pauseStart) break;
-					this.running = true;
-					totalPauseTime += new SvelteDate().getTime() - pauseStart;
-					pauseStart = null;
+					this.status = 'live';
 					break;
 				case 'goal':
 					eventTeam(event.team!).goals++;
+					eventOtherTeam(event.team!).releaseFirstPenalty();
 					break;
 				case 'catch':
 					eventTeam(event.team!).catch = true;
+					eventOtherTeam(event.team!).releaseFirstPenalty();
 					break;
 				case 'blue_card':
 				case 'yellow_card':
 				case 'red_card':
 				case 'ejection':
-					// Save card to team class
+					eventTeam(event.team!).addPenalty(event.eventType, event.player!);
 					break;
 
 				default:
 					break;
 			}
-			const now = pauseStart ?? event.timestamp.getTime() - totalPauseTime;
-			this.gameTime = now - this.start.getTime();
+
+			lastEventTime = event.timestamp.getTime();
 			this.events.push(new GameEvent(event, this.gameTime, this.score));
 			this.nextEvent = event.eventNum + 1;
 		}
@@ -136,9 +150,8 @@ export class Game {
 	}
 
 	public async startGame() {
-		this.running = true;
-		this.start = new SvelteDate();
 		this.status = 'live';
+		this.start = new SvelteDate();
 		await fetch(`/api/games/${this.id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
@@ -148,7 +161,6 @@ export class Game {
 	}
 
 	public async endGame() {
-		this.running = false;
 		this.addEvent('pause');
 		this.status = 'finished';
 		await fetch(`/api/games/${this.id}`, {
@@ -159,19 +171,19 @@ export class Game {
 	}
 
 	public resumeGame() {
-		this.running = true;
+		this.status = 'live';
 		this.addEvent('resume');
 	}
 
 	public pauseGame() {
-		this.running = false;
+		this.status = 'paused';
 		this.addEvent('pause');
 	}
 
 	public useTimeout(home: boolean) {
 		const team = home ? this.homeTeam : this.awayTeam;
 		team.timeoutAvailable = false;
-		this.running = false;
+		this.status = 'timeout';
 		this.addEvent('timeout', null, team.id);
 	}
 
@@ -184,6 +196,7 @@ export class Game {
 		const team = home ? this.homeTeam : this.awayTeam;
 		const otherTeam = home ? this.awayTeam : this.homeTeam;
 		team.catch = true;
+		otherTeam.releaseFirstPenalty();
 		this.addEvent('catch', player ?? null, team.id);
 
 		if (team.score > otherTeam.score) {
@@ -195,13 +208,16 @@ export class Game {
 
 	public addGoal(home: boolean, player?: number) {
 		const team = home ? this.homeTeam : this.awayTeam;
+		const otherTeam = home ? this.awayTeam : this.homeTeam;
 		team.goals++;
+		otherTeam.releaseFirstPenalty();
 		this.addEvent('goal', player ?? null, team.id);
 		if (this.setScore && team.score >= this.setScore) this.endGame();
 	}
 
 	public addPenalty(home: boolean, player: number, penaltyType: PenaltyType) {
 		const team = home ? this.homeTeam : this.awayTeam;
+		team.addPenalty(penaltyType, player);
 		this.addEvent(penaltyType, player, team.id);
 	}
 
