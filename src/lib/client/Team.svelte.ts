@@ -27,7 +27,9 @@ export class Team {
 		this.players = teamData.players.toSorted((a, b) => a.number - b.number);
 		this.color = '#FFFFFF';
 		this.penalties = $state([]);
-		this.activePenalties = $derived(this.penalties.filter((p) => p.active));
+		this.activePenalties = $derived(
+			this.penalties.filter((p) => p.active).toSorted((a, b) => a.timeLeft - b.timeLeft)
+		);
 	}
 
 	public addPenalty(type: PenaltyType, player: number) {

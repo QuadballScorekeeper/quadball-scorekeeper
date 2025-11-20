@@ -26,14 +26,12 @@
 
 <style>
 	.pause-menu {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		width: 100%;
+		display: grid;
+		grid-template-rows: auto minmax(0, 1fr);
 		background-color: var(--bg-light);
-		padding: 0.5rem 1.5rem;
-		gap: 0.5rem;
-		height: 100%;
+		padding: 1rem 1rem;
+		gap: 1rem;
 		min-height: 12rem;
+		height: 100%;
 	}
 </style>

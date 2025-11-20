@@ -113,20 +113,20 @@
 
 	.timer {
 		width: 100%;
-		height: 80px;
+		height: 5rem;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.5rem 1.5rem;
-		color: light-dark(var(--color-gray-400), var(--color-gray-500));
-		background-color: light-dark(var(--black), var(--color-gray-200));
+		color: light-dark(var(--color-gray-400), var(--color-gray-400));
+		background-color: light-dark(var(--black), var(--color-gray-500));
 	}
 	.finished {
 		color: light-dark(var(--success), var(--black));
 		background-color: light-dark(var(--black), var(--success));
 	}
 	.live {
-		color: var(--bg-light);
+		color: var(--white);
 	}
 	.cancelled {
 		background-color: light-dark(var(--color-gray-800), var(--color-gray-300));

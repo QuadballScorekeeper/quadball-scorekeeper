@@ -13,15 +13,23 @@
 		}}>Timeout</button
 	>
 {/snippet}
-<div>
-	<ClockOutline class="h-14 w-14" />
-</div>
-<div class="button-group">
-	{@render timeoutButton(true)}
-	{@render timeoutButton(false)}
+<div class="timeout-window">
+	<div>
+		<ClockOutline class="h-14 w-14" />
+	</div>
+	<div class="button-group">
+		{@render timeoutButton(true)}
+		{@render timeoutButton(false)}
+	</div>
 </div>
 
 <style>
+	.timeout-window {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 2rem;
+	}
 	.button-group {
 		display: flex;
 		width: 100%;
@@ -31,14 +39,14 @@
 		text-align: center;
 		text-justify: center;
 		background-color: var(--fg-dark);
-		color: var(--bg-light);
+		color: var(--bg-dark);
 		border-radius: 0.5rem;
 		width: 100%;
 		height: 2.5rem;
 
 		&:disabled {
-			background-color: var(--color-gray-100);
-			color: var(--color-gray-400);
+			background-color: light-dark(var(--gray-100), var(--gray-600));
+			color: light-dark(var(--gray-400), var(--gray-500));
 		}
 	}
 </style>

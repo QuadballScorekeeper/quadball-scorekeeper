@@ -41,11 +41,9 @@
 	.penalty-window {
 		display: flex;
 		flex-direction: column;
-		background-color: var(--color-purple-300);
 		align-items: center;
 		justify-content: center;
 		padding: 1rem;
-		width: 100%;
 		gap: 1rem;
 		border-radius: 0.5rem;
 	}
@@ -57,8 +55,8 @@
 	}
 
 	form:invalid button {
-		background-color: var(--color-gray-100);
-		color: var(--color-gray-400);
+		background-color: light-dark(var(--gray-100), var(--gray-600));
+		color: light-dark(var(--gray-400), var(--gray-500));
 	}
 
 	button {

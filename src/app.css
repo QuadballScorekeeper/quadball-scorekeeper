@@ -30,7 +30,7 @@ html:has(#mode-switcher [value='system']:checked) {
 	--gray-900: hsla(210, 10%, 2%, 1);
 	--black: #000;
 
-	--bg-light: light-dark(var(--gray-100), var(--gray-700));
+	--bg-light: light-dark(var(--white), var(--gray-700));
 	--bg-dark: light-dark(var(--gray-200), var(--gray-800));
 
 	--fg-light: light-dark(var(--gray-700), var(--gray-200));
@@ -44,27 +44,27 @@ html:has(#mode-switcher [value='system']:checked) {
 	--info: light-dark(hsla(208, 93%, 39%, 1), hsla(203, 79%, 53%, 1));
 
 	--text-xs: 0.75rem;
+	--text-xl: 2.125rem;
 	--font-mono: Roboto Mono;
 }
 
 @source "../node_modules/flowbite-svelte-icons/dist";
 
 @layer base {
-	body {
-		min-width: 20rem;
+	.page-wrapper {
+		width: clamp(20rem, 100%, 35rem);
+		margin: auto;
 		font-family: Roboto;
 		height: 100dvh;
 		background-color: light-dark(var(--gray-50), var(--gray-900));
 		color: var(--fg-dark);
-		display: flex;
-		flex-direction: column;
+		display: grid;
+		grid-template-rows: auto minmax(0, 1fr);
 	}
 
 	main {
 		background-color: var(--bg-dark);
-		height: 100%;
 		width: 100%;
-		width: clamp(20rem, 100%, 35rem);
 		margin-inline: auto;
 		display: flex;
 		flex-direction: column;
@@ -84,5 +84,16 @@ html:has(#mode-switcher [value='system']:checked) {
 
 	li {
 		background-color: var(--bg-light);
+	}
+
+	input {
+		border: 1px solid var(--bg-dark);
+		padding: 0.25rem;
+	}
+
+	.numeric-xl {
+		font-family: var(--font-mono);
+		font-size: var(--text-xl);
+		font-weight: 600;
 	}
 }

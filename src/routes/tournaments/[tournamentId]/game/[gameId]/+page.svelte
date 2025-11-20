@@ -41,31 +41,42 @@
 </NavBar>
 
 <main>
-	<div class="container">
+	<div class="top">
 		<Timer {game} />
 		<div class="teams">
 			<TeamScore {game} home={true} />
 			<TeamScore {game} home={false} />
 		</div>
-
+	</div>
+	<div class="bottom">
 		<EventWindow {game} />
 	</div>
 </main>
 
 <style>
+	main {
+		padding: 0;
+		display: grid;
+		grid-template-rows: auto minmax(0, 1fr);
+		align-items: stretch;
+	}
+
+	.bottom,
+	.top {
+		display: flex;
+		flex-direction: column;
+		padding: 1rem 1.5rem;
+		gap: 1rem;
+	}
+
+	.bottom {
+		background-color: var(--bg-light);
+	}
+
 	.teams {
 		width: 100%;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		gap: 1.5rem;
-	}
-
-	.container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		width: clamp(20rem, 100%, 35rem);
-		height: 100%;
-		padding: 1.5rem;
 	}
 </style>

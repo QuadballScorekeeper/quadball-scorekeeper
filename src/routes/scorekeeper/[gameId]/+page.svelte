@@ -38,26 +38,28 @@
 <style>
 	main {
 		padding: 0;
+		display: grid;
+		grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+		align-items: stretch;
 	}
 	.teams {
-		width: 100%;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		gap: 1.5rem;
 	}
 	.top {
-		width: 100%;
+		display: flex;
+		flex-direction: column;
 		padding: 1rem 1.5rem;
+		gap: 1rem;
 	}
 	.bottom {
-		width: 100%;
 		padding: 0;
-		background-color: white;
 	}
 	.team-column {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
+		align-items: stretch;
 		width: 100%;
 		padding-bottom: 1.5rem;
 	}

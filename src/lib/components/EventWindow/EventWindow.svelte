@@ -43,18 +43,16 @@
 
 <style>
 	.event-window {
-		width: 100%;
+		height: 100%;
 		display: flex;
 		flex-direction: column;
-		align-items: center;
-		gap: 0.5rem;
-		border: 0.5rem solid var(--color-purple-300);
+		gap: 0.25rem;
 		border-radius: 0.5rem;
+		border: 0.5rem solid var(--bg-dark);
 		overflow: auto;
-		background-color: var(--color-purple-300);
+		background-color: var(--bg-dark);
 	}
 	.event {
-		width: 100%;
 		background-color: var(--bg-light);
 		border-radius: 0.25rem;
 		padding: 0.25rem 0.5rem;

@@ -4,4 +4,6 @@
 	let { children } = $props();
 </script>
 
-{@render children()}
+<div class="page-wrapper">
+	{@render children()}
+</div>

@@ -21,12 +21,14 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 0.25rem;
 		border-radius: 0.5rem;
+		padding: 0.25rem;
+		gap: 0.25rem;
 		background-color: var(--bg-dark);
 	}
 
 	.tab-item {
+		background-color: transparent;
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;
 		width: 100%;
@@ -34,6 +36,7 @@
 	}
 
 	.tab-item.active {
-		background-color: light-dark(var(--color-gray-300), var(--color-gray-700));
+		background-color: var(--bg-light);
+		box-shadow: 0 0.25rem 1rem 0 hsla(0, 0%, 0%, 0.12);
 	}
 </style>

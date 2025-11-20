@@ -44,15 +44,14 @@
 		justify-content: space-between;
 		background: linear-gradient(
 			to right,
-			var(--color-gray-800) var(--gradient),
-			var(--color-success-dark) var(--gradient),
-			var(--color-success-dark)
+			var(--fg-light) var(--gradient),
+			var(--success) var(--gradient),
+			var(--success)
 		);
 		transition-property: background;
 		color: var(--color-white);
-		width: 100%;
 		padding: 0.25rem 1rem;
-		border-radius: 0.25rem;
+		border-radius: 0.5rem;
 		gap: 0.5rem;
 	}
 </style>
