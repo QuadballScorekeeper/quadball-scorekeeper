@@ -25,16 +25,16 @@
 	.button-group {
 		display: flex;
 		width: 100%;
-		gap: 24px;
+		gap: 1.5rem;
 	}
 	button {
 		text-align: center;
 		text-justify: center;
-		background-color: var(--color-black);
-		color: var(--color-white);
-		border-radius: 8px;
+		background-color: var(--fg-dark);
+		color: var(--bg-light);
+		border-radius: 0.5rem;
 		width: 100%;
-		height: 40px;
+		height: 2.5rem;
 
 		&:disabled {
 			background-color: var(--color-gray-100);

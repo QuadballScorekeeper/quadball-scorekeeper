@@ -1,5 +1,4 @@
 import type { SelectPlayer, SelectTeam } from '$lib/server/db/schema';
-import { SvelteMap } from 'svelte/reactivity';
 import { Penalty, type PenaltyType } from './Penalty.svelte';
 
 export type TeamData = SelectTeam & {

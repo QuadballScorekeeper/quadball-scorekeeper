@@ -1,7 +1,8 @@
 <script lang="ts">
-	import EventWindow from './EventWindow.svelte';
+	import { EventWindow } from '$lib/components/EventWindow';
+	import { TabSelect } from '$lib/components/TabSelect';
+	import FlagWindow from './FlagWindow.svelte';
 	import PenaltyWindow from './PenaltyWindow.svelte';
-	import TabBar from './TabBar.svelte';
 	import TimeoutWindow from './TimeoutWindow.svelte';
 
 	let { game } = $props();
@@ -11,13 +12,15 @@
 </script>
 
 <div class="pause-menu">
-	<TabBar {tabs} bind:activeTab />
+	<TabSelect {tabs} bind:activeTab />
 	{#if activeTab == 'Events'}
 		<EventWindow {game} />
 	{:else if activeTab == 'Penalty'}
 		<PenaltyWindow {game} />
 	{:else if activeTab == 'Timeout'}
 		<TimeoutWindow {game} />
+	{:else if activeTab == 'Flag'}
+		<FlagWindow {game} />
 	{/if}
 </div>
 
@@ -27,11 +30,10 @@
 		flex-direction: column;
 		align-items: center;
 		width: 100%;
-		background-color: var(--color-purple-200);
-		padding: 8px;
-		border-radius: 8px;
-		gap: 8px;
+		background-color: var(--bg-light);
+		padding: 0.5rem 1.5rem;
+		gap: 0.5rem;
 		height: 100%;
-		min-height: 200px;
+		min-height: 12rem;
 	}
 </style>

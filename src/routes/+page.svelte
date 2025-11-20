@@ -1,23 +1,24 @@
 <script lang="ts">
-	import { Button, Navbar, NavBrand } from 'flowbite-svelte';
-	import { DarkMode } from 'flowbite-svelte';
+	import { NavBar } from '$lib/components/NavBar';
 </script>
 
-<Navbar class="bg-primary-50 dark:bg-primary-900">
-	<NavBrand href="/">
-		<h1>Scorekeeper</h1>
-	</NavBrand>
-	<DarkMode class="dark:text-primary-50 text-primary-900" />
-</Navbar>
+<NavBar />
 
 <main>
-	<Button class="w-40" href="/scorekeeper">Start a game</Button>
-	<Button class="w-40" href="/tournaments" color="secondary">View tournaments</Button>
-	<!-- <Button class="w-40" color="blue">Plan tournament</Button> -->
+	<a class="button" href="/scorekeeper">Start a game</a>
+	<a class="button" href="/tournaments">View tournaments</a>
 </main>
 
 <style>
 	main {
 		gap: 1rem;
+	}
+	a {
+		display: flex;
+		width: 10rem;
+		height: 2.5rem;
+		border-radius: 0.5rem;
+		justify-content: center;
+		align-items: center;
 	}
 </style>

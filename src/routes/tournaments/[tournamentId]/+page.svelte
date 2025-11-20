@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { NavBar } from '$lib/components/NavBar';
 	import { Tournament } from '$lib/client/Tournament.svelte.js';
-	import { Navbar, NavLi, NavUl } from 'flowbite-svelte';
 	import Teams from './Teams.svelte';
 	import Games from './Games.svelte';
 
@@ -9,12 +9,11 @@
 	let value = $state('games');
 </script>
 
-<Navbar class="bg-primary-50 dark:bg-primary-900 items-center">
-	<NavUl>
-		<NavLi onclick={() => (value = 'teams')}>Teams</NavLi>
-		<NavLi onclick={() => (value = 'games')}>Games</NavLi>
-	</NavUl>
-</Navbar>
+<NavBar>
+	{tournament.name}
+	<button onclick={() => (value = 'games')}> Games </button>
+	<button onclick={() => (value = 'teams')}> Teams </button>
+</NavBar>
 
 <main>
 	{#if value == 'teams'}
@@ -23,3 +22,9 @@
 		<Games games={tournament.games} />
 	{/if}
 </main>
+
+<style>
+	button {
+		background-color: transparent;
+	}
+</style>

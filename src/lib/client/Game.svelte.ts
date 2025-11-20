@@ -3,7 +3,6 @@ import type { SelectGame, SelectGameEvent } from '../server/db/schema';
 import { GameEvent, type Score } from './GameEvent.svelte';
 import { Team, type TeamData } from './Team.svelte';
 import type { PenaltyType } from './Penalty.svelte';
-import { formatGameTime } from '$lib/utils';
 
 export type GameData = SelectGame & {
 	homeTeam: TeamData;
@@ -94,6 +93,12 @@ export class Game {
 				case 'ejection':
 					eventTeam(event.team!).addPenalty(event.eventType, event.player!);
 					break;
+				case 'start':
+					this.status = 'live';
+					break;
+				case 'end':
+					this.status = 'finished';
+					break;
 
 				default:
 					break;
@@ -102,6 +107,13 @@ export class Game {
 			lastEventTime = event.timestamp.getTime();
 			this.events.push(new GameEvent(event, this.gameTime, this.score));
 			this.nextEvent = event.eventNum + 1;
+		}
+
+		if (this.status == 'live') {
+			const elapsedTime = Date.now() - lastEventTime;
+			this.gameTime += elapsedTime;
+			this.homeTeam.removePenaltyTimes(elapsedTime);
+			this.awayTeam.removePenaltyTimes(elapsedTime);
 		}
 	}
 
@@ -152,16 +164,16 @@ export class Game {
 	public async startGame() {
 		this.status = 'live';
 		this.start = new SvelteDate();
+		this.addEvent('start');
 		await fetch(`/api/games/${this.id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ start: this.start, status: this.status })
 		});
-		this.addEvent('resume');
 	}
 
 	public async endGame() {
-		this.addEvent('pause');
+		this.addEvent('end');
 		this.status = 'finished';
 		await fetch(`/api/games/${this.id}`, {
 			method: 'PUT',

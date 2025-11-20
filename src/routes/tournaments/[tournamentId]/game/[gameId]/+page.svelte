@@ -2,9 +2,10 @@
 	import { onMount } from 'svelte';
 	import { Game } from '$lib/client/Game.svelte';
 	import type { GameEvent } from '$lib/client/GameEvent.svelte';
-	import Timer from '$lib/components/Timer.svelte';
-	import EventWindow from '$lib/components/EventWindow.svelte';
 	import TeamScore from '$lib/components/TeamScore.svelte';
+	import { EventWindow } from '$lib/components/EventWindow';
+	import { Timer } from '$lib/components/Timer';
+	import { NavBar } from '$lib/components/NavBar';
 
 	let { data, params } = $props();
 	let game = new Game(data.gameInfo);
@@ -35,6 +36,10 @@
 	});
 </script>
 
+<NavBar>
+	<a href="/tournaments/{data.gameInfo.tournament}">Games</a>
+</NavBar>
+
 <main>
 	<div class="container">
 		<Timer {game} />
@@ -52,17 +57,15 @@
 		width: 100%;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-		gap: 24px;
+		gap: 1.5rem;
 	}
 
 	.container {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		width: 100%;
+		width: clamp(20rem, 100%, 35rem);
 		height: 100%;
-		max-width: 560px;
-		min-width: 320px;
-		padding: 24px;
+		padding: 1.5rem;
 	}
 </style>

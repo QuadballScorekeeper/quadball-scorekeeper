@@ -5,9 +5,8 @@
 	let {
 		game,
 		home,
-		markNumbers = false,
 		scorekeeper = false
-	}: { game: Game; home: boolean; markNumbers?: boolean; scorekeeper?: boolean } = $props();
+	}: { game: Game; home: boolean; scorekeeper?: boolean } = $props();
 	let team = home ? game.homeTeam : game.awayTeam;
 	const teamClass = home ? 'home' : 'away';
 
@@ -52,12 +51,12 @@
 		flex-direction: column;
 		align-items: center;
 		width: 100%;
-		background-color: var(--color-white);
+		background-color: light-dark(var(--white), var(--gray-700));
 		&.top {
-			border-radius: 8px 8px 0 0;
+			border-radius: 0.5rem 0.5rem 0 0;
 		}
 		&.bottom {
-			border-radius: 0 0 8px 8px;
+			border-radius: 0 0 0.5rem 0.5rem;
 		}
 	}
 	.team-score {
@@ -67,17 +66,17 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		padding: 16px 0px;
-		gap: 8px;
+		padding: 1rem 0;
+		gap: 0.5rem;
 	}
 
 	.home {
-		border-left: 8px solid var(--team-color);
-		border-right: 8px solid transparent;
+		border-left: 0.5rem solid var(--team-color);
+		border-right: 0.5rem solid transparent;
 	}
 	.away {
-		border-right: 8px solid var(--team-color);
-		border-left: 8px solid transparent;
+		border-right: 0.5rem solid var(--team-color);
+		border-left: 0.5rem solid transparent;
 	}
 	.score {
 		font-family: var(--font-mono);
@@ -87,6 +86,6 @@
 		font-size: var(--text-xs);
 		text-wrap: nowrap;
 		overflow: hidden;
-		padding: 4px;
+		padding: 0.25rem;
 	}
 </style>

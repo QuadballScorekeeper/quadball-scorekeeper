@@ -18,6 +18,6 @@
 		flex-direction: column;
 		align-items: center;
 		width: 100%;
-		gap: 4px;
+		gap: 0.25rem;
 	}
 </style>

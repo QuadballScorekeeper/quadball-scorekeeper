@@ -1,14 +1,5 @@
 <script lang="ts">
-	import {
-		Button,
-		Input,
-		Listgroup,
-		ListgroupItem,
-		Modal,
-		Navbar,
-		NavBrand
-	} from 'flowbite-svelte';
-	import { DarkMode } from 'flowbite-svelte';
+	import { NavBar } from '$lib/components/NavBar';
 
 	let { data } = $props();
 	let { tournaments } = data;
@@ -25,37 +16,51 @@
 	};
 </script>
 
-<Navbar class="bg-primary-50 dark:bg-primary-900">
-	<NavBrand href="/">
-		<h1>Scorekeeper</h1>
-	</NavBrand>
-	<DarkMode class="dark:text-primary-50 text-primary-900" />
-</Navbar>
+<NavBar />
 
 <main>
-	<Button class="w-40" onclick={openModal}>Create tournament</Button>
+	<button class="w-40" onclick={openModal}>Create tournament</button>
 
-	<Modal bind:open>
+	<dialog {open}>
 		<form method="POST">
-			<Input name="name" type="text" placeholder="Tournament name" bind:value={name} required />
-			<Button type="submit">Create</Button>
-			<Button color="alternative" onclick={closeModal}>Cancel</Button>
+			<input name="name" type="text" placeholder="Tournament name" bind:value={name} required />
+			<button class="submit" type="submit">Create</button>
+			<button class="cancel" onclick={closeModal}>Cancel</button>
 		</form>
-	</Modal>
+	</dialog>
 
 	<h1>Tournaments you can manage</h1>
-	<Listgroup active>
+	<ul>
 		{#each tournaments as t (t.id)}
-			<ListgroupItem href="/admin/{t.id}" class="flex flex-col">
-				<p>{t.name}</p>
-				<p>{t.start.toLocaleDateString([])} - {t.end.toLocaleDateString([])}</p>
-			</ListgroupItem>
+			<li>
+				<a href="/admin/{t.id}">
+					<p>{t.name}</p>
+					<p>{t.start.toLocaleDateString([])} - {t.end.toLocaleDateString([])}</p>
+				</a>
+			</li>
 		{/each}
-	</Listgroup>
+	</ul>
 </main>
 
 <style>
+	button {
+		border-radius: 0.5rem;
+		padding: 0.25rem 0.5rem;
+		cursor: pointer;
+	}
 	main {
 		gap: 1rem;
+	}
+	dialog {
+		margin-inline: auto;
+	}
+	ul {
+		display: grid;
+		gap: 0.625rem;
+	}
+	li {
+		width: 12rem;
+		border-radius: 0.5rem;
+		padding: 0.25rem 0.5rem;
 	}
 </style>

@@ -1,22 +1,35 @@
 <script lang="ts">
 	import { Team } from '$lib/client/Team.svelte.js';
-	import { Accordion, AccordionItem, Listgroup, ListgroupItem } from 'flowbite-svelte';
 	let { teams }: { teams: Team[] } = $props();
 </script>
 
-<Accordion class="dark:bg-primary-900 w-100">
+<div class="team-list">
 	{#each teams as team (team.id)}
-		<AccordionItem>
-			{#snippet header()}
-				{team.name}
-			{/snippet}
-			<Listgroup>
+		<details class="team">
+			<summary>{team.name}</summary>
+			<ul>
 				{#each team.players as player (player.number)}
-					<ListgroupItem>
+					<li>
 						#{player.number} - {player.name}
-					</ListgroupItem>
+					</li>
 				{/each}
-			</Listgroup>
-		</AccordionItem>
+			</ul>
+		</details>
 	{/each}
-</Accordion>
+</div>
+
+<style>
+	.team-list {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		padding: 0 1rem;
+	}
+
+	.team {
+		background-color: light-dark(var(--white), var(--bg-light));
+		border-radius: 0.5rem;
+		padding: 0.25rem 0.5rem;
+	}
+</style>

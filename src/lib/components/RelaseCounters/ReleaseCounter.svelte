@@ -51,8 +51,8 @@
 		transition-property: background;
 		color: var(--color-white);
 		width: 100%;
-		padding: 4px 16px;
-		border-radius: 4px;
-		gap: 8px;
+		padding: 0.25rem 1rem;
+		border-radius: 0.25rem;
+		gap: 0.5rem;
 	}
 </style>

@@ -1,68 +1,88 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Roboto&display=swap');
 @import 'tailwindcss';
 
-@plugin 'flowbite/plugin';
+html:has(#mode-switcher [value='light']:checked) {
+	color-scheme: light;
+}
+html:has(#mode-switcher [value='dark']:checked) {
+	color-scheme: dark;
+}
+html:has(#mode-switcher [value='system']:checked) {
+	color-scheme: light dark;
+}
 
-@custom-variant dark (&:where(.dark, .dark *));
+:root {
+	color-scheme: light dark;
 
-@theme {
 	--font-sans: 'Roboto';
 	--font-mono: 'Roboto Mono';
 
-	--color-primary-50: #bde9ff;
-	--color-primary-100: #bde9ff;
-	--color-primary-200: #66d3ff;
-	--color-primary-300: #40b8e3;
-	--color-primary-400: #089dc7;
-	--color-primary-500: #0081a5;
-	--color-primary-600: #006684;
-	--color-primary-700: #004d64;
-	--color-primary-800: #003546;
-	--color-primary-900: #001f2a;
+	--white: #fff;
+	--gray-50: hsla(210, 10%, 98%, 1);
+	--gray-100: hsla(210, 10%, 95%, 1);
+	--gray-200: hsla(210, 10%, 91%, 1);
+	--gray-300: hsla(210, 10%, 85%, 1);
+	--gray-400: hsla(210, 10%, 66%, 1);
+	--gray-500: hsla(210, 10%, 30%, 1);
+	--gray-600: hsla(210, 10%, 21%, 1);
+	--gray-700: hsla(210, 10%, 15%, 1);
+	--gray-800: hsla(210, 10%, 6%, 1);
+	--gray-900: hsla(210, 10%, 2%, 1);
+	--black: #000;
 
-	--color-secondary-50: #fffbff;
-	--color-secondary-100: #ffede3;
-	--color-secondary-200: #ffdcc4;
-	--color-secondary-300: #ffb781;
-	--color-secondary-400: #ff8e25;
-	--color-secondary-500: #de7500;
-	--color-secondary-600: #b76000;
-	--color-secondary-700: #934b00;
-	--color-secondary-800: #703800;
-	--color-secondary-900: #4e2500;
+	--bg-light: light-dark(var(--gray-100), var(--gray-700));
+	--bg-dark: light-dark(var(--gray-200), var(--gray-800));
 
-	--color-success-light: #75f19b;
-	--color-success-dark: #088a3c;
-	--color-error-dark: #ca122a;
-	--color-warning-light: #ffd92e;
+	--fg-light: light-dark(var(--gray-700), var(--gray-200));
+	--fg-dark: light-dark(var(--gray-800), var(--gray-100));
 
-	--color-background-dark: #e3e8ee;
-	--color-background-light: #eff2f6;
+	--primary: light-dark(var(--gray-600), var(--gray-400));
+
+	--success: light-dark(hsla(138, 82%, 70%, 1), hsla(138, 63%, 59%, 1));
+	--warning: light-dark(hsla(49, 100%, 59%, 1), hsla(45, 96%, 55%, 1));
+	--error: light-dark(hsla(352, 84%, 43%, 1), hsla(352, 84%, 72%, 1));
+	--info: light-dark(hsla(208, 93%, 39%, 1), hsla(203, 79%, 53%, 1));
+
+	--text-xs: 0.75rem;
+	--font-mono: Roboto Mono;
 }
 
-@source "../node_modules/flowbite-svelte/dist";
 @source "../node_modules/flowbite-svelte-icons/dist";
 
 @layer base {
-	/* disable chrome cancel button */
-	input[type='search']::-webkit-search-cancel-button {
-		display: none;
-	}
-	input::-webkit-outer-spin-button,
-	input::-webkit-inner-spin-button {
-		-webkit-appearance: none;
-		margin: 0;
-	}
-
 	body {
+		min-width: 20rem;
+		font-family: Roboto;
 		height: 100dvh;
+		background-color: light-dark(var(--gray-50), var(--gray-900));
+		color: var(--fg-dark);
+		display: flex;
+		flex-direction: column;
 	}
 
 	main {
+		background-color: var(--bg-dark);
+		height: 100%;
+		width: 100%;
+		width: clamp(20rem, 100%, 35rem);
+		margin-inline: auto;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		padding-top: 1rem;
-		height: 100%;
+		padding: 1rem 1.5rem;
+	}
+
+	.button {
+		background-color: var(--primary);
+		color: var(--bg-dark);
+	}
+
+	button {
+		background-color: var(--bg-light);
+		cursor: pointer;
+	}
+
+	li {
+		background-color: var(--bg-light);
 	}
 }

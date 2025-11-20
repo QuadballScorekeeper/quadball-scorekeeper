@@ -1,12 +1,4 @@
 <script lang="ts">
-	import {
-		Accordion,
-		AccordionItem,
-		Button,
-		Input,
-		Listgroup,
-		ListgroupItem
-	} from 'flowbite-svelte';
 	let { data } = $props();
 	let { tournament, teamsWithPlayers } = data;
 </script>
@@ -16,36 +8,59 @@
 
 	<h2>Add a new team</h2>
 	<form method="POST" action="?/newTeam">
-		<Input type="text" name="teamName" placeholder="Team name" required class="mb-2" />
-		<Button type="submit">Add</Button>
+		<input type="text" name="teamName" placeholder="Team name" required class="mb-2" />
+		<button class="submit button" type="submit">Add</button>
 	</form>
 
-	<Accordion class="dark:bg-primary-900 w-100">
-		{#each teamsWithPlayers as team}
-			<AccordionItem>
-				{#snippet header()}
-					{team.name}
-				{/snippet}
+	<div class="team-list">
+		{#each teamsWithPlayers as team (team.id)}
+			<div class="team">
+				<strong>{team.name}</strong>
+
 				<form method="POST" action="?/newPlayer">
-					<Input type="hidden" name="teamId" value={team.id} />
-					<div class="mb-4 grid grid-cols-2 gap-4">
-						<Input type="text" name="playerName" placeholder="Name" required />
-						<Input type="number" name="playerNumber" placeholder="Number" required />
+					<input type="hidden" name="teamId" value={team.id} />
+					<div class="player-info mb-4 grid grid-cols-2 gap-4">
+						<input type="number" name="playerNumber" placeholder="Number" required />
+						<input type="text" name="playerName" placeholder="Name" required />
 					</div>
-					<Button type="submit">Add</Button>
+					<button class="submit button" type="submit">Add</button>
 				</form>
-				<Listgroup>
-					{#each team.players as player}
-						<ListgroupItem>
+				<ul>
+					{#each team.players as player (player.number)}
+						<li>
 							#{player.number} - {player.name}
-						</ListgroupItem>
+						</li>
 					{/each}
-				</Listgroup>
-				<Button>Delete team</Button>
-			</AccordionItem>
+				</ul>
+			</div>
 		{/each}
-	</Accordion>
+	</div>
 </main>
 
 <style>
+	.team-list {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.team {
+		background-color: var(--bg-light);
+		border-radius: 0.5rem;
+		padding: 0.5rem;
+	}
+	.submit {
+		padding: 0.125rem 0.5rem;
+		border-radius: 0.5rem;
+	}
+
+	.player-info {
+		display: grid;
+		grid-template-columns: 5rem 1fr;
+	}
+
+	input {
+		border: 1px solid var(--gray-500);
+	}
 </style>

@@ -47,27 +47,27 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 8px;
-		border: 8px solid var(--color-purple-300);
-		border-radius: 8px;
+		gap: 0.5rem;
+		border: 0.5rem solid var(--color-purple-300);
+		border-radius: 0.5rem;
 		overflow: auto;
 		background-color: var(--color-purple-300);
 	}
 	.event {
 		width: 100%;
-		background-color: var(--color-white);
-		border-radius: 4px;
-		padding: 4px 8px;
+		background-color: var(--bg-light);
+		border-radius: 0.25rem;
+		padding: 0.25rem 0.5rem;
 		display: flex;
 		align-items: center;
 
 		&.home {
-			border-left: 4px solid var(--team-color);
-			border-right: 4px solid transparent;
+			border-left: 0.25rem solid var(--team-color);
+			border-right: 0.25rem solid transparent;
 		}
 		&.away {
-			border-right: 4px solid var(--team-color);
-			border-left: 4px solid transparent;
+			border-right: 0.25rem solid var(--team-color);
+			border-left: 0.25rem solid transparent;
 		}
 	}
 	.event-info {

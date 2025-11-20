@@ -21,19 +21,19 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 4px;
-		border-radius: 8px;
-		background-color: var(--color-white);
+		padding: 0.25rem;
+		border-radius: 0.5rem;
+		background-color: var(--bg-dark);
 	}
 
 	.tab-item {
-		padding: 4px 8px;
-		border-radius: 4px;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.25rem;
 		width: 100%;
 		cursor: pointer;
 	}
 
 	.tab-item.active {
-		background-color: var(--color-gray-200);
+		background-color: light-dark(var(--color-gray-300), var(--color-gray-700));
 	}
 </style>
