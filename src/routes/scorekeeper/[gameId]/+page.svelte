@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Game } from '$lib/client/Game.svelte';
-	import TeamScore from '$lib/components/TeamScore.svelte';
+	import { TeamScore } from '$lib/components/TeamScore';
 	import { PauseMenu } from '$lib/components/PauseMenu';
 	import { ReleaseCounters } from '$lib/components/RelaseCounters';
 	import { Timer } from '$lib/components/Timer';

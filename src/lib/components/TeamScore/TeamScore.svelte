@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Game } from '$lib/client/Game.svelte';
-	import { AngleDownOutline, AngleUpOutline } from 'flowbite-svelte-icons';
 
 	let {
 		game,

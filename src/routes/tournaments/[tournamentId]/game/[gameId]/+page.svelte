@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { Game } from '$lib/client/Game.svelte';
 	import type { GameEvent } from '$lib/client/GameEvent.svelte';
-	import TeamScore from '$lib/components/TeamScore.svelte';
+	import { TeamScore } from '$lib/components/TeamScore';
 	import { EventWindow } from '$lib/components/EventWindow';
 	import { Timer } from '$lib/components/Timer';
 	import { NavBar } from '$lib/components/NavBar';
