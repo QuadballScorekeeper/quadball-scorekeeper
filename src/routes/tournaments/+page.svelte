@@ -1,28 +1,27 @@
 <script lang="ts">
-	import { DarkMode, Listgroup, ListgroupItem, Navbar, NavBrand } from 'flowbite-svelte';
+	import { NavBar } from '$lib/components/NavBar';
 
 	let { data } = $props();
 	let { tournaments } = data;
 </script>
 
-<Navbar class="bg-primary-50 dark:bg-primary-900">
-	<NavBrand href="/">
-		<h1>Scorekeeper</h1>
-	</NavBrand>
-	<h1>Tournaments</h1>
-	<DarkMode class="dark:text-primary-50 text-primary-900" />
-</Navbar>
+<NavBar />
 
 <main>
-	<Listgroup active>
-		{#each tournaments as t}
-			<ListgroupItem href="/tournaments/{t.id}/games" class="flex flex-col">
-				<p>{t.name}</p>
-				<p>{t.start.toLocaleDateString([])} - {t.end.toLocaleDateString([])}</p>
-			</ListgroupItem>
-		{/each}
-	</Listgroup>
+	{#each tournaments as t (t.id)}
+		<a class="button" href="/tournaments/{t.id}">
+			<p>{t.name}</p>
+			<p>{t.start.toLocaleDateString([])} - {t.end.toLocaleDateString([])}</p>
+		</a>
+	{/each}
 </main>
 
 <style>
+	a {
+		border-radius: 0.5rem;
+		padding: 0.25rem 0.5rem;
+	}
+	main {
+		gap: 0.5rem;
+	}
 </style>

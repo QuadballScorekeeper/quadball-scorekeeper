@@ -1,72 +1,66 @@
 <script lang="ts">
-	import Timer from './Timer.svelte';
-	import Counter from './Counter.svelte';
-	import Penalty from './Penalty.svelte';
-	import Timeout from './Timeout.svelte';
-	import type { Game } from '$lib/models/Game.svelte';
-	import { gameAndTeamsFromEvents } from '$lib/buildModels.svelte';
-	import EventsWindow from '../../tournaments/[tournamentId]/games/[gameId]/EventsWindow.svelte';
-	import Catch from './Catch.svelte';
-	import { Toggle } from 'flowbite-svelte';
+	import { Game } from '$lib/client/Game.svelte';
+	import { TeamScore } from '$lib/components/TeamScore';
+	import { PauseMenu } from '$lib/components/PauseMenu';
+	import { ReleaseCounters } from '$lib/components/RelaseCounters';
+	import { Timer } from '$lib/components/Timer';
+	import { NavBar } from '$lib/components/NavBar';
 
 	let { data } = $props();
-	let { gameInfo } = data;
-	let flip = $state(true);
-	let markNumbers = $state(true);
+	let game = new Game(data.gameData);
 
-	const { game }: { game: Game } = gameAndTeamsFromEvents(gameInfo);
+	// Wait for data to load to actually create stuff on the page!
+	// Now it jumps from 0 goals and stuff to correct info, ugly!
 </script>
 
 {#snippet teamColumn(game: Game, home: boolean)}
+	{@const team = home ? game.homeTeam : game.awayTeam}
 	<div class="team-column">
-		<h1>{home ? game.homeTeam.name : game.awayTeam.name}</h1>
-		<Counter {game} {home} {markNumbers} />
-		<Penalty {game} {home} />
-		<Timeout {game} {home} />
-		<Catch {game} {home} {markNumbers} />
+		<TeamScore {game} {home} scorekeeper={true} />
+		<ReleaseCounters {game} {team} />
 	</div>
 {/snippet}
 
-{#snippet finishedGame(game: Game)}
-	<h1>Game is finished</h1>
-	<strong class="font-mono text-5xl">{game.homeTeam.name} - {game.awayTeam.name}</strong>
-	<div class="flex">
-		<div class="flex items-start">
-			<strong class="font-mono text-5xl">{game.homeTeam.score}</strong>
-			<strong class="font-mono text-2xl">{game.homeTeam.catch ? '*' : ''}</strong>
-		</div>
-		<strong class="font-mono text-5xl">-</strong>
-		<div class="flex items-start">
-			<strong class="font-mono text-5xl">{game.awayTeam.score}</strong>
-			<strong class="font-mono text-2xl">{game.awayTeam.catch ? '*' : ''}</strong>
-		</div>
-	</div>
-{/snippet}
-
+<NavBar />
 <main>
-	{#if game.status == 'finished'}
-		{@render finishedGame(game)}
-	{:else}
-		<Timer {game} />
-		{#key flip}
-			<div class="flex">
-				{@render teamColumn(game, flip)}
-				{@render teamColumn(game, !flip)}
-			</div>
-			<EventsWindow {game} {flip} class="h-80 w-80 overflow-auto" />
-		{/key}
-		<Toggle bind:checked={flip}>Flip teams</Toggle>
-		<Toggle bind:checked={markNumbers}>Player number on goals</Toggle>
-	{/if}
+	<div class="top">
+		<Timer {game} scorekeeper={true} />
+		<div class="teams">
+			{@render teamColumn(game, true)}
+			{@render teamColumn(game, false)}
+		</div>
+	</div>
+	<div class="bottom">
+		<PauseMenu {game} />
+	</div>
 </main>
 
 <style>
+	main {
+		padding: 0;
+		display: grid;
+		grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+		align-items: stretch;
+	}
+	.teams {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 1.5rem;
+	}
+	.top {
+		display: flex;
+		flex-direction: column;
+		padding: 1rem 1.5rem;
+		gap: 1rem;
+	}
+	.bottom {
+		padding: 0;
+	}
 	.team-column {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
-		gap: 4px;
-		width: 10rem;
-		height: 20rem;
+		align-items: stretch;
+		width: 100%;
+		padding-bottom: 1.5rem;
 	}
 </style>

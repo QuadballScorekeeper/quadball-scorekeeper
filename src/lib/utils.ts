@@ -4,3 +4,5 @@ export function formatGameTime(milliseconds: number) {
 	const minutes = zeroPad(Math.floor(milliseconds / 1000 / 60));
 	return `${minutes}:${seconds}`;
 }
+
+export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?: U | null };

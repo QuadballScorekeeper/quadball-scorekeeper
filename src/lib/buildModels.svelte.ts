@@ -22,6 +22,7 @@ export function gameAndTeamsFromEvents(
 		switch (eventRow.eventType) {
 			case 'timeout':
 				getEventTeam(eventRow).timeoutAvailable = false;
+			// eslint-disable-next-line no-fallthrough
 			case 'pause':
 				if (game.currentPauseStart) break;
 				game.currentPauseStart = eventRow.timestamp.getTime();
@@ -37,7 +38,6 @@ export function gameAndTeamsFromEvents(
 			case 'catch':
 				getEventTeam(eventRow).catch = true;
 				break;
-			// Check if the team wins?
 
 			case 'blue_card':
 			case 'yellow_card':

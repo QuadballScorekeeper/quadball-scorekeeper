@@ -8,18 +8,18 @@ export function addGameViewer(gameId: number, stream: ReadableStreamDefaultContr
 }
 
 export function broadcastGameEvent(event: GameEvent) {
-	console.log('sending', event.eventType, 'event to all connections!');
 	const streams = streamConnections.get(event.game);
 	if (!streams) return;
+	console.log('sending', event.eventType, 'event to all connections!');
 
-	const eventData = JSON.stringify(event)
+	const eventData = JSON.stringify(event);
 
 	streams.forEach((stream) => {
 		try {
 			console.log('sending', event.eventType, 'event to single stream');
 			stream.enqueue(`data: ${eventData}\n\n`);
 		} catch (error) {
-			console.error('Could not enqueue to stream, removing it?');
+			console.error('Could not enqueue to stream, got error: ', error);
 			streams.delete(stream);
 		}
 	});

@@ -9,16 +9,13 @@ export const GET: RequestHandler = async ({ params }) => {
 	const stream = new ReadableStream({
 		start(controller) {
 			addGameViewer(gameId, controller);
-			// Legg til noe keep-alive-ping her for å passe på koblinga ikke dør?
-			// den kan også lukke koblinga, så det er jo nice
 		},
-		cancel() {
-		}
+		cancel() {}
 	});
 	return new Response(stream, {
 		headers: {
 			'Content-Type': 'text/event-stream',
-			'Cache-Control': 'no-cache',
+			'Cache-Control': 'no-cache'
 		}
 	});
 };

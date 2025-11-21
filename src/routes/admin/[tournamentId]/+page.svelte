@@ -1,36 +1,39 @@
 <script lang="ts">
-	import { Button, Datepicker, Input, Label } from 'flowbite-svelte';
-
 	let { data } = $props();
 	const tournament = data.tournament;
 	let name = $state(tournament.name);
-	let start = $state(tournament.start);
-	let startString = $derived(start?.toDateString());
-	let end = $state(tournament.end);
-	let endString = $derived(end?.toDateString());
+	let startString = $derived(tournament.start.toISOString().split('T')[0]);
+	let endString = $derived(tournament.end.toISOString().split('T')[0]);
+	$effect(() => {
+		console.log(startString);
+		console.log(endString);
+	});
 </script>
 
-<main class="gap-2">
-	<form class="grid gap-2" method="POST" action="?/saveTournament">
-		<Label>Name</Label>
-		<Input type="text" name="name" bind:value={name} />
-		<Label>Duration</Label>
-		<Input name="start" type="hidden" bind:value={startString} />
-		<Input name="end" type="hidden" bind:value={endString} />
-		<div class="w-52">
-			<Datepicker
-				range
-				color="secondary"
-				bind:rangeFrom={start}
-				bind:rangeTo={end}
-				firstDayOfWeek={1}
-			/>
-		</div>
-		<div class="grid grid-cols-2">
-			<Button type="submit" class="w-20">Save</Button>
-			<Button type="submit" formaction="?/deleteTournament" class="w-20 bg-red-700 dark:bg-red-900"
-				>Delete</Button
+<main>
+	<form method="POST" action="?/saveTournament">
+		<label for="name">Name</label>
+		<input type="text" id="name" name="name" bind:value={name} />
+		<label for="start">Start</label>
+		<input name="start" id="start" type="date" bind:value={startString} />
+		<label for="end">End</label>
+		<input name="end" id="end" type="date" bind:value={endString} />
+		<div class="button-group">
+			<button type="submit" class="w-20">Save</button>
+			<button type="submit" formaction="?/deleteTournament" class="w-20 bg-red-700 dark:bg-red-900"
+				>Delete</button
 			>
 		</div>
 	</form>
 </main>
+
+<style>
+	form {
+		display: grid;
+		gap: 0.5rem;
+	}
+	.button-group {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+	}
+</style>
