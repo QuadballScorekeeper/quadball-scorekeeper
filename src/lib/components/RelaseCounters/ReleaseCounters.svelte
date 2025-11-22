@@ -16,8 +16,8 @@
 		expanded = !expanded;
 	}}
 >
-	{#each team.activePenalties as penalty (penalty)}
-		<ReleaseCounter {penalty} {game} {expanded} />
+	{#each team.activePenalties as penalty, i (i)}
+		<ReleaseCounter {penalty} {game} {expanded} {i} />
 	{/each}
 </button>
 
@@ -25,6 +25,7 @@
 	.release-counters {
 		display: flex;
 		flex-direction: column-reverse;
+		align-items: stretch;
 		max-height: 6rem;
 		gap: 1px;
 		overflow: auto;
