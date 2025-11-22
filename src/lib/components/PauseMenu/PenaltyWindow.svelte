@@ -3,7 +3,7 @@
 	import { TabSelect } from '$lib/components/TabSelect';
 
 	let { game }: { game: Game } = $props();
-	const penaltyOptions = ['blue_card', 'yellow_card', 'red_card', 'eject'];
+	const penaltyOptions = ['blue_card', 'yellow_card', 'red_card', 'ejection'];
 	let penalty = $state(undefined);
 	const teamOptions = [game.homeTeam.name, game.awayTeam.name];
 	let team = $state(undefined);

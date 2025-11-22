@@ -1,10 +1,14 @@
-import type { GameEvent } from './models/GameEvent.svelte';
+import type { GameEvent } from './client/GameEvent.svelte';
 
 const streamConnections = new Map<number, Set<ReadableStreamDefaultController>>();
 
 export function addGameViewer(gameId: number, stream: ReadableStreamDefaultController) {
 	if (!streamConnections.has(gameId)) streamConnections.set(gameId, new Set());
 	streamConnections.get(gameId)!.add(stream);
+}
+export function removeGameViewer(gameId: number, stream: ReadableStreamDefaultController) {
+	if (!streamConnections.has(gameId)) return;
+	streamConnections.get(gameId)!.delete(stream);
 }
 
 export function broadcastGameEvent(event: GameEvent) {
