@@ -1,18 +1,22 @@
 <script lang="ts">
 	import type { Game } from '$lib/client/Game.svelte';
-	import type { Penalty } from '$lib/client/Penalty.svelte';
+	// import type { Penalty } from '$lib/client/Penalty.svelte';
 	import { formatGameTime } from '$lib/utils';
 	import { CheckCircleOutline } from 'flowbite-svelte-icons';
 	import { fade } from 'svelte/transition';
 
-	let { penalty, game, expanded }: { penalty: Penalty; game: Game; expanded: boolean } = $props();
+	let {
+		game,
+		home,
+		expanded = $bindable(false)
+	}: { game: Game; home: boolean; expanded: boolean } = $props();
+	let team = home ? game.homeTeam : game.awayTeam;
 
-	let gradient = $derived(Math.floor(Math.min(penalty.timeLeft / 100, 100)));
 	const freq = 100;
 	$effect(() => {
 		if (game.status == 'live') {
 			const interval = setInterval(() => {
-				penalty.removeTime(freq);
+				team.activePenalties.forEach((p) => p.removeTime(freq));
 			}, freq);
 			return () => {
 				clearInterval(interval);
@@ -21,26 +25,43 @@
 	});
 </script>
 
-<div
-	class="penalty {expanded ? '' : 'compact'}"
-	style="--gradient:{gradient}%"
-	out:fade={{ delay: 500, duration: 500 }}
+<button
+	class="release-counters"
+	onclick={() => {
+		expanded = !expanded;
+	}}
 >
-	{#if penalty.timeLeft > 2 * freq}
-		{penalty.getIcon()}
-		{penalty.player}
-		<div>
-			{formatGameTime(penalty.timeLeft)}
+	{#each team.activePenalties as penalty (penalty)}
+		<div
+			class="penalty {expanded ? '' : 'compact'}"
+			style="--time-left:{penalty.timeLeft}%"
+			out:fade={{ delay: 500, duration: 500 }}
+		>
+			{#if penalty.timeLeft > 2 * freq}
+				{penalty.getIcon()}
+				{penalty.player}
+				<div>
+					{formatGameTime(penalty.timeLeft)}
+				</div>
+			{:else}
+				Release {penalty.player}
+				<div>
+					<CheckCircleOutline />
+				</div>
+			{/if}
 		</div>
-	{:else}
-		Release {penalty.player}
-		<div>
-			<CheckCircleOutline />
-		</div>
-	{/if}
-</div>
+	{/each}
+</button>
 
 <style>
+	.release-counters {
+		display: flex;
+		flex-direction: column-reverse;
+		max-height: 6rem;
+		gap: 1px;
+		overflow: auto;
+	}
+
 	@property --gradient {
 		syntax: '<length-percentage>';
 		inherits: false;
@@ -53,9 +74,11 @@
 	}
 
 	.penalty {
+		--gradient: calc(min(var(--timeLeft) / 100, 100));
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+
 		background: linear-gradient(
 			to right,
 			transparent var(--gradient),
@@ -64,6 +87,7 @@
 		);
 		background-color: var(--base-clr);
 		color: var(--color-white);
+
 		border-radius: 0.5rem 0.5rem 0 0;
 		gap: 0.5rem;
 		transition:

@@ -1,1 +1,1 @@
-export { default as ReleaseCounters } from './ReleaseCounters.svelte';
+export { default as ReleaseCounters } from './ReleaseCounter.svelte';
