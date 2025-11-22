@@ -4,7 +4,7 @@ import { gameEvent, type InsertGameEvent } from '$lib/server/db/schema';
 import { json } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
 import { broadcastGameEvent } from '$lib/stream';
-import type { GameEvent } from '$lib/models/GameEvent.svelte';
+import type { GameEvent } from '$lib/client/GameEvent.svelte';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const { newEvent }: { newEvent: GameEvent } = await request.json();
@@ -34,7 +34,7 @@ export const DELETE: RequestHandler = async ({ request }) => {
 			.delete(gameEvent)
 			.where(and(eq(gameEvent.game, game), eq(gameEvent.eventNum, eventNum)));
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		return json({ success: false, error: 'Error deleting row' }, { status: 500 });
 	}
 

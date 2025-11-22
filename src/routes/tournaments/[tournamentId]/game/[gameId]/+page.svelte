@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Game } from '$lib/client/Game.svelte';
-	import type { GameEvent } from '$lib/client/GameEvent.svelte';
+	import { GameEvent } from '$lib/client/GameEvent.svelte';
 	import { TeamScore } from '$lib/components/TeamScore';
 	import { EventWindow } from '$lib/components/EventWindow';
 	import { Timer } from '$lib/components/Timer';
@@ -13,7 +13,8 @@
 	onMount(() => {
 		const eventSource = new EventSource(`/api/games/${params.gameId}/stream`);
 		eventSource.onmessage = (message) => {
-			const event: GameEvent = JSON.parse(message.data);
+			const event: GameEvent = GameEvent.from(JSON.parse(message.data));
+			game.gameTime = event.gameTime;
 			game.events.push(event);
 			switch (event.eventType) {
 				case 'goal':

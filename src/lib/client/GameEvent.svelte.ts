@@ -27,6 +27,10 @@ export class GameEvent {
 		this.score = score;
 	}
 
+	static from(json: GameEvent) {
+		return Object.create(GameEvent.prototype, Object.getOwnPropertyDescriptors(json));
+	}
+
 	public getIcon() {
 		switch (this.eventType) {
 			case 'goal':
