@@ -67,7 +67,7 @@
 		border-radius: 0.5rem 0.5rem 0 0;
 		gap: 0.5rem;
 		transition:
-			all 300ms ease,
+			all 150ms ease-out allow-discrete,
 			--gradient 100ms linear;
 
 		--base-clr: var(--fg-light);
@@ -75,29 +75,47 @@
 		padding: 0.25rem 1rem;
 		border-radius: 0.5rem;
 
-		&.compact:nth-child(n + 2) > * {
-			display: none;
-		}
-
-		&.compact:nth-child(2) {
-			--base-clr: light-dark(var(--gray-600), var(--fg-light));
-			height: 0.5rem;
-			margin: 0 0.5rem;
-			border-radius: 0.5rem 0.5rem 0 0;
+		&.compact:nth-child(n + 2) {
 			font-size: 0;
 			padding: 0;
+			border-radius: 0.5rem 0.5rem 0 0;
+			* {
+				display: none;
+			}
+		}
+
+		&:nth-child(2) {
+			transition-duration: 200ms;
+		}
+		&.compact:nth-child(2) {
+			--base-clr: light-dark(var(--gray-600), var(--fg-light));
+			transition-duration: 300ms;
+			height: 0.5rem;
+			margin: 0 0.5rem;
+		}
+		&:nth-child(3) {
+			transition-duration: 250ms;
 		}
 		&.compact:nth-child(3) {
+			transition-duration: 250ms;
 			--base-clr: light-dark(var(--gray-500), var(--fg-light));
 			height: 0.375rem;
 			margin: 0 1rem;
-			border-radius: 0.5rem 0.5rem 0 0;
-			font-size: 0;
-			padding: 0;
 		}
 		&:nth-child(n + 4) {
+			transition-duration: 300ms;
 			&.compact {
+				transition-duration: 200ms;
+				height: 0;
+				margin: 0 1.5rem;
 				display: none;
+			}
+			@starting-style {
+				font-size: 0;
+				padding: 0;
+				border-radius: 0.5rem 0.5rem 0 0;
+				height: 0;
+				margin: 0 1.5rem;
 			}
 		}
 	}
