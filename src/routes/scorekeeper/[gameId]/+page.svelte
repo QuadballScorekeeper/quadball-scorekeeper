@@ -8,38 +8,33 @@
 
 	let { data } = $props();
 	let game = new Game(data.gameData);
+	let expanded = $state(false);
 
 	// Wait for data to load to actually create stuff on the page!
 	// Now it jumps from 0 goals and stuff to correct info, ugly!
 </script>
 
-{#snippet teamColumn(game: Game, home: boolean)}
-	{@const team = home ? game.homeTeam : game.awayTeam}
-	<div class="team-column">
-		<TeamScore {game} {home} scorekeeper={true} />
-		<ReleaseCounters {game} {team} />
-	</div>
-{/snippet}
-
 <NavBar />
 <main>
 	<div class="top">
+		<div class="teams">
+			<ReleaseCounters {game} home={true} bind:expanded />
+			<ReleaseCounters {game} home={false} bind:expanded />
+		</div>
 		<Timer {game} scorekeeper={true} />
 		<div class="teams">
-			{@render teamColumn(game, true)}
-			{@render teamColumn(game, false)}
+			<TeamScore {game} home={true} scorekeeper={true} />
+			<TeamScore {game} home={false} scorekeeper={true} />
 		</div>
 	</div>
-	<div class="bottom">
-		<PauseMenu {game} />
-	</div>
+	<PauseMenu {game} />
 </main>
 
 <style>
 	main {
 		padding: 0;
 		display: grid;
-		grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+		grid-template-rows: 20rem minmax(20rem, 1fr);
 		align-items: stretch;
 	}
 	.teams {
@@ -48,19 +43,10 @@
 		gap: 1.5rem;
 	}
 	.top {
-		display: flex;
+		display: grid;
 		flex-direction: column;
-		padding: 1rem 1.5rem;
+		grid-template-rows: 1fr auto auto;
+		padding: 0 1.5rem 3rem;
 		gap: 1rem;
-	}
-	.bottom {
-		padding: 0;
-	}
-	.team-column {
-		display: flex;
-		flex-direction: column;
-		align-items: stretch;
-		width: 100%;
-		padding-bottom: 1.5rem;
 	}
 </style>

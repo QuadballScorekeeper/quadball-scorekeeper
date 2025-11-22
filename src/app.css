@@ -67,10 +67,6 @@ html {
 	.button {
 		background-color: var(--primary);
 		color: var(--bg-dark);
-	}
-
-	button {
-		background-color: var(--bg-light);
 		cursor: pointer;
 	}
 

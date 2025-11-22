@@ -4,10 +4,6 @@
 	let name = $state(tournament.name);
 	let startString = $derived(tournament.start.toISOString().split('T')[0]);
 	let endString = $derived(tournament.end.toISOString().split('T')[0]);
-	$effect(() => {
-		console.log(startString);
-		console.log(endString);
-	});
 </script>
 
 <main>
