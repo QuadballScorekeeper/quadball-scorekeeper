@@ -25,6 +25,7 @@
 	.release-counters {
 		display: flex;
 		flex-direction: column-reverse;
+		align-items: stretch;
 		max-height: 6rem;
 		gap: 1px;
 		overflow: auto;
