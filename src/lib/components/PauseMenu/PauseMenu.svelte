@@ -31,7 +31,5 @@
 		background-color: var(--bg-light);
 		padding: 1rem 1rem;
 		gap: 1rem;
-		min-height: 12rem;
-		height: 100%;
 	}
 </style>
