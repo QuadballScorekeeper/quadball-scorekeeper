@@ -16,7 +16,8 @@
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
-		"seed": "tsx src/scripts/seed.ts"
+		"db:seed": "tsx scripts/seed.ts",
+		"icons:build": "node scripts/svg-to-svelte.ts"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",
@@ -39,6 +40,7 @@
 		"prettier-plugin-tailwindcss": "^0.6.14",
 		"svelte": "^5.39.11",
 		"svelte-check": "^4.3.3",
+		"svgo": "^4.0.0",
 		"tailwindcss": "^4.0.0",
 		"tsx": "^4.20.6",
 		"typescript": "^5.9.3",
