@@ -6,72 +6,111 @@ html {
 }
 
 :root {
-	--font-sans: 'Roboto';
-	--font-mono: 'Roboto Mono';
+	--black: #000000;
+	--white: #ffffff;
 
-	--white: #fff;
-	--gray-50: hsla(210, 10%, 98%, 1);
-	--gray-100: hsla(210, 10%, 95%, 1);
-	--gray-200: hsla(210, 10%, 91%, 1);
-	--gray-300: hsla(210, 10%, 85%, 1);
-	--gray-400: hsla(210, 10%, 66%, 1);
-	--gray-500: hsla(210, 10%, 30%, 1);
-	--gray-600: hsla(210, 10%, 21%, 1);
-	--gray-700: hsla(210, 10%, 15%, 1);
-	--gray-800: hsla(210, 10%, 6%, 1);
-	--gray-900: hsla(210, 10%, 2%, 1);
-	--black: #000;
+	--gray-50: #f7f9fb;
+	--gray-100: #eff2f5;
+	--gray-150: #e8ecf0;
+	--gray-200: #d2dae1;
+	--gray-300: #a8b7c0;
+	--gray-400: #8797a2;
+	--gray-500: #697780;
+	--gray-600: #404f58;
+	--gray-700: #323f47;
+	--gray-800: #222c32;
+	--gray-850: #171e22;
+	--gray-900: #0d1113;
 
-	--bg-light: light-dark(var(--white), var(--gray-700));
-	--bg-dark: light-dark(var(--gray-200), var(--gray-800));
+	--blue-400: #02a1f0;
+	--blue-500: #007dd0;
+	--green-400: #58f39e;
+	--green-500: #09d379;
+	--red-400: #f66c6a;
+	--red-500: #ca040d;
+	--yellow-400: #fed728;
+	--yellow-500: #f8bf0b;
 
-	--fg-light: light-dark(var(--gray-700), var(--gray-200));
-	--fg-dark: light-dark(var(--gray-800), var(--gray-100));
+	--bg-default: light-dark(var(--gray-100), var(--black));
+	--surface-0: light-dark(var(--white), var(--gray-800));
+	--surface-1: light-dark(var(--gray-50), var(--gray-850));
+	--surface-2: light-dark(var(--gray-100), var(--gray-900));
 
-	--primary: light-dark(var(--gray-600), var(--gray-400));
+	--text-default: light-dark(var(--gray-900), var(--gray-150));
+	--text-on-reverse: light-dark(var(--gray-100), var(--gray-900));
+	--text-on-color: light-dark(var(--white), var(--white));
+	--text-subtle: light-dark(var(--gray-600), var(--gray-300));
+	--text-disabled: light-dark(var(--gray-400), var(--gray-500));
 
-	--success: light-dark(hsla(138, 82%, 70%, 1), hsla(138, 63%, 59%, 1));
-	--warning: light-dark(hsla(49, 100%, 59%, 1), hsla(45, 96%, 55%, 1));
-	--error: light-dark(hsla(352, 84%, 43%, 1), hsla(352, 84%, 72%, 1));
-	--info: light-dark(hsla(208, 93%, 39%, 1), hsla(203, 79%, 53%, 1));
+	--border-default: light-dark(var(--gray-200), var(--gray-600));
+	--border-subtle: light-dark(var(--gray-150), var(--gray-800));
+	--border-strong: light-dark(var(--gray-300), var(--gray-500));
+
+	--base-default: light-dark(var(--gray-900), var(--gray-150));
+	--base-secondary: light-dark(var(--white), var(--gray-800));
+	--base-lowered: light-dark(var(--gray-400), var(--gray-500));
+	--base-elevated: light-dark(var(--white), var(--gray-600));
+	--base-disabled: light-dark(var(--gray-150), var(--gray-850));
+
+	--success: light-dark(var(--green-400), var(--green-500));
+	--warning: light-dark(var(--yellow-400), var(--yellow-500));
+	--error: light-dark(var(--red-500), var(--red-400));
+	--info: light-dark(var(--blue-500), var(--blue-400));
+
+	--shadow-light: 0px 4px 10px 0px rgba(0, 0, 0, 0.08);
+	--shadow-interactive: 0px 4px 16px 0px rgba(0, 0, 0, 0.12);
 
 	--text-xs: 0.75rem;
+	--text-s: 0.875rem;
 	--text-xl: 2.125rem;
 	--font-mono: Roboto Mono;
+	--font-default: Roboto;
 }
 
-@source "../node_modules/flowbite-svelte-icons/dist";
-
 @layer base {
+	body {
+		background-color: var(--surface-1);
+	}
 	.page-wrapper {
+		position: relative;
 		width: clamp(20rem, 100%, 35rem);
 		margin: auto;
-		font-family: Roboto;
+		font-family: var(--font-default);
 		height: 100dvh;
 		background-color: light-dark(var(--gray-50), var(--gray-900));
-		color: var(--fg-dark);
+		color: var(--text-default);
 		display: grid;
 		grid-template-rows: auto minmax(0, 1fr);
 	}
 
 	main {
-		background-color: var(--bg-dark);
-		width: 100%;
-		margin-inline: auto;
+		position: relative;
 		display: flex;
+		gap: 1rem;
 		flex-direction: column;
 		align-items: center;
+		background-color: var(--bg-default);
+		width: 100%;
+		margin-inline: auto;
 		padding: 1rem 1.5rem;
 	}
 
 	.button {
-		background-color: var(--primary);
-		color: var(--bg-dark);
+		background-color: var(--base-default);
+		color: var(--text-on-reverse);
+		padding: 12px;
+		border-radius: 0.5rem;
 		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		&.large {
+			width: 10rem;
+		}
 	}
 
 	li {
-		background-color: var(--bg-light);
+		background-color: var(--surface-0);
 	}
 
 	input {

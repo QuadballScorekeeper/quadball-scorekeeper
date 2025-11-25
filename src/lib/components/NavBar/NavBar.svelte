@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { HomeOutline } from 'flowbite-svelte-icons';
 	import type { Snippet } from 'svelte';
 	import ThemeToggle from './ThemeToggle.svelte';
+	import { Home } from '$lib/icons';
 
 	let { children }: { children?: Snippet } = $props();
 </script>
 
 <div class="banner">
 	<nav>
-		<a href="/"><HomeOutline /></a>
+		<a href="/"><Home /></a>
 		{@render children?.()}
 		<ThemeToggle />
 	</nav>
