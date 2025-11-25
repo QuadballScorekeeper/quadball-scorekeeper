@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Game } from '$lib/client/Game.svelte';
 	import type { Penalty } from '$lib/client/Penalty.svelte';
+	import { Success } from '$lib/icons';
 	import { formatGameTime } from '$lib/utils';
-	import { CheckCircleOutline } from 'flowbite-svelte-icons';
 	import { fade } from 'svelte/transition';
 
 	let { penalty, game, expanded }: { penalty: Penalty; game: Game; expanded: boolean } = $props();
@@ -35,7 +35,7 @@
 	{:else}
 		Release {penalty.player}
 		<div>
-			<CheckCircleOutline />
+			<Success />
 		</div>
 	{/if}
 </div>
@@ -46,13 +46,14 @@
 		inherits: false;
 		initial-value: 100%;
 	}
-	@property --base-clr {
+	@property --_bg-clr {
 		syntax: '<color>';
 		inherits: false;
 		initial-value: var(-fg-light);
 	}
 
 	.penalty {
+		--_bg-clr: light-dark(var(--gray-800), var(--gray-700));
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -62,15 +63,13 @@
 			var(--success) var(--gradient),
 			var(--success)
 		);
-		background-color: var(--base-clr);
+		background-color: var(--_bg-clr);
 		color: var(--color-white);
-		border-radius: 0.5rem 0.5rem 0 0;
 		gap: 0.5rem;
 		transition:
-			all 150ms ease-out allow-discrete,
-			--gradient 100ms linear;
+			all 150ms ease allow-discrete,
+			--gradient 100ms linear allow-discrete;
 
-		--base-clr: var(--fg-light);
 		height: 2rem;
 		padding: 0.25rem 1rem;
 		border-radius: 0.5rem;
@@ -88,7 +87,7 @@
 			transition-duration: 200ms;
 		}
 		&.compact:nth-child(2) {
-			--base-clr: light-dark(var(--gray-600), var(--fg-light));
+			--_bg-clr: light-dark(var(--gray-600), var(--gray-800));
 			transition-duration: 300ms;
 			height: 0.5rem;
 			margin: 0 0.5rem;
@@ -98,7 +97,7 @@
 		}
 		&.compact:nth-child(3) {
 			transition-duration: 250ms;
-			--base-clr: light-dark(var(--gray-500), var(--fg-light));
+			--_bg-clr: light-dark(var(--gray-500), var(--gray-850));
 			height: 0.375rem;
 			margin: 0 1rem;
 		}

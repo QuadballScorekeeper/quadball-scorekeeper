@@ -24,19 +24,19 @@
 		border-radius: 0.5rem;
 		padding: 0.25rem;
 		gap: 0.25rem;
-		background-color: var(--bg-dark);
+		background-color: var(--base-disabled);
 	}
 
 	.tab-item {
 		background-color: transparent;
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;
-		width: 100%;
 		cursor: pointer;
+		width: 100%;
 	}
 
 	.tab-item.active {
-		background-color: var(--bg-light);
-		box-shadow: 0 0.25rem 1rem 0 hsla(0, 0%, 0%, 0.12);
+		background-color: var(--base-elevated);
+		box-shadow: var(--shadow-interactive);
 	}
 </style>

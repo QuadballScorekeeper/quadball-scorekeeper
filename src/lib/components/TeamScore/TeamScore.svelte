@@ -19,7 +19,7 @@
 
 <button
 	onclick={scoreGoal}
-	class="team-score"
+	class="team-score {game.status}"
 	style="--team-color: {team.color}"
 	disabled={!scorekeeper}
 >
@@ -38,13 +38,18 @@
 <style>
 	.team-score {
 		border-radius: 0.5rem;
-		background-color: light-dark(var(--white), var(--gray-700));
+		background-color: var(--surface-0);
 		align-items: center;
 		padding: 0.25rem;
+		box-shadow: var(--shadow-interactive);
+		&.scheduled {
+			color: var(--text-disabled);
+		}
 	}
 	.team {
 		background-color: var(--team-color);
-		font-size: var(--text-xs);
+		color: var(--text-on-color);
+		font-size: var(--text-s);
 		text-wrap: nowrap;
 		overflow: hidden;
 		padding: 0.25rem;

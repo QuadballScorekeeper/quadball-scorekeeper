@@ -28,7 +28,7 @@
 	.pause-menu {
 		display: grid;
 		grid-template-rows: auto minmax(0, 1fr);
-		background-color: var(--bg-light);
+		background-color: var(--surface-0);
 		padding: 1rem 1rem;
 		gap: 1rem;
 	}

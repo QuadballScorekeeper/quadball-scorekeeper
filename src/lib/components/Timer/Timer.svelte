@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Game } from '$lib/client/Game.svelte';
+	import { Pause, Play, Success } from '$lib/icons';
 	import { formatGameTime } from '$lib/utils';
-	import { CheckCircleOutline, CirclePauseOutline, PlayOutline } from 'flowbite-svelte-icons';
 	import TimerBanner from './TimerBanner.svelte';
 
 	let { game, scorekeeper = false }: { game: Game; scorekeeper?: boolean } = $props();
@@ -29,7 +29,6 @@
 				game.startGame();
 				break;
 			case 'cancelled':
-				game.status = 'live';
 				break;
 		}
 	}
@@ -59,25 +58,31 @@
 	});
 </script>
 
+<!-- <select class="button" style="width:fit-content" bind:value={game.status}>
+	{#each ['scheduled', 'live', 'paused', 'timeout', 'finished', 'cancelled'] as status (status)}
+		<option value={status}>{status}</option>
+	{/each}
+</select> -->
+
 <div class="container" role={scorekeeper ? 'button' : undefined} {onclick}>
-	<TimerBanner {game} end={minute * 10} />
-	<div class="timer {game.status} ">
+	<TimerBanner {game} />
+	<div class="timer {game.status}">
 		<div class="status">
 			{#if game.status == 'finished'}
-				<CheckCircleOutline />
+				<Success />
 				Full-time
 			{:else if game.status == 'scheduled'}
 				{#if scorekeeper}
-					<PlayOutline class="h-8 w-8" />
+					<Play />
 					Tap to start
 				{:else}
 					Scheduled to start:
 				{/if}
 			{:else if game.status == 'paused'}
-				<CirclePauseOutline class="h-6 w-6" />
+				<Pause />
 				Paused
 			{:else if game.status == 'timeout'}
-				<CirclePauseOutline class="h-6 w-6" />
+				<Pause />
 				Timeout
 				{formatGameTime(timeoutTimeLeft)}
 			{/if}
@@ -100,6 +105,7 @@
 		flex-direction: column;
 		align-items: center;
 		border-radius: 0.5rem;
+		box-shadow: var(--shadow-light);
 
 		:first-child {
 			border-top-left-radius: 0.5rem;
@@ -118,8 +124,13 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.5rem 1.5rem;
-		color: light-dark(var(--color-gray-400), var(--color-gray-400));
+		color: light-dark(var(--color-gray-500), var(--color-gray-300));
 		background-color: light-dark(var(--black), var(--color-gray-500));
+		font-family: var(--font-mono);
+	}
+	.paused {
+		background-color: var(--red-500);
+		color: var(--text-on-color);
 	}
 	.finished {
 		color: light-dark(var(--success), var(--black));
@@ -129,21 +140,24 @@
 		color: var(--white);
 	}
 	.cancelled {
-		background-color: light-dark(var(--color-gray-800), var(--color-gray-300));
+		background-color: var(--base-disabled);
+		color: var(--text-disabled);
 	}
 
 	.status {
+		font-family: var(--font-default);
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
 	}
 	.timeout {
-		background-color: light-dark(var(--black), var(--warning));
+		background-color: light-dark(var(--black), var(--yellow-500));
+		color: light-dark(var(--color-gray-500), var(--black));
 	}
 	.timeout > .status {
-		color: light-dark(var(--warning), var(--black));
+		color: light-dark(var(--yellow-500), var(--black));
 	}
 	.scheduled > .status {
-		color: var(--bg-light);
+		color: var(--text-on-color);
 	}
 </style>
