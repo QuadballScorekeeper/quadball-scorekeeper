@@ -31,8 +31,8 @@ export class Game {
 		this.homeTeam = new Team(gameData.homeTeam);
 		this.awayTeam = new Team(gameData.awayTeam);
 		// set colours manually for now!
-		this.homeTeam.color = '#FF0000';
-		this.awayTeam.color = '#0000FF';
+		this.homeTeam.color = '#0a0';
+		this.awayTeam.color = '#00b';
 
 		this.events = $state([]);
 		this.gameTime = $state(0);
@@ -153,6 +153,7 @@ export class Game {
 			return;
 		}
 		this.events.splice(index, 1);
+		//recalculate game!
 
 		await fetch(`/api/events`, {
 			method: 'DELETE',

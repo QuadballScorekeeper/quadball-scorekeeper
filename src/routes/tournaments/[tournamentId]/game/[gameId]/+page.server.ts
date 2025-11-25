@@ -22,10 +22,10 @@ export const load = async ({ params }) => {
 			},
 			events: true
 		}
-	})
-	if (gameInfo == undefined) throw error(400, 'unable to find game')
+	});
+	if (gameInfo == undefined) throw error(400, 'unable to find game');
 
 	return {
-		gameInfo,
+		gameInfo
 	};
 };
