@@ -45,11 +45,11 @@
 			onclick={() => {
 				game.removeEvent(event.eventNum);
 			}}
-			type="destructive"
+			classStr="destructive"
 		>
 			<Delete />
 		</Button>
-		<Button type="secondary">
+		<Button classStr="secondary">
 			<Edit />
 		</Button>
 	</div>

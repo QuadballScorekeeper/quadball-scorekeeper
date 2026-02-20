@@ -5,17 +5,31 @@
 	import { ReleaseCounters } from '$lib/components/RelaseCounters';
 	import { Timer } from '$lib/components/Timer';
 	import { NavBar } from '$lib/components/NavBar';
+	import GameSettings from './GameSettings.svelte';
+	import { Button } from '$lib/components/ui/Button';
 
 	let { data } = $props();
 	let game = new Game(data.gameData);
 	let expanded = $state(false);
 
+	let swapPlacement = $state(false);
+	let markPlayers = $state(false);
+	let settingsOpen = $state(false);
 	// Wait for data to load to actually create stuff on the page!
 	// Now it jumps from 0 goals and stuff to correct info, ugly!
 </script>
 
-<NavBar />
+<NavBar>
+	<Button
+		onclick={() => {
+			settingsOpen = !settingsOpen;
+		}}
+	>
+		Menu
+	</Button>
+</NavBar>
 <main>
+	<GameSettings open={settingsOpen} {swapPlacement} {markPlayers} />
 	<div class="top">
 		<div class="teams">
 			<ReleaseCounters {game} home={true} bind:expanded />
@@ -32,6 +46,7 @@
 
 <style>
 	main {
+		overflow-x: hidden;
 		padding: 0;
 		display: grid;
 		grid-template-rows: 20rem minmax(20rem, 1fr);

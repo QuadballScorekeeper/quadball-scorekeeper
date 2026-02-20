@@ -1,7 +1,7 @@
 import { db } from '$lib/server/db/client';
 import { player, team, tournament } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import type { Actions } from './$types';
 
 export const load = async ({ params }) => {
@@ -32,6 +32,12 @@ export const actions = {
 			name: teamName,
 			tournament: tId
 		});
+	},
+	deleteTeam: async ({ params, request }) => {
+		const data = await request.formData();
+		const teamId: number = Number(data.get('team'));
+		const tId: number = Number(params.tournamentId);
+		await db.delete(team).where(and(eq(team.id, teamId), eq(team.tournament, tId)));
 	},
 	newPlayer: async ({ request }) => {
 		const data = await request.formData();

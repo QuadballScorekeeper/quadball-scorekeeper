@@ -6,16 +6,16 @@
 	let { children }: { children?: Snippet } = $props();
 </script>
 
-<div class="banner">
+<header>
 	<nav>
 		<a href="/"><Home /></a>
 		{@render children?.()}
 		<ThemeToggle />
 	</nav>
-</div>
+</header>
 
 <style>
-	.banner {
+	header {
 		display: flex;
 		width: 100%;
 		height: 3rem;

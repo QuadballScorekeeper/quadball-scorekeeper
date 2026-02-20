@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { NavBar } from '$lib/components/NavBar';
+	import { Button } from '$lib/components/ui/Button';
 
 	let { data } = $props();
 	let { tournaments } = data;
@@ -19,7 +20,7 @@
 <NavBar />
 
 <main>
-	<button class="w-40" onclick={openModal}>Create tournament</button>
+	<Button onclick={openModal}>Create tournament</Button>
 
 	<dialog {open}>
 		<form method="POST">

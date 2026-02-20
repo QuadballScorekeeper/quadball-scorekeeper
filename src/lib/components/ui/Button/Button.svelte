@@ -1,13 +1,20 @@
 <script lang="ts">
-	let { type = 'primary', href = null, onclick = null, children } = $props();
+	let {
+		classStr = 'primary',
+		href = null,
+		onclick = null,
+		formaction = null,
+		type = null,
+		children
+	} = $props();
 </script>
 
 {#if href}
-	<a {href} {onclick} class={type}>
+	<a {href} {onclick} class={classStr}>
 		{@render children()}
 	</a>
 {:else}
-	<button {onclick} class={type}>
+	<button {formaction} {onclick} class={classStr} {type}>
 		{@render children()}
 	</button>
 {/if}

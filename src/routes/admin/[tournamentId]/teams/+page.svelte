@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { DeleteTableOutline } from 'flowbite-svelte-icons';
 	let { data } = $props();
 	let { tournament, teamsWithPlayers } = data;
 </script>
@@ -32,6 +33,12 @@
 						</li>
 					{/each}
 				</ul>
+				<form method="POST" action="?/deleteTeam">
+					<input type="hidden" name="team" value={team.id} />
+					<button class="delete-team">
+						<DeleteTableOutline />
+					</button>
+				</form>
 			</div>
 		{/each}
 	</div>
@@ -59,7 +66,10 @@
 		display: grid;
 		grid-template-columns: 5rem 1fr;
 	}
-
+	.delete-team {
+		color: var(--error);
+		width: 2rem;
+	}
 	input {
 		border: 1px solid var(--gray-500);
 	}

@@ -4,8 +4,14 @@
 	import { Input } from '../ui/Input';
 
 	let { game }: { game: Game } = $props();
-	const penaltyOptions = ['blue_card', 'yellow_card', 'red_card', 'ejection'];
+	const penaltyOptions = {
+		'🟦': 'blue_card',
+		'🟨': 'yellow_card',
+		'🟥': 'red_card',
+		'🚫': 'ejection'
+	};
 	let penalty = $state(undefined);
+	let penaltyString = $derived(penalty ? penaltyOptions[penalty] : undefined);
 	const teamOptions = [game.homeTeam.name, game.awayTeam.name];
 	let team = $state(undefined);
 	let player = $state(undefined);
@@ -20,10 +26,10 @@
 </script>
 
 <div class="penalty-window">
-	<TabSelect tabs={penaltyOptions} bind:activeTab={penalty} />
+	<TabSelect tabs={Object.keys(penaltyOptions)} bind:activeTab={penalty} />
 	<TabSelect tabs={teamOptions} bind:activeTab={team} />
 	<form onsubmit={addPenalty}>
-		<input type="hidden" required bind:value={penalty} />
+		<input type="hidden" required bind:value={penaltyString} />
 		<input type="hidden" required bind:value={team} />
 		<Input type="number" required placeholder="Number" bind:value={player} />
 		<button class="button" type="submit">Save</button>

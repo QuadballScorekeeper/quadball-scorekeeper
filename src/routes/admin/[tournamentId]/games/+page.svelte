@@ -19,7 +19,7 @@
 				<option value={team.id}>{team.name}</option>
 			{/each}
 		</select>
-		<label for="awayTeam">Home team</label>
+		<label for="awayTeam">Away team</label>
 		<select name="awayTeam" id="awayTeam">
 			<option value="">Choose a team</option>
 			{#each teams as team, i (i)}
@@ -62,6 +62,7 @@
 		display: grid;
 		gap: 0.25rem;
 		width: 100%;
+		overflow-y: auto;
 	}
 	li {
 		display: flex;
@@ -72,6 +73,7 @@
 	}
 	.delete-game {
 		color: var(--error);
+		width: 2rem;
 	}
 	.team {
 		flex-grow: 1;
