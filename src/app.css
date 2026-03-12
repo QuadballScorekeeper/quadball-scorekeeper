@@ -1,9 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Roboto&display=swap');
-@import 'tailwindcss';
-
-html {
-	color-scheme: light dark;
-}
+@import './reset.css';
 
 :root {
 	--black: #000000;
@@ -67,60 +63,45 @@ html {
 	--font-default: Roboto;
 }
 
-@layer base {
-	body {
-		background-color: var(--surface-1);
-	}
-	.page-wrapper {
-		position: relative;
-		width: clamp(20rem, 100%, 35rem);
-		margin: auto;
-		font-family: var(--font-default);
-		height: 100dvh;
-		background-color: light-dark(var(--gray-50), var(--gray-900));
-		color: var(--text-default);
-		display: grid;
-		grid-template-rows: auto minmax(0, 1fr);
-	}
+body {
+	background-color: var(--surface-1);
+}
 
-	main {
-		position: relative;
-		display: flex;
-		gap: 1rem;
-		flex-direction: column;
-		align-items: center;
-		background-color: var(--bg-default);
-		width: 100%;
-		margin-inline: auto;
-		padding: 1rem 1.5rem;
-	}
+.page-wrapper {
+	position: relative;
+	width: clamp(20rem, 100%, 35rem);
+	margin: auto;
+	font-family: var(--font-default);
+	height: 100dvh;
+	background-color: light-dark(var(--gray-50), var(--gray-900));
+	color: var(--text-default);
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+}
 
-	.button {
-		background-color: var(--base-default);
-		color: var(--text-on-reverse);
-		padding: 12px;
-		border-radius: 0.5rem;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		&.large {
-			width: 10rem;
-		}
-	}
+main {
+	position: relative;
+	display: flex;
+	gap: 1rem;
+	flex-direction: column;
+	align-items: center;
+	background-color: var(--bg-default);
+	width: 100%;
+	margin-inline: auto;
+	padding: 1rem 1.5rem;
+}
 
-	li {
-		background-color: var(--surface-0);
-	}
+li {
+	background-color: var(--surface-0);
+}
 
-	input {
-		border: 1px solid var(--bg-dark);
-		padding: 0.25rem;
-	}
+input {
+	border: 1px solid var(--bg-dark);
+	padding: 0.25rem;
+}
 
-	.numeric-xl {
-		font-family: var(--font-mono);
-		font-size: var(--text-xl);
-		font-weight: 600;
-	}
+.numeric-xl {
+	font-family: var(--font-mono);
+	font-size: var(--text-xl);
+	font-weight: 600;
 }

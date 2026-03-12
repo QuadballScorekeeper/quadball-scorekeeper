@@ -18,11 +18,11 @@
 </script>
 
 {#if game.setScore}
-	<div class="banner text-xs">
+	<div class="banner">
 		Set score: {game.setScore}
 	</div>
 {:else if remainingTime < 2 * minute}
-	<div class="banner text-xs {remainingTime < 10 * 1000 ? 'highlight' : ''}">
+	<div class="banner {remainingTime < 10 * 1000 ? 'highlight' : ''}">
 		<div class="message">{nextEvent!.event}</div>
 		{formatGameTime(remainingTime)}
 	</div>
@@ -39,6 +39,7 @@
 		border-radius: 0.5rem 0.5rem 0 0;
 		padding: 0.125rem 0.5rem;
 		gap: 1rem;
+		font-size: var(--text-xs);
 
 		&.highlight {
 			background-color: var(--yellow-400);

@@ -13,13 +13,13 @@
 		{#each games as game (game.id)}
 			<li>
 				<a href="/scorekeeper/{game.id}">
-					<strong class="grow-2 basis-0">
+					<strong class="home-team">
 						{game.homeTeam.name}
 					</strong>
-					<div class="grow basis-0 text-center">
+					<div class="game-time">
 						{game.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
 					</div>
-					<strong class=" grow-2 basis-0 text-right">
+					<strong class="away-team">
 						{game.awayTeam.name}
 					</strong>
 				</a>
@@ -42,5 +42,22 @@
 			display: flex;
 			gap: 0.25rem;
 		}
+	}
+
+	.home-team {
+		flex-grow: 2;
+		flex-basis: 0;
+	}
+
+	.game-time {
+		flex-grow: 1;
+		flex-basis: 0;
+		text-align: center;
+	}
+
+	.away-team {
+		flex-grow: 2;
+		flex-basis: 0;
+		text-align: right;
 	}
 </style>

@@ -96,7 +96,7 @@
 		{#if game.status == 'cancelled'}
 			<div>Cancelled</div>
 		{:else}
-			<div class="text-2xl">
+			<div class="game-time">
 				{gameTime}
 			</div>
 		{/if}
@@ -130,8 +130,8 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.5rem 1.5rem;
-		color: light-dark(var(--color-gray-500), var(--color-gray-300));
-		background-color: light-dark(var(--black), var(--color-gray-500));
+		color: light-dark(var(--gray-500), var(--gray-300));
+		background-color: light-dark(var(--black), var(--gray-500));
 		font-family: var(--font-mono);
 	}
 	.paused {
@@ -158,12 +158,16 @@
 	}
 	.timeout {
 		background-color: light-dark(var(--black), var(--yellow-500));
-		color: light-dark(var(--color-gray-500), var(--black));
+		color: light-dark(var(--gray-500), var(--black));
 	}
 	.timeout > .status {
 		color: light-dark(var(--yellow-500), var(--black));
 	}
 	.scheduled > .status {
 		color: var(--text-on-color);
+	}
+
+	.game-time {
+		font-size: var(--text-xl);
 	}
 </style>

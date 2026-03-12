@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { NavBar } from '$lib/components/NavBar';
+	import { Button } from '$lib/components/ui/Button';
 </script>
 
 <NavBar />
 
 <main>
-	<a class="large button" href="/scorekeeper">Start a game</a>
-	<a class="large button" href="/tournaments">View tournaments</a>
+	<Button href="/scorekeeper" size="large">Start a game</Button>
+	<Button href="/tournaments" size="large">View tournaments</Button>
 </main>
 
 <style>

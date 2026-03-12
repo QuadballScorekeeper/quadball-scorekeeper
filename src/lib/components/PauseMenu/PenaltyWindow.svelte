@@ -2,6 +2,7 @@
 	import type { Game } from '$lib/client/Game.svelte';
 	import { TabSelect } from '$lib/components/TabSelect';
 	import { Input } from '../ui/Input';
+	import { Button } from '../ui/Button';
 
 	let { game }: { game: Game } = $props();
 	const penaltyOptions = {
@@ -32,7 +33,7 @@
 		<input type="hidden" required bind:value={penaltyString} />
 		<input type="hidden" required bind:value={team} />
 		<Input type="number" required placeholder="Number" bind:value={player} />
-		<button class="button" type="submit">Save</button>
+		<Button type="submit">Save</Button>
 	</form>
 </div>
 

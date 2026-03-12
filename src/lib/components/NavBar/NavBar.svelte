@@ -31,4 +31,22 @@
 		width: clamp(20rem, 100%, 35rem);
 		margin-inline: auto;
 	}
+
+	nav :global(a),
+	nav :global(button) {
+		display: flex;
+		align-items: center;
+		padding: 0.5rem 0.75rem;
+		border-radius: 0.375rem;
+		color: var(--text-default);
+		transition: background-color 0.2s ease;
+
+		&:hover {
+			background-color: light-dark(var(--gray-150), var(--gray-700));
+		}
+
+		&:active {
+			background-color: light-dark(var(--gray-200), var(--gray-600));
+		}
+	}
 </style>

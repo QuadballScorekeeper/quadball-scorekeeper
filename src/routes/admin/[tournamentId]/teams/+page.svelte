@@ -1,16 +1,17 @@
 <script lang="ts">
-	import { DeleteTableOutline } from 'flowbite-svelte-icons';
+	import { Delete } from '$lib/icons';
+	import { Button } from '$lib/components/ui/Button';
 	let { data } = $props();
 	let { tournament, teamsWithPlayers } = data;
 </script>
 
-<main class="gap-2">
+<main>
 	<h1>{tournament.name}</h1>
 
 	<h2>Add a new team</h2>
 	<form method="POST" action="?/newTeam">
-		<input type="text" name="teamName" placeholder="Team name" required class="mb-2" />
-		<button class="submit button" type="submit">Add</button>
+		<input type="text" name="teamName" placeholder="Team name" required />
+		<Button type="submit">Add</Button>
 	</form>
 
 	<div class="team-list">
@@ -20,11 +21,11 @@
 
 				<form method="POST" action="?/newPlayer">
 					<input type="hidden" name="teamId" value={team.id} />
-					<div class="player-info mb-4 grid grid-cols-2 gap-4">
+					<div class="player-info">
 						<input type="number" name="playerNumber" placeholder="Number" required />
 						<input type="text" name="playerName" placeholder="Name" required />
 					</div>
-					<button class="submit button" type="submit">Add</button>
+					<Button type="submit">Add</Button>
 				</form>
 				<ul>
 					{#each team.players as player (player.number)}
@@ -36,7 +37,7 @@
 				<form method="POST" action="?/deleteTeam">
 					<input type="hidden" name="team" value={team.id} />
 					<button class="delete-team">
-						<DeleteTableOutline />
+						<Delete />
 					</button>
 				</form>
 			</div>
@@ -45,6 +46,14 @@
 </main>
 
 <style>
+	main {
+		gap: 0.5rem;
+	}
+
+	form input[name='teamName'] {
+		margin-bottom: 0.5rem;
+	}
+
 	.team-list {
 		width: 100%;
 		display: flex;
@@ -57,14 +66,12 @@
 		border-radius: 0.5rem;
 		padding: 0.5rem;
 	}
-	.submit {
-		padding: 0.125rem 0.5rem;
-		border-radius: 0.5rem;
-	}
 
 	.player-info {
 		display: grid;
 		grid-template-columns: 5rem 1fr;
+		margin-bottom: 1rem;
+		gap: 1rem;
 	}
 	.delete-team {
 		color: var(--error);

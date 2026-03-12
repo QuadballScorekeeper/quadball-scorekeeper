@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { NavBar } from '$lib/components/NavBar';
+	import { Button } from '$lib/components/ui/Button';
 
 	let { data } = $props();
 	let { tournaments } = data;
@@ -9,10 +10,10 @@
 
 <main>
 	{#each tournaments as t (t.id)}
-		<a class="button" href="/tournaments/{t.id}">
+		<Button href="/tournaments/{t.id}">
 			<p>{t.name}</p>
 			<p>{t.start.toLocaleDateString([])} - {t.end.toLocaleDateString([])}</p>
-		</a>
+		</Button>
 	{/each}
 </main>
 
@@ -20,6 +21,7 @@
 	a {
 		border-radius: 0.5rem;
 		padding: 0.25rem 0.5rem;
+		color: var(--text-on-reverse);
 	}
 	main {
 		gap: 0.5rem;

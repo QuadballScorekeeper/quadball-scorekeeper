@@ -25,8 +25,8 @@
 	<dialog {open}>
 		<form method="POST">
 			<input name="name" type="text" placeholder="Tournament name" bind:value={name} required />
-			<button class="submit" type="submit">Create</button>
-			<button class="cancel" onclick={closeModal}>Cancel</button>
+			<Button type="submit">Create</Button>
+			<Button variant="secondary" onclick={closeModal}>Cancel</Button>
 		</form>
 	</dialog>
 

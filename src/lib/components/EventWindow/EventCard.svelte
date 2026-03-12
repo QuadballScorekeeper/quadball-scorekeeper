@@ -29,7 +29,7 @@
 				-
 				{event.score.away}{event.score.catch == 'away' ? '*' : ''}
 			</div>
-			<div class="text-xs">
+			<div class="time-text">
 				{formatGameTime(event.gameTime)}
 			</div>
 		</div>
@@ -45,11 +45,11 @@
 			onclick={() => {
 				game.removeEvent(event.eventNum);
 			}}
-			classStr="destructive"
+			variant="destructive"
 		>
 			<Delete />
 		</Button>
-		<Button classStr="secondary">
+		<Button variant="secondary">
 			<Edit />
 		</Button>
 	</div>
@@ -58,10 +58,10 @@
 <style>
 	.event-container {
 		display: grid;
-		grid-template-columns: 1fr 0;
+		grid-template-columns: 100% 7rem;
 		transition: transform 200ms;
 		&.slide {
-			transform: translate(-6.5rem, 0);
+			transform: translate(-7rem, 0);
 		}
 	}
 	.button-group {
@@ -99,5 +99,9 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+	}
+
+	.time-text {
+		font-size: var(--text-xs);
 	}
 </style>

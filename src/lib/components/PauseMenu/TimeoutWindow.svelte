@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Game } from '$lib/client/Game.svelte';
-	import { ClockOutline } from 'flowbite-svelte-icons';
+	import { Time } from '$lib/icons';
 
 	let { game }: { game: Game } = $props();
 </script>
@@ -15,7 +15,7 @@
 {/snippet}
 <div class="timeout-window">
 	<div>
-		<ClockOutline class="h-14 w-14" />
+		<Time class="timeout-icon" />
 	</div>
 	<div class="button-group">
 		{@render timeoutButton(true)}
@@ -48,5 +48,10 @@
 			background-color: light-dark(var(--gray-100), var(--gray-600));
 			color: light-dark(var(--gray-400), var(--gray-500));
 		}
+	}
+
+	:global(.timeout-icon) {
+		height: 3.5rem;
+		width: 3.5rem;
 	}
 </style>

@@ -28,12 +28,7 @@ export class GameEvent {
 	}
 
 	static from(json: GameEvent) {
-		const event = Object.create(GameEvent.prototype, Object.getOwnPropertyDescriptors(json));
-		// Convert timestamp string back to Date object if needed
-		if (typeof event.timestamp === 'string') {
-			event.timestamp = new Date(event.timestamp);
-		}
-		return event;
+		return Object.create(GameEvent.prototype, Object.getOwnPropertyDescriptors(json));
 	}
 
 	public getIcon() {

@@ -19,12 +19,12 @@
 	<div class="card">
 		Top or bottom placement of score/time?
 		<div class="placement">
-			<div class="flex flex-col items-center">
+			<div class="placement-option">
 				<label for="placement-top">Top</label>
 				<Radio name="placement-top" value={false} bind:selected={swapPlacement} />
 			</div>
 
-			<div class="flex flex-col items-center">
+			<div class="placement-option">
 				<label for="placement-bot">Bottom</label>
 				<Radio name="placement-bot" value={true} bind:selected={swapPlacement} />
 			</div>
@@ -72,6 +72,12 @@
 		display: grid;
 		justify-items: center;
 		grid-template-columns: 1fr 1fr;
+	}
+
+	.placement-option {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.theme {

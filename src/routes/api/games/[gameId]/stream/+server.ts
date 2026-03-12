@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ params }) => {
 		headers: {
 			'Content-Type': 'text/event-stream',
 			'Cache-Control': 'no-store',
-			'Connection': 'keep-alive',
+			Connection: 'keep-alive',
 			'X-Accel-Buffering': 'no' // Disable proxy buffering (nginx)
 		}
 	});

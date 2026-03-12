@@ -1,20 +1,32 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	let {
-		classStr = 'primary',
+		variant = 'primary',
+		size = 'normal',
 		href = null,
 		onclick = null,
 		formaction = null,
 		type = null,
 		children
+	}: {
+		variant?: 'primary' | 'secondary' | 'destructive';
+		size?: 'normal' | 'large';
+		href?: string | null;
+		onclick?: (() => void) | null;
+		formaction?: string | null;
+		type?: 'button' | 'submit' | 'reset' | null;
+		children: Snippet;
 	} = $props();
+
+	const classes = $derived(`${variant} ${size}`);
 </script>
 
 {#if href}
-	<a {href} {onclick} class={classStr}>
+	<a {href} {onclick} class={classes}>
 		{@render children()}
 	</a>
 {:else}
-	<button {formaction} {onclick} class={classStr} {type}>
+	<button {formaction} {onclick} class={classes} {type}>
 		{@render children()}
 	</button>
 {/if}
@@ -41,5 +53,9 @@
 	.destructive {
 		background-color: var(--red-500);
 		color: var(--text-on-color);
+	}
+
+	.large {
+		width: 10rem;
 	}
 </style>

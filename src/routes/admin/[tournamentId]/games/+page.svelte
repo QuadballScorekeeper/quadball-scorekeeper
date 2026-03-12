@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { DeleteTableOutline } from 'flowbite-svelte-icons';
+	import { Delete } from '$lib/icons';
 	let { data } = $props();
 	let { tournament, games, teams } = data;
 	let startDate: Date = $state(tournament.start);
 	let start = $derived(startDate?.toISOString().split('Z')[0]);
 </script>
 
-<main class="gap-2">
+<main>
 	<strong>{tournament.name}</strong>
 
 	Add a new game
@@ -46,7 +46,7 @@
 				<form method="POST" action="?/deleteGame">
 					<input type="hidden" name="game" value={game.id} />
 					<button class="delete-game">
-						<DeleteTableOutline />
+						<Delete />
 					</button>
 				</form>
 			</li>
@@ -55,6 +55,10 @@
 </main>
 
 <style>
+	main {
+		gap: 0.5rem;
+	}
+
 	form {
 		display: grid;
 	}

@@ -24,7 +24,7 @@
 		<p>Add an option to remove the catch here?</p>
 	{:else}
 		<TabSelect tabs={teamOptions} bind:activeTab={team} />
-		<form class="flex w-full gap-4" onsubmit={addCatch}>
+		<form class="flag-form" onsubmit={addCatch}>
 			<input type="hidden" required bind:value={team} />
 			<input
 				class="number"
@@ -50,6 +50,12 @@
 		width: 100%;
 		gap: 1rem;
 		border-radius: 0.5rem;
+	}
+
+	.flag-form {
+		display: flex;
+		width: 100%;
+		gap: 1rem;
 	}
 
 	.number,

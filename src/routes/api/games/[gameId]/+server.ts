@@ -3,7 +3,7 @@ import { db } from '$lib/server/db/client';
 import { game } from '$lib/server/db/schema';
 import { json } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
-import type { Game } from '$lib/models/Game.svelte';
+import type { Game } from '$lib/client/Game.svelte';
 
 export const PUT: RequestHandler = async ({ params, request }) => {
 	let { start, status }: { start: Game['start']; status: Game['status'] } = await request.json();

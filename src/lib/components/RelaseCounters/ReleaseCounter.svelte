@@ -64,7 +64,7 @@
 			var(--success)
 		);
 		background-color: var(--_bg-clr);
-		color: var(--color-white);
+		color: var(--white);
 		gap: 0.5rem;
 		transition:
 			all 150ms ease allow-discrete,

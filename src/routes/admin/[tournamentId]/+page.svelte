@@ -17,7 +17,7 @@
 		<input name="end" id="end" type="date" bind:value={endString} />
 		<div class="button-group">
 			<Button type="submit">Save</Button>
-			<Button classStr="destructive" formaction="?/deleteTournament">Delete</Button>
+			<Button variant="destructive" formaction="?/deleteTournament">Delete</Button>
 		</div>
 	</form>
 </main>
