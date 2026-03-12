@@ -18,7 +18,7 @@
 
 	function addPenalty(event: Event) {
 		event.preventDefault();
-		game.addPenalty(team == teamOptions[0], player!, penalty!);
+		game.addPenalty(team == teamOptions[0], player!, penaltyString!);
 		penalty = undefined;
 		player = undefined;
 		team = undefined;

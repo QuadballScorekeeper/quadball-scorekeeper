@@ -8,8 +8,6 @@
 	let gameTime = $derived(formatGameTime(game.gameTime));
 	let timeoutTimeLeft = $state(0);
 	const minute = 60 * 1000;
-	// let flagRunnerBanner = $derived(game.gameTime >= 18 * minute && game.gameTime < 19 * minute);
-	// let seekerBanner = $derived(game.gameTime >= 19 * minute && game.gameTime < 20 * minute);
 
 	function onclick() {
 		if (!scorekeeper) return;
@@ -44,7 +42,15 @@
 			};
 		} else if (game.status == 'timeout') {
 			const freq = 100;
-			timeoutTimeLeft = minute;
+			// Find the most recent timeout event
+			const timeoutEvent = game.events.findLast((event) => event.eventType === 'timeout');
+			if (timeoutEvent) {
+				const elapsedTime = Date.now() - timeoutEvent.timestamp.getTime();
+				timeoutTimeLeft = Math.max(0, minute - elapsedTime);
+			} else {
+				// Fallback if no timeout event found
+				timeoutTimeLeft = minute;
+			}
 			const interval = setInterval(() => {
 				timeoutTimeLeft -= freq;
 				if (timeoutTimeLeft <= 0) {

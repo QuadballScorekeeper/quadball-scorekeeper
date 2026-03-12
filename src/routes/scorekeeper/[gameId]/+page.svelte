@@ -6,7 +6,8 @@
 	import { Timer } from '$lib/components/Timer';
 	import { NavBar } from '$lib/components/NavBar';
 	import GameSettings from './GameSettings.svelte';
-	import { Button } from '$lib/components/ui/Button';
+	import Menu from '$lib/icons/components/Menu.svelte';
+	import Close from '$lib/icons/components/Close.svelte';
 
 	let { data } = $props();
 	let game = new Game(data.gameData);
@@ -15,33 +16,44 @@
 	let swapPlacement = $state(false);
 	let markPlayers = $state(false);
 	let settingsOpen = $state(false);
-	// Wait for data to load to actually create stuff on the page!
-	// Now it jumps from 0 goals and stuff to correct info, ugly!
 </script>
 
 <NavBar>
-	<Button
+	<button
 		onclick={() => {
 			settingsOpen = !settingsOpen;
 		}}
 	>
-		Menu
-	</Button>
+		{#if settingsOpen}
+			<Close />
+		{:else}
+			<Menu />
+		{/if}
+	</button>
 </NavBar>
 <main>
-	<GameSettings open={settingsOpen} {swapPlacement} {markPlayers} />
-	<div class="top">
-		<div class="teams">
-			<ReleaseCounters {game} home={true} bind:expanded />
-			<ReleaseCounters {game} home={false} bind:expanded />
+	{#if game.loaded}
+		{#if swapPlacement}
+			<PauseMenu {game} />
+		{/if}
+		<GameSettings bind:open={settingsOpen} bind:swapPlacement bind:markPlayers />
+		<div class="top">
+			<div class="teams">
+				<ReleaseCounters {game} home={true} bind:expanded />
+				<ReleaseCounters {game} home={false} bind:expanded />
+			</div>
+			<Timer {game} scorekeeper={true} />
+			<div class="teams">
+				<TeamScore {game} home={true} scorekeeper={true} />
+				<TeamScore {game} home={false} scorekeeper={true} />
+			</div>
 		</div>
-		<Timer {game} scorekeeper={true} />
-		<div class="teams">
-			<TeamScore {game} home={true} scorekeeper={true} />
-			<TeamScore {game} home={false} scorekeeper={true} />
-		</div>
-	</div>
-	<PauseMenu {game} />
+		{#if !swapPlacement}
+			<PauseMenu {game} />
+		{/if}
+	{:else}
+		<div class="loading">Loading game...</div>
+	{/if}
 </main>
 
 <style>
@@ -63,5 +75,13 @@
 		grid-template-rows: 1fr auto auto;
 		padding: 0 1.5rem 3rem;
 		gap: 1rem;
+	}
+	.loading {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+		font-size: 1.5rem;
+		color: var(--text-default);
 	}
 </style>

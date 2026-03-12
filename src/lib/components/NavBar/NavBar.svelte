@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import ThemeToggle from './ThemeToggle.svelte';
 	import { Home } from '$lib/icons';
 
 	let { children }: { children?: Snippet } = $props();
@@ -10,7 +9,7 @@
 	<nav>
 		<a href="/"><Home /></a>
 		{@render children?.()}
-		<ThemeToggle />
+		<!-- <ThemeToggle /> -->
 	</nav>
 </header>
 

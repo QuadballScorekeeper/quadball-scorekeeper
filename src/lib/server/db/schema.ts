@@ -27,6 +27,7 @@ export const eventTypeEnum = pgEnum('event_type', [
 	'timeout',
 
 	'start',
+	'overtime',
 	'end'
 ]);
 

@@ -7,8 +7,7 @@
 	const minute = 60 * 1000;
 	type TimeEvent = { time: number; event: string };
 	const events: TimeEvent[] = [
-		{ time: 2.9 * minute, event: 'test-event' },
-		{ time: 18 * minute, event: 'flag-release' },
+		{ time: 19 * minute, event: 'flag-release' },
 		{ time: 20 * minute, event: 'seeker-release' },
 		{ time: 25 * minute, event: 'handicap-1' },
 		{ time: 30 * minute, event: 'handicap-2' },
@@ -18,7 +17,11 @@
 	let remainingTime = $derived(nextEvent!.time - game.gameTime);
 </script>
 
-{#if remainingTime < 2 * minute}
+{#if game.setScore}
+	<div class="banner text-xs">
+		Set score: {game.setScore}
+	</div>
+{:else if remainingTime < 2 * minute}
 	<div class="banner text-xs {remainingTime < 10 * 1000 ? 'highlight' : ''}">
 		<div class="message">{nextEvent!.event}</div>
 		{formatGameTime(remainingTime)}

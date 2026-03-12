@@ -38,7 +38,7 @@
 	button {
 		text-align: center;
 		text-justify: center;
-		background-color: var(--fg-dark);
+		background-color: var(--fg-ligt);
 		color: var(--bg-dark);
 		border-radius: 0.5rem;
 		width: 100%;

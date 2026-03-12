@@ -19,8 +19,15 @@
 	<div class="card">
 		Top or bottom placement of score/time?
 		<div class="placement">
-			<Radio name="placement" value={false} bind:selected={swapPlacement} />
-			<Radio name="placement" value={true} bind:selected={swapPlacement} />
+			<div class="flex flex-col items-center">
+				<label for="placement-top">Top</label>
+				<Radio name="placement-top" value={false} bind:selected={swapPlacement} />
+			</div>
+
+			<div class="flex flex-col items-center">
+				<label for="placement-bot">Bottom</label>
+				<Radio name="placement-bot" value={true} bind:selected={swapPlacement} />
+			</div>
 		</div>
 	</div>
 	<div class="card">
@@ -47,7 +54,7 @@
 		z-index: 1;
 		overflow-x: hidden;
 		transition: all 300ms ease-out;
-		height: 100lvh;
+		height: 100%;
 		gap: 1rem;
 		padding: 1rem 1.5rem;
 	}

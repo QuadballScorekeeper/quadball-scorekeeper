@@ -23,6 +23,7 @@ export class Game {
 	runnerCaught: boolean;
 	nextEvent: number;
 	setScore: number | undefined;
+	loaded: boolean;
 
 	constructor(gameData: GameData) {
 		this.id = gameData.id;
@@ -31,7 +32,7 @@ export class Game {
 		this.homeTeam = new Team(gameData.homeTeam);
 		this.awayTeam = new Team(gameData.awayTeam);
 		// set colours manually for now!
-		this.homeTeam.color = '#0a0';
+		this.homeTeam.color = '#a00';
 		this.awayTeam.color = '#00b';
 
 		this.events = $state([]);
@@ -41,13 +42,19 @@ export class Game {
 			away: this.awayTeam.score,
 			catch: (this.homeTeam.catch && 'home') || (this.awayTeam.catch && 'away')
 		});
+		this.setScore = $state(undefined);
 		this.runnerCaught = $derived(this.homeTeam.catch || this.awayTeam.catch);
 		this.nextEvent = 0;
+		this.loaded = $state(false);
 
 		this.replayEvents(gameData.events);
+		// Use queueMicrotask to ensure loaded is set after reactive state updates
+		queueMicrotask(() => {
+			this.loaded = true;
+		});
 	}
 
-	private replayEvents(events: SelectGameEvent[]) {
+	public replayEvents(events: SelectGameEvent[]) {
 		const eventTeam = (teamId: number) => {
 			if (teamId == this.homeTeam.id) return this.homeTeam;
 			if (teamId == this.awayTeam.id) return this.awayTeam;
@@ -152,14 +159,37 @@ export class Game {
 			console.error('Trying to delete non-existent event??');
 			return;
 		}
+
 		this.events.splice(index, 1);
-		//recalculate game!
 
 		await fetch(`/api/events`, {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ game: this.id, eventNum })
 		});
+
+		// Recalculate game state by replaying all remaining events
+		this.recalculateGameState(this.events);
+	}
+
+	private recalculateGameState(events: GameEvent[]) {
+		// Reset game state
+		this.status = 'scheduled';
+		this.gameTime = 0;
+		this.homeTeam.goals = 0;
+		this.awayTeam.goals = 0;
+		this.homeTeam.catch = false;
+		this.awayTeam.catch = false;
+		this.homeTeam.penalties = [];
+		this.awayTeam.penalties = [];
+		this.homeTeam.timeoutAvailable = true;
+		this.awayTeam.timeoutAvailable = true;
+		this.events = [];
+		this.nextEvent = 0;
+		this.setScore = undefined;
+
+		// Replay all events
+		this.replayEvents(events);
 	}
 
 	public async startGame() {
