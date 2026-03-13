@@ -5,7 +5,7 @@
 	import { Button } from '$lib/components/ui/Button';
 	import { Delete, Edit } from '$lib/icons';
 
-	let { game, event }: { game: Game; event: GameEvent } = $props();
+	let { game, event, scorekeeper = false }: { game: Game; event: GameEvent; scorekeeper?: boolean } = $props();
 	const home = game.homeTeam.id == event.team;
 
 	let slide = $state(false);
@@ -40,19 +40,21 @@
 			{/if}
 		</div>
 	</button>
-	<div class="button-group">
-		<Button
-			onclick={() => {
-				game.removeEvent(event.eventNum);
-			}}
-			variant="destructive"
-		>
-			<Delete />
-		</Button>
-		<Button variant="secondary">
-			<Edit />
-		</Button>
-	</div>
+	{#if scorekeeper}
+		<div class="button-group">
+			<Button
+				onclick={() => {
+					game.removeEvent(event.eventNum);
+				}}
+				variant="destructive"
+			>
+				<Delete />
+			</Button>
+			<Button variant="secondary">
+				<Edit />
+			</Button>
+		</div>
+	{/if}
 </div>
 
 <style>

@@ -2,7 +2,7 @@
 	import type { Game } from '$lib/client/Game.svelte';
 	import EventCard from './EventCard.svelte';
 
-	let { game }: { game: Game } = $props();
+	let { game, scorekeeper = false }: { game: Game; scorekeeper?: boolean } = $props();
 	let events = $derived(
 		game.events
 			.filter((event) => !['pause', 'resume', 'end', 'start'].includes(event.eventType))
@@ -12,7 +12,7 @@
 
 <div class="event-window">
 	{#each events as event (event.eventNum)}
-		<EventCard {game} {event} />
+		<EventCard {game} {event} {scorekeeper} />
 	{/each}
 </div>
 

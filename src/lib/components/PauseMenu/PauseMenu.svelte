@@ -14,7 +14,7 @@
 <div class="pause-menu">
 	<TabSelect {tabs} bind:activeTab />
 	{#if activeTab == 'Events'}
-		<EventWindow {game} />
+		<EventWindow {game} scorekeeper={true} />
 	{:else if activeTab == 'Penalty'}
 		<PenaltyWindow {game} />
 	{:else if activeTab == 'Timeout'}
