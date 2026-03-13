@@ -77,6 +77,8 @@
 			{#if game.status == 'finished'}
 				<Success />
 				Full-time
+			{:else if game.status == 'live'}
+				{scorekeeper ?? 'Tap to pause'}
 			{:else if game.status == 'scheduled'}
 				{#if scorekeeper}
 					<Play />
@@ -86,7 +88,7 @@
 				{/if}
 			{:else if game.status == 'paused'}
 				<Pause />
-				Paused
+				{scorekeeper ? 'Tap to start' : 'Paused'}
 			{:else if game.status == 'timeout'}
 				<Pause />
 				Timeout
