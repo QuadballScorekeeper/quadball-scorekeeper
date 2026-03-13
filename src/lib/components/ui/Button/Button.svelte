@@ -7,6 +7,7 @@
 		onclick = null,
 		formaction = null,
 		type = null,
+		disabled = false,
 		children
 	}: {
 		variant?: 'primary' | 'secondary' | 'destructive';
@@ -15,6 +16,7 @@
 		onclick?: (() => void) | null;
 		formaction?: string | null;
 		type?: 'button' | 'submit' | 'reset' | null;
+		disabled?: boolean;
 		children: Snippet;
 	} = $props();
 
@@ -26,7 +28,7 @@
 		{@render children()}
 	</a>
 {:else}
-	<button {formaction} {onclick} class={classes} {type}>
+	<button {formaction} {onclick} class={classes} {type} {disabled}>
 		{@render children()}
 	</button>
 {/if}
@@ -40,6 +42,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 
 	.primary {

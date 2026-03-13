@@ -8,7 +8,8 @@
 		required = false,
 		placeholder = null,
 		value = $bindable(),
-		options = null
+		options = null,
+		name = null
 	} = $props();
 
 	if (type == 'number') {
@@ -19,7 +20,7 @@
 
 <div class="icon-input">
 	<User />
-	<input type="text" bind:value {required} {placeholder} {pattern} {inputmode} />
+	<input type="text" bind:value {required} {placeholder} {pattern} {inputmode} {name} />
 	{#if options}
 		<Dropdown />
 	{/if}
