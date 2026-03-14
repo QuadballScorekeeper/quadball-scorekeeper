@@ -1,0 +1,17 @@
+width-height
+Time 1.8x0.86
+Gap 0.2x0.86
+ScoreAndTeams 5x0.86
+
+ZNT
+#F2AA00
+NTN
+#098040
+OUQ
+#06246A
+OSI
+#C90000
+BSI
+#000000
+FIN
+#0E2841
