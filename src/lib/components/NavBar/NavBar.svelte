@@ -1,15 +1,28 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { enhance } from '$app/forms';
 	import { Home } from '$lib/icons';
 
-	let { children }: { children?: Snippet } = $props();
+	let { children, user }: { children?: Snippet; user?: App.Locals['user'] } = $props();
 </script>
 
 <header>
 	<nav>
 		<a href="/"><Home /></a>
 		{@render children?.()}
-		<!-- <ThemeToggle /> -->
+
+		<div class="auth-section">
+			{#if user}
+				<form method="post" action="/logout" use:enhance>
+					<button type="submit" class="logout-btn">
+						<span>{user.email}</span>
+						<span class="logout-text">Logout</span>
+					</button>
+				</form>
+			{:else}
+				<a href="/login">Login</a>
+			{/if}
+		</div>
 	</nav>
 </header>
 
@@ -48,5 +61,23 @@
 		&:active {
 			background-color: light-dark(var(--gray-200), var(--gray-600));
 		}
+	}
+
+	.auth-section {
+		margin-left: auto;
+	}
+
+	.auth-section form {
+		display: contents;
+	}
+
+	.logout-btn {
+		display: flex;
+		gap: 0.5rem;
+		font-size: var(--text-s);
+	}
+
+	.logout-text {
+		color: var(--text-subtle);
 	}
 </style>

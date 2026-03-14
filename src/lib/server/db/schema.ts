@@ -1,4 +1,5 @@
 import { relations, type InferInsertModel, type InferSelectModel } from 'drizzle-orm';
+
 import {
 	pgTable,
 	serial,
@@ -11,21 +12,25 @@ import {
 	primaryKey
 } from 'drizzle-orm/pg-core';
 
-export const gameStatusEnum = pgEnum('game_status', ['scheduled', 'live', 'finished', 'cancelled']);
+export const gameStatusEnum = pgEnum('game_status', [
+	'scheduled',
+	'live',
+	'finished',
+	'cancelled',
+	'timeout',
+	'paused'
+]);
 
 export const eventTypeEnum = pgEnum('event_type', [
 	'goal',
 	'catch',
-
 	'blue_card',
 	'yellow_card',
 	'red_card',
 	'ejection',
-
 	'resume',
 	'pause',
 	'timeout',
-
 	'start',
 	'overtime',
 	'end'
@@ -42,7 +47,6 @@ export const tournamentRelations = relations(tournament, ({ many }) => ({
 	teams: many(team),
 	games: many(game)
 }));
-
 export type SelectTournament = InferSelectModel<typeof tournament>;
 
 export const team = pgTable(
@@ -97,7 +101,8 @@ export const game = pgTable(
 			.references(() => team.id, { onDelete: 'cascade' }),
 		awayTeamId: integer()
 			.notNull()
-			.references(() => team.id, { onDelete: 'cascade' })
+			.references(() => team.id, { onDelete: 'cascade' }),
+		code: text().notNull().unique()
 	},
 	(table) => [index().on(table.tournament)]
 );
@@ -135,11 +140,4 @@ export const gameEventRelations = relations(gameEvent, ({ one }) => ({
 export type SelectGameEvent = InferSelectModel<typeof gameEvent>;
 export type InsertGameEvent = InferInsertModel<typeof gameEvent>;
 
-// Set up proper users with hashed pw
-export const user = pgTable('app_user', {
-	id: serial().primaryKey(),
-	username: text().notNull().unique(),
-	password: text().notNull(),
-	createdAt: timestamp().defaultNow().notNull(),
-	updatedAt: timestamp().defaultNow().notNull()
-});
+export * from './auth.schema';

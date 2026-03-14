@@ -1,13 +1,20 @@
 <script lang="ts">
 	import { NavBar } from '$lib/components/NavBar';
 	import { Button } from '$lib/components/ui/Button';
+
+	let { data } = $props();
+	let user = $derived(data.user);
 </script>
 
-<NavBar />
+<NavBar {user} />
 
 <main>
-	<Button href="/scorekeeper" size="large">Start a game</Button>
 	<Button href="/tournaments" size="large">View tournaments</Button>
+	<Button href="/scorekeeper" size="large">Start a game</Button>
+
+	{#if user?.role === 'admin'}
+		<Button href="/admin" size="large">Admin panel</Button>
+	{/if}
 </main>
 
 <style>

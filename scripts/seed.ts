@@ -1,8 +1,9 @@
 // src/scripts/seed.ts
+//
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { faker } from '@faker-js/faker';
-import bcrypt from 'bcrypt';
+import * as schema from '../src/lib/server/db/schema';
 import {
 	tournament,
 	team,
@@ -11,8 +12,11 @@ import {
 	gameEvent,
 	user,
 	eventTypeEnum
-} from '../lib/server/db/schema';
-import { sql } from 'drizzle-orm';
+} from '../src/lib/server/db/schema';
+import { generateUniqueGameCode } from '../src/lib/server/gameCode';
+import { sql, eq } from 'drizzle-orm';
+import { betterAuth } from 'better-auth/minimal';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 
 // ------------------------------------------------------------------
 // 1️⃣ Set up DB connection
@@ -20,12 +24,43 @@ const DATABASE_URL = 'postgres://testuser:testpassword@localhost:5432/testdb';
 const pool = new Pool({
 	connectionString: DATABASE_URL // e.g. postgres://user:pw@localhost:5432/db
 });
-const db = drizzle(pool);
+const db = drizzle(pool, { schema });
+
+// Create auth instance for seeding
+const auth = betterAuth({
+	baseURL: 'http://localhost:5173',
+	secret: 'seed-secret-key-for-testing-only',
+	database: drizzleAdapter(db, { provider: 'pg', schema }),
+	emailAndPassword: {
+		enabled: true,
+		requireEmailVerification: false
+	},
+	user: {
+		additionalFields: {
+			role: {
+				type: 'string',
+				required: true,
+				defaultValue: 'team_manager',
+				input: false
+			}
+		}
+	}
+});
 
 // ------------------------------------------------------------------
 // 1️⃣.5 Reset the DB
 async function resetDb() {
-	const tables = ['game_event', 'game', 'player', 'team', 'tournament', 'app_user'];
+	const tables = [
+		'game_event',
+		'game',
+		'player',
+		'team',
+		'tournament',
+		'session',
+		'account',
+		'verification',
+		'user'
+	];
 	const stmt = sql.raw(`
       TRUNCATE TABLE ${tables.map((t) => `"${t}"`).join(',')}
       RESTART IDENTITY CASCADE;
@@ -45,15 +80,34 @@ const EVENTS_PER_GAME = 30;
 // ------------------------------------------------------------------
 // 3️⃣ Seed function
 async function main() {
-	resetDb();
-	// ---- Users (admin + a few normal users)
-	const plainPw = 'secret123';
-	const hash = await bcrypt.hash(plainPw, 10);
-	await db.insert(user).values([
-		{ username: 'admin', password: hash },
-		{ username: faker.internet.username(), password: hash },
-		{ username: faker.internet.username(), password: hash }
-	]);
+	await resetDb();
+	// ---- Users (admin + team manager)
+	// Use better-auth API to create users with properly hashed passwords
+	await auth.api.signUpEmail({
+		body: {
+			email: 'admin@example.com',
+			password: 'secret123',
+			name: 'Admin User'
+		}
+	});
+
+	// Update role to admin (custom field not handled by signUpEmail)
+	await db.update(user).set({ role: 'admin' }).where(eq(user.email, 'admin@example.com'));
+
+	await auth.api.signUpEmail({
+		body: {
+			email: 'manager@example.com',
+			password: 'secret123',
+			name: 'Team Manager'
+		}
+	});
+
+	// Update role to team_manager (this is actually the default, but being explicit)
+	await db.update(user).set({ role: 'team_manager' }).where(eq(user.email, 'manager@example.com'));
+
+	console.log('✅ Created users:');
+	console.log('   - admin@example.com (role: admin, password: secret123)');
+	console.log('   - manager@example.com (role: team_manager, password: secret123)');
 
 	// ---- Tournaments
 	const tournamentRows: (typeof tournament.$inferInsert)[] = [];
@@ -107,16 +161,29 @@ async function main() {
 			const teamsInTournament = insertedTeams.filter((team) => team.tournament == t.id);
 			const teams = faker.helpers.arrayElements(teamsInTournament, 2);
 
+			// Generate unique game code
+			const code = await generateUniqueGameCode(db);
+
 			gameRows.push({
 				start: faker.date.between({ from: t.start, to: t.end }),
 				tournament: t.id,
 				status: 'finished' as const,
 				awayTeamId: teams[0].id,
-				homeTeamId: teams[1].id
+				homeTeamId: teams[1].id,
+				code
 			});
 		}
 	}
 	const insertedGames = await db.insert(game).values(gameRows).returning();
+
+	// Log some game codes for testing
+	console.log('\n📋 Sample game codes:');
+	insertedGames.slice(0, 3).forEach((g) => {
+		const homeTeam = insertedTeams.find((t) => t.id === g.homeTeamId);
+		const awayTeam = insertedTeams.find((t) => t.id === g.awayTeamId);
+		console.log(`  ${g.code} - ${homeTeam?.name} vs ${awayTeam?.name}`);
+	});
+	console.log('');
 
 	// ---- GameEvents (populate each game with a few random events)
 	const eventRows: (typeof gameEvent.$inferInsert)[] = [];
