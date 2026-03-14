@@ -11,6 +11,7 @@ import {
 	unique,
 	primaryKey
 } from 'drizzle-orm/pg-core';
+const DEFAULT_TEAM_COLOR = '#808080';
 
 export const gameStatusEnum = pgEnum('game_status', [
 	'scheduled',
@@ -54,6 +55,7 @@ export const team = pgTable(
 	{
 		id: serial().primaryKey(),
 		name: text().notNull(),
+		color: text().notNull().default(DEFAULT_TEAM_COLOR),
 		tournament: integer()
 			.notNull()
 			.references(() => tournament.id, { onDelete: 'cascade' })

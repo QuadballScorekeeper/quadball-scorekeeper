@@ -4,6 +4,8 @@ import { error } from '@sveltejs/kit';
 import { and, desc, eq } from 'drizzle-orm';
 import type { Actions } from './$types';
 
+const isValidHexColor = (color: string): boolean => /^#[0-9A-Fa-f]{6}$/.test(color);
+
 export const load = async ({ params }) => {
 	const tId = Number(params.tournamentId);
 
@@ -26,12 +28,45 @@ export const load = async ({ params }) => {
 export const actions = {
 	newTeam: async ({ params, request }) => {
 		const data = await request.formData();
-		const teamName: string = data.get('teamName')!.toString();
+		const teamName = data.get('teamName');
+		const teamColor = data.get('teamColor');
+
+		if (!teamName || !teamColor) {
+			throw error(400, 'Missing required fields');
+		}
+
+		const colorStr = teamColor.toString();
+		if (!isValidHexColor(colorStr)) {
+			throw error(400, 'Invalid color format');
+		}
+
 		const tId = Number(params.tournamentId);
 		await db.insert(team).values({
-			name: teamName,
+			name: teamName.toString(),
+			color: colorStr,
 			tournament: tId
 		});
+	},
+	updateTeamColor: async ({ params, request }) => {
+		const data = await request.formData();
+		const teamIdData = data.get('teamId');
+		const teamColor = data.get('teamColor');
+
+		if (!teamIdData || !teamColor) {
+			throw error(400, 'Missing required fields');
+		}
+
+		const colorStr = teamColor.toString();
+		if (!isValidHexColor(colorStr)) {
+			throw error(400, 'Invalid color format');
+		}
+
+		const teamId = Number(teamIdData);
+		const tId = Number(params.tournamentId);
+		await db
+			.update(team)
+			.set({ color: colorStr })
+			.where(and(eq(team.id, teamId), eq(team.tournament, tId)));
 	},
 	deleteTeam: async ({ params, request }) => {
 		const data = await request.formData();

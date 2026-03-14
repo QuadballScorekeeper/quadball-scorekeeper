@@ -25,7 +25,7 @@ export class Team {
 		this.score = $derived(this.goals + 3 * Number(this.catch));
 		this.timeoutAvailable = $state(true);
 		this.players = teamData.players.toSorted((a, b) => a.number - b.number);
-		this.color = '#FFFFFF';
+		this.color = teamData.color;
 		this.penalties = $state([]);
 		this.activePenalties = $derived(
 			this.penalties.filter((p) => p.active).toSorted((a, b) => a.timeLeft - b.timeLeft)

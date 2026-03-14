@@ -31,9 +31,6 @@ export class Game {
 		this.status = $state(gameData.status);
 		this.homeTeam = new Team(gameData.homeTeam);
 		this.awayTeam = new Team(gameData.awayTeam);
-		// set colours manually for now!
-		this.homeTeam.color = '#a00';
-		this.awayTeam.color = '#00b';
 
 		this.events = $state([]);
 		this.gameTime = $state(0);
