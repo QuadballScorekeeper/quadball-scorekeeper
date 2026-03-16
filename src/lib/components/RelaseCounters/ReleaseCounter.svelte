@@ -12,7 +12,8 @@
 	$effect(() => {
 		if (game.status == 'live') {
 			const interval = setInterval(() => {
-				penalty.removeTime(freq);
+				// Update penalty time based on current game time
+				penalty.timeLeft = penalty.calculateTimeLeft(game.gameTime);
 			}, freq);
 			return () => {
 				clearInterval(interval);

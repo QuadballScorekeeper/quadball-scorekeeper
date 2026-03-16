@@ -35,26 +35,31 @@
 		if (game.status == 'live') {
 			const freq = 100;
 			const interval = setInterval(() => {
-				game.gameTime += freq;
+				// Calculate elapsed time since last event and update game time
+				const elapsedSinceLastEvent = Date.now() - game.getLastEventTime();
+				game.gameTime = game.getLastEventGameTime() + elapsedSinceLastEvent;
 			}, freq);
 			return () => {
 				clearInterval(interval);
 			};
 		} else if (game.status == 'timeout') {
 			const freq = 100;
-			// Find the most recent timeout event
-			const timeoutEvent = game.events.findLast((event) => event.eventType === 'timeout');
-			if (timeoutEvent) {
-				const elapsedTime = Date.now() - timeoutEvent.timestamp.getTime();
-				timeoutTimeLeft = Math.max(0, minute - elapsedTime);
-			} else {
-				// Fallback if no timeout event found
-				timeoutTimeLeft = minute;
-			}
 			const interval = setInterval(() => {
-				timeoutTimeLeft -= freq;
-				if (timeoutTimeLeft <= 0) {
-					game.status = 'paused';
+				// Calculate elapsed game time since last event and update game time
+				const elapsedSinceLastEvent = Date.now() - game.getLastEventTime();
+				game.gameTime = game.getLastEventGameTime() + elapsedSinceLastEvent;
+
+				// Find the most recent timeout event and calculate remaining time based on game time
+				const timeoutEvent = game.events.findLast((event) => event.eventType === 'timeout');
+				if (timeoutEvent) {
+					const elapsedGameTime = game.gameTime - timeoutEvent.gameTime;
+					timeoutTimeLeft = Math.max(0, minute - elapsedGameTime);
+					if (timeoutTimeLeft <= 0) {
+						game.status = 'paused';
+					}
+				} else {
+					// Fallback if no timeout event found
+					timeoutTimeLeft = minute;
 				}
 			}, freq);
 			return () => {

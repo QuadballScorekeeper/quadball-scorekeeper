@@ -32,8 +32,8 @@ export class Team {
 		);
 	}
 
-	public addPenalty(type: PenaltyType, player: number) {
-		this.penalties.push(new Penalty(type, this.id, player));
+	public addPenalty(type: PenaltyType, player: number, gameTime: number) {
+		this.penalties.push(new Penalty(type, this.id, player, gameTime));
 	}
 
 	public removePenaltyTimes(time: number) {

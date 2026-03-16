@@ -95,7 +95,7 @@ export class Game {
 				case 'yellow_card':
 				case 'red_card':
 				case 'ejection':
-					eventTeam(event.team!).addPenalty(event.eventType, event.player!);
+					eventTeam(event.team!).addPenalty(event.eventType, event.player!, this.gameTime);
 					break;
 				case 'start':
 					this.status = 'live';
@@ -257,7 +257,7 @@ export class Game {
 
 	public addPenalty(home: boolean, player: number, penaltyType: PenaltyType) {
 		const team = home ? this.homeTeam : this.awayTeam;
-		team.addPenalty(penaltyType, player);
+		team.addPenalty(penaltyType, player, this.gameTime);
 		this.addEvent(penaltyType, player, team.id);
 	}
 
@@ -270,5 +270,15 @@ export class Game {
 			(event) => event.eventType == 'goal' && event.team == team.id
 		);
 		this.removeEvent(lastGoal!.eventNum);
+	}
+
+	public getLastEventTime(): number {
+		const lastEvent = this.events[this.events.length - 1];
+		return lastEvent ? lastEvent.timestamp.getTime() : this.start.getTime();
+	}
+
+	public getLastEventGameTime(): number {
+		const lastEvent = this.events[this.events.length - 1];
+		return lastEvent ? lastEvent.gameTime : 0;
 	}
 }
