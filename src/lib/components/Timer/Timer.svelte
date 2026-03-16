@@ -83,7 +83,10 @@
 				<Success />
 				Full-time
 			{:else if game.status == 'live'}
-				{scorekeeper ?? 'Tap to pause'}
+				{#if scorekeeper}
+					<Pause />
+					Tap to pause
+				{/if}
 			{:else if game.status == 'scheduled'}
 				{#if scorekeeper}
 					<Play />
@@ -92,8 +95,13 @@
 					Scheduled to start:
 				{/if}
 			{:else if game.status == 'paused'}
-				<Pause />
-				{scorekeeper ? 'Tap to start' : 'Paused'}
+				{#if scorekeeper}
+					<Play />
+					Tap to start
+				{:else}
+					<Pause />
+					Paused
+				{/if}
 			{:else if game.status == 'timeout'}
 				<Pause />
 				Timeout
