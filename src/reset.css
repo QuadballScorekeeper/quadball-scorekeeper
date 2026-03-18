@@ -57,6 +57,12 @@ a {
 	text-decoration: none;
 }
 
+ul,
+ol {
+	list-style: none;
+	padding: 0;
+}
+
 html {
 	color-scheme: light dark;
 }
