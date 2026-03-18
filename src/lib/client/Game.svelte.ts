@@ -121,6 +121,65 @@ export class Game {
 		}
 	}
 
+	public updateFromEvent(event: GameEvent) {
+		// Helper functions for team lookup
+		const eventTeam = (teamId: number) => {
+			if (teamId == this.homeTeam.id) return this.homeTeam;
+			if (teamId == this.awayTeam.id) return this.awayTeam;
+			throw Error('Invalid team ID: ' + teamId);
+		};
+		const eventOtherTeam = (teamId: number) => {
+			if (teamId == this.awayTeam.id) return this.homeTeam;
+			if (teamId == this.homeTeam.id) return this.awayTeam;
+			throw Error('Invalid team ID: ' + teamId);
+		};
+
+		// Update game time from event (already calculated by sender)
+		this.gameTime = event.gameTime;
+
+		// Add event to array
+		this.events.push(event);
+
+		// Process event to update state
+		switch (event.eventType) {
+			case 'timeout':
+				eventTeam(event.team!).timeoutAvailable = false;
+				this.status = 'timeout';
+				break;
+			case 'pause':
+				this.status = 'paused';
+				break;
+			case 'resume':
+				this.status = 'live';
+				break;
+			case 'goal':
+				eventTeam(event.team!).goals++;
+				eventOtherTeam(event.team!).releaseFirstPenalty();
+				break;
+			case 'catch':
+				eventTeam(event.team!).catch = true;
+				eventOtherTeam(event.team!).releaseFirstPenalty();
+				break;
+			case 'blue_card':
+			case 'yellow_card':
+			case 'red_card':
+			case 'ejection':
+				eventTeam(event.team!).addPenalty(event.eventType, event.player!, this.gameTime);
+				break;
+			case 'start':
+				this.status = 'live';
+				break;
+			case 'end':
+				this.status = 'finished';
+				break;
+			default:
+				break;
+		}
+
+		// Update next event number
+		this.nextEvent = event.eventNum + 1;
+	}
+
 	public async addEvent(
 		eventType: SelectGameEvent['eventType'],
 		player?: SelectGameEvent['player'],
@@ -274,7 +333,7 @@ export class Game {
 
 	public getLastEventTime(): number {
 		const lastEvent = this.events[this.events.length - 1];
-		return lastEvent ? lastEvent.timestamp.getTime() : this.start.getTime();
+		return lastEvent ? new Date(lastEvent.timestamp).getTime() : this.start.getTime();
 	}
 
 	public getLastEventGameTime(): number {

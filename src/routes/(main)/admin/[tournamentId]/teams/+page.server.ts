@@ -5,6 +5,7 @@ import { and, desc, eq } from 'drizzle-orm';
 import type { Actions } from './$types';
 
 const isValidHexColor = (color: string): boolean => /^#[0-9A-Fa-f]{6}$/.test(color);
+const isValidAcronym = (acronym: string): boolean => /^[A-Z]{3,4}$/.test(acronym);
 
 export const load = async ({ params }) => {
 	const tId = Number(params.tournamentId);
@@ -30,8 +31,9 @@ export const actions = {
 		const data = await request.formData();
 		const teamName = data.get('teamName');
 		const teamColor = data.get('teamColor');
+		const teamAcronym = data.get('teamAcronym');
 
-		if (!teamName || !teamColor) {
+		if (!teamName || !teamColor || !teamAcronym) {
 			throw error(400, 'Missing required fields');
 		}
 
@@ -40,9 +42,15 @@ export const actions = {
 			throw error(400, 'Invalid color format');
 		}
 
+		const acronymStr = teamAcronym.toString().toUpperCase();
+		if (!isValidAcronym(acronymStr)) {
+			throw error(400, 'Acronym must be 3-4 uppercase letters');
+		}
+
 		const tId = Number(params.tournamentId);
 		await db.insert(team).values({
 			name: teamName.toString(),
+			acronym: acronymStr,
 			color: colorStr,
 			tournament: tId
 		});
@@ -85,5 +93,26 @@ export const actions = {
 			number: playerNumber,
 			team: teamId
 		});
+	},
+	updateTeamAcronym: async ({ params, request }) => {
+		const data = await request.formData();
+		const teamIdData = data.get('teamId');
+		const teamAcronym = data.get('teamAcronym');
+
+		if (!teamIdData || !teamAcronym) {
+			throw error(400, 'Missing required fields');
+		}
+
+		const acronymStr = teamAcronym.toString().toUpperCase();
+		if (!isValidAcronym(acronymStr)) {
+			throw error(400, 'Acronym must be 3-4 uppercase letters');
+		}
+
+		const teamId = Number(teamIdData);
+		const tId = Number(params.tournamentId);
+		await db
+			.update(team)
+			.set({ acronym: acronymStr })
+			.where(and(eq(team.id, teamId), eq(team.tournament, tId)));
 	}
 } satisfies Actions;

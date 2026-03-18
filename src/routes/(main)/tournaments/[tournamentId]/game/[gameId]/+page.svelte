@@ -15,37 +15,17 @@
 
 		eventSource.onmessage = (message) => {
 			try {
-				const event: GameEvent = GameEvent.from(JSON.parse(message.data));
-				game.gameTime = event.gameTime;
-				game.events.push(event);
-				switch (event.eventType) {
-					case 'goal':
-						if (event.team == game.homeTeam.id) game.homeTeam.goals++;
-						if (event.team == game.awayTeam.id) game.awayTeam.goals++;
-						break;
-					case 'timeout':
-						game.status = 'timeout';
-						break;
-					case 'pause':
-						game.status = 'paused';
-						break;
-					case 'resume':
-						game.status = 'live';
-						break;
-					default:
-						break;
-				}
+				const event = GameEvent.from(JSON.parse(message.data));
+				game.updateFromEvent(event);
 			} catch (err) {
 				console.error('Error processing game event:', err);
 			}
 		};
 
 		eventSource.onerror = (error) => {
-			// EventSource will automatically reconnect
 			console.error('EventSource connection error, will auto-reconnect:', error);
 		};
 
-		// Cleanup on component unmount
 		return () => {
 			eventSource.close();
 		};

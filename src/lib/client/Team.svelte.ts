@@ -1,30 +1,34 @@
 import type { SelectPlayer, SelectTeam } from '$lib/server/db/schema';
 import { Penalty, type PenaltyType } from './Penalty.svelte';
 
-export type TeamData = SelectTeam & {
-	players: SelectPlayer[];
-};
+export type TeamData =
+	| (SelectTeam & {
+			players: SelectPlayer[];
+	  })
+	| SelectTeam;
 
 export class Team {
 	id: number;
 	name: string;
+	acronym: string;
 	goals: number;
 	catch: boolean;
 	score: number;
 	color: string;
 	timeoutAvailable: boolean;
-	players: SelectPlayer[];
+	players?: SelectPlayer[];
 	penalties: Penalty[];
 	activePenalties: Penalty[];
 
 	constructor(teamData: TeamData) {
 		this.id = teamData.id;
 		this.name = teamData.name;
+		this.acronym = teamData.acronym;
 		this.goals = $state(0);
 		this.catch = $state(false);
 		this.score = $derived(this.goals + 3 * Number(this.catch));
 		this.timeoutAvailable = $state(true);
-		this.players = teamData.players.toSorted((a, b) => a.number - b.number);
+		this.players = teamData.players?.toSorted((a, b) => a.number - b.number);
 		this.color = teamData.color;
 		this.penalties = $state([]);
 		this.activePenalties = $derived(

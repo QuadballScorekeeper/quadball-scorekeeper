@@ -17,6 +17,15 @@
 	<h2>Add a new team</h2>
 	<form method="POST" action="?/newTeam">
 		<input type="text" name="teamName" placeholder="Team name" required />
+		<input
+			type="text"
+			name="teamAcronym"
+			placeholder="Acronym (3-4 letters)"
+			required
+			pattern="[A-Za-z]&#123;3,4&#125;"
+			maxlength="4"
+			style="text-transform: uppercase"
+		/>
 		<div class="color-input">
 			<label for="teamColor">Team Color</label>
 			<input type="color" name="teamColor" id="teamColor" value={DEFAULT_TEAM_COLOR} required />
@@ -25,19 +34,32 @@
 	</form>
 
 	<div class="team-list">
-		{#each teamsWithPlayers as team (team.id)}
+		{#each teamsWithPlayers.toSorted((a, b) => a.name.localeCompare(b.name)) as team (team.id)}
 			<div class="team">
 				<div class="team-header">
-					<strong>{team.name}</strong>
+					<strong>{team.name} ({team.acronym})</strong>
 					<form method="POST" action="?/updateTeamColor" class="color-edit-form">
 						<input type="hidden" name="teamId" value={team.id} />
 						<input
 							type="color"
 							name="teamColor"
 							value={team.color}
-							on:change={(e) => handleColorChange(e.currentTarget.form!)}
+							onchange={(e) => handleColorChange(e.currentTarget.form!)}
 							title="Change team color"
 						/>
+					</form>
+					<form method="POST" action="?/updateTeamAcronym" class="acronym-edit-form">
+						<input type="hidden" name="teamId" value={team.id} />
+						<input
+							type="text"
+							name="teamAcronym"
+							value={team.acronym}
+							pattern="[A-Za-z]&#123;3,4&#125;"
+							maxlength="4"
+							style="text-transform: uppercase"
+							required
+						/>
+						<Button type="submit" size="small">Update</Button>
 					</form>
 				</div>
 
@@ -128,6 +150,18 @@
 	.color-edit-form {
 		display: flex;
 		align-items: center;
+	}
+
+	.acronym-edit-form {
+		display: flex;
+		gap: 0.5rem;
+		align-items: center;
+	}
+
+	.acronym-edit-form input[type='text'] {
+		width: 5rem;
+		padding: 0.25rem 0.5rem;
+		font-size: var(--text-s);
 	}
 
 	.player-info {

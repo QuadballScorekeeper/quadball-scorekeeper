@@ -54,12 +54,17 @@ export const team = pgTable(
 	{
 		id: serial().primaryKey(),
 		name: text().notNull(),
+		acronym: text().notNull(),
 		color: text().notNull().default(DEFAULT_TEAM_COLOR),
 		tournament: integer()
 			.notNull()
 			.references(() => tournament.id, { onDelete: 'cascade' })
 	},
-	(table) => [index().on(table.tournament), unique().on(table.tournament, table.name)]
+	(table) => [
+		index().on(table.tournament),
+		unique().on(table.tournament, table.name),
+		unique().on(table.tournament, table.acronym)
+	]
 );
 
 export type SelectTeam = InferSelectModel<typeof team>;

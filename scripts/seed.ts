@@ -124,9 +124,38 @@ async function main() {
 	// ---- Teams (per tournament)
 	const teamRows: (typeof team.$inferInsert)[] = [];
 	for (const t of insertedTournaments) {
+		const usedAcronyms = new Set<string>();
 		for (let i = 0; i < TEAMS_PER_TOURNAMENT; i++) {
+			const teamName = faker.location.country();
+			// Generate 3-4 letter acronym from team name
+			let acronym = teamName
+				.replace(/[^A-Za-z\s]/g, '') // Remove non-letter characters
+				.split(/\s+/) // Split by whitespace
+				.map((word) => word[0]) // Take first letter of each word
+				.join('')
+				.toUpperCase()
+				.slice(0, 4); // Max 4 letters
+
+			// If acronym is too short, pad with more letters from the name
+			if (acronym.length < 3) {
+				acronym = teamName
+					.replace(/[^A-Za-z]/g, '')
+					.toUpperCase()
+					.slice(0, 4);
+			}
+
+			// Ensure unique acronym within tournament
+			let finalAcronym = acronym;
+			let suffix = 1;
+			while (usedAcronyms.has(finalAcronym)) {
+				finalAcronym = acronym.slice(0, 3) + suffix;
+				suffix++;
+			}
+			usedAcronyms.add(finalAcronym);
+
 			teamRows.push({
-				name: faker.location.country(),
+				name: teamName,
+				acronym: finalAcronym,
 				tournament: t.id
 			});
 		}
