@@ -228,7 +228,7 @@ export class Game {
 		this.recalculateGameState(this.events);
 	}
 
-	private recalculateGameState(events: GameEvent[]) {
+	protected recalculateGameState(events: GameEvent[]) {
 		// Reset game state
 		this.status = 'scheduled';
 		this.gameTime = 0;

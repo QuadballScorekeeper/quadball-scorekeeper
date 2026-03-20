@@ -39,7 +39,7 @@
 	}
 </script>
 
-<NavBar {user} />
+<NavBar />
 
 <main>
 	<h1>Enter Game Code</h1>
@@ -65,6 +65,15 @@
 			{loading ? 'Checking...' : 'Start Scorekeeping'}
 		</Button>
 	</form>
+
+	<div class="divider">
+		<span>or</span>
+	</div>
+
+	<div class="local-game">
+		<p>Start a quick game without saving to the database</p>
+		<Button onclick={() => goto('/scorekeeper/local')}>Start Local Game</Button>
+	</div>
 </main>
 
 <style>
@@ -113,5 +122,33 @@
 	.error {
 		color: var(--error);
 		font-size: var(--text-s);
+	}
+
+	.divider {
+		display: flex;
+		align-items: center;
+		margin: 1rem 0;
+		max-width: 20rem;
+	}
+
+	.divider::before,
+	.divider::after {
+		content: '';
+		flex: 1;
+		height: 1px;
+		background-color: var(--border-default);
+	}
+
+	.divider span {
+		padding: 0 1rem;
+		color: var(--text-subtle);
+		font-size: var(--text-s);
+	}
+
+	.local-game {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		max-width: 20rem;
 	}
 </style>
