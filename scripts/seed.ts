@@ -3,20 +3,16 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { faker } from '@faker-js/faker';
-import * as schema from '../src/lib/server/db/schema';
 import {
 	tournament,
 	team,
 	player,
 	game,
 	gameEvent,
-	user,
 	eventTypeEnum
 } from '../src/lib/server/db/schema';
 import { generateUniqueGameCode } from '../src/lib/server/gameCode';
-import { sql, eq } from 'drizzle-orm';
-import { betterAuth } from 'better-auth/minimal';
-import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { sql } from 'drizzle-orm';
 
 // ------------------------------------------------------------------
 // 1️⃣ Set up DB connection
@@ -24,43 +20,12 @@ const DATABASE_URL = 'postgres://testuser:testpassword@localhost:5432/testdb';
 const pool = new Pool({
 	connectionString: DATABASE_URL // e.g. postgres://user:pw@localhost:5432/db
 });
-const db = drizzle(pool, { schema });
-
-// Create auth instance for seeding
-const auth = betterAuth({
-	baseURL: 'http://localhost:5173',
-	secret: 'seed-secret-key-for-testing-only',
-	database: drizzleAdapter(db, { provider: 'pg', schema }),
-	emailAndPassword: {
-		enabled: true,
-		requireEmailVerification: false
-	},
-	user: {
-		additionalFields: {
-			role: {
-				type: 'string',
-				required: true,
-				defaultValue: 'team_manager',
-				input: false
-			}
-		}
-	}
-});
+const db = drizzle(pool);
 
 // ------------------------------------------------------------------
 // 1️⃣.5 Reset the DB
 async function resetDb() {
-	const tables = [
-		'game_event',
-		'game',
-		'player',
-		'team',
-		'tournament',
-		'session',
-		'account',
-		'verification',
-		'user'
-	];
+	const tables = ['game_event', 'game', 'player', 'team', 'tournament'];
 	const stmt = sql.raw(`
       TRUNCATE TABLE ${tables.map((t) => `"${t}"`).join(',')}
       RESTART IDENTITY CASCADE;
@@ -81,33 +46,6 @@ const EVENTS_PER_GAME = 30;
 // 3️⃣ Seed function
 async function main() {
 	await resetDb();
-	// ---- Users (admin + team manager)
-	// Use better-auth API to create users with properly hashed passwords
-	await auth.api.signUpEmail({
-		body: {
-			email: 'admin@example.com',
-			password: 'secret123',
-			name: 'Admin User'
-		}
-	});
-
-	// Update role to admin (custom field not handled by signUpEmail)
-	await db.update(user).set({ role: 'admin' }).where(eq(user.email, 'admin@example.com'));
-
-	await auth.api.signUpEmail({
-		body: {
-			email: 'manager@example.com',
-			password: 'secret123',
-			name: 'Team Manager'
-		}
-	});
-
-	// Update role to team_manager (this is actually the default, but being explicit)
-	await db.update(user).set({ role: 'team_manager' }).where(eq(user.email, 'manager@example.com'));
-
-	console.log('✅ Created users:');
-	console.log('   - admin@example.com (role: admin, password: secret123)');
-	console.log('   - manager@example.com (role: team_manager, password: secret123)');
 
 	// ---- Tournaments
 	const tournamentRows: (typeof tournament.$inferInsert)[] = [];

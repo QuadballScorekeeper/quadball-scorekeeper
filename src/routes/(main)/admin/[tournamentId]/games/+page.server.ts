@@ -30,14 +30,8 @@ export const load = async ({ params }) => {
 export const actions = {
 	newGame: async ({
 		params,
-		request,
-		locals
+		request
 	}): Promise<{ success: true; code: string } | ReturnType<typeof fail<{ error: string }>>> => {
-		// Auth check
-		if (!locals.user || locals.user.role !== 'admin') {
-			return fail(401, { error: 'Unauthorized' });
-		}
-
 		const tId: number = Number(params.tournamentId);
 		const data = await request.formData();
 		const homeTeam: number = Number(data.get('homeTeam'));
@@ -70,14 +64,8 @@ export const actions = {
 	},
 	deleteGame: async ({
 		params,
-		request,
-		locals
+		request
 	}): Promise<{ success: true } | ReturnType<typeof fail<{ error: string }>>> => {
-		// Auth check
-		if (!locals.user || locals.user.role !== 'admin') {
-			return fail(401, { error: 'Unauthorized' });
-		}
-
 		const data = await request.formData();
 		const gameId: number = Number(data.get('game'));
 		const tId: number = Number(params.tournamentId);

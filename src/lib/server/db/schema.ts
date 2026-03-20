@@ -145,5 +145,3 @@ export const gameEventRelations = relations(gameEvent, ({ one }) => ({
 
 export type SelectGameEvent = InferSelectModel<typeof gameEvent>;
 export type InsertGameEvent = InferInsertModel<typeof gameEvent>;
-
-export * from './auth.schema';

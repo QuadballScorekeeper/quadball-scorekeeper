@@ -3,9 +3,6 @@
 	import { NavBar } from '$lib/components/NavBar';
 	import { Button } from '$lib/components/ui/Button';
 
-	let { data } = $props();
-	let user = $derived(data.user);
-
 	let code = $state('');
 	let error = $state('');
 	let loading = $state(false);
