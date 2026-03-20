@@ -1,16 +1,17 @@
 <script lang="ts">
 	import type { Game } from '$lib/client/Game.svelte';
 	import { Time } from '$lib/icons';
+	import { Button } from '../ui/Button';
 
 	let { game }: { game: Game } = $props();
 </script>
 
 {#snippet timeoutButton(home: boolean)}
-	<button
+	<Button
 		disabled={home ? !game.homeTeam.timeoutAvailable : !game.awayTeam.timeoutAvailable}
 		onclick={() => {
 			game.useTimeout(home);
-		}}>Timeout</button
+		}}>Timeout</Button
 	>
 {/snippet}
 <div class="timeout-window">
@@ -31,23 +32,11 @@
 		gap: 2rem;
 	}
 	.button-group {
-		display: flex;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
 		width: 100%;
-		gap: 1.5rem;
-	}
-	button {
-		text-align: center;
-		text-justify: center;
-		background-color: var(--fg-ligt);
-		color: var(--bg-dark);
-		border-radius: 0.5rem;
-		width: 100%;
-		height: 2.5rem;
-
-		&:disabled {
-			background-color: light-dark(var(--gray-100), var(--gray-600));
-			color: light-dark(var(--gray-400), var(--gray-500));
-		}
+		gap: 2rem;
+		padding: 0 2rem;
 	}
 
 	:global(.timeout-icon) {

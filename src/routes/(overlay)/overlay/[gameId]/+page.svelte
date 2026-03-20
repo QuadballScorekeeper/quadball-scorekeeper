@@ -3,9 +3,13 @@
 	import { Game } from '$lib/client/Game.svelte';
 	import { GameEvent } from '$lib/client/GameEvent.svelte';
 	import { formatGameTime } from '$lib/utils';
+	import { check } from 'drizzle-orm/sqlite-core';
 
 	let { data, params } = $props();
 	let game = new Game(data.gameInfo);
+	let flipped = $state(false);
+	let left = $derived(flipped ? game.awayTeam : game.homeTeam);
+	let right = $derived(flipped ? game.homeTeam : game.awayTeam);
 
 	$effect(() => {
 		if (game.status == 'live') {
@@ -49,15 +53,13 @@
 		{formatGameTime(game.gameTime)}
 	</div>
 
-	<div
-		class="score-box"
-		style="--home-color: {game.homeTeam.color}; --away-color: {game.awayTeam.color}"
-	>
-		<span class="acronym">{game.homeTeam.acronym}</span>
-		<span class="score">{game.homeTeam.score}</span>
-		<span class="score">{game.awayTeam.score}</span>
-		<span class="acronym">{game.awayTeam.acronym}</span>
+	<div class="score-box" style="--left-color: {left.color}; --right-color: {right.color}">
+		<span class="acronym">{left.acronym}</span>
+		<span class="score">{left.score}</span>
+		<span class="score">{right.score}</span>
+		<span class="acronym">{right.acronym}</span>
 	</div>
+	<input type="checkbox" bind:checked={flipped} />Flip teams
 </div>
 
 <style>
@@ -67,6 +69,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-family: Roboto Mono;
+		font-weight: 700;
 		color: #fff;
 	}
 
@@ -78,7 +81,6 @@
 		height: 4rem;
 		width: 8rem;
 		font-size: 2rem;
-		font-weight: 600;
 	}
 
 	.score-box {
@@ -90,26 +92,23 @@
 		justify-items: center;
 		gap: 1.5rem;
 		font-size: 1.75rem;
-		font-weight: 700;
 
 		background: linear-gradient(
 			to right,
-			var(--home-color) 0%,
+			var(--left-color) 0%,
 			#000 40%,
 			#000 60%,
-			var(--away-color) 100%
+			var(--right-color) 100%
 		);
 	}
 
 	.acronym {
-		font-weight: 700;
 		letter-spacing: 0.1em;
 		font-family: Roboto;
 	}
 
 	.score {
 		font-size: 2rem;
-		font-weight: 800;
 		min-width: 2.5rem;
 		text-align: center;
 	}

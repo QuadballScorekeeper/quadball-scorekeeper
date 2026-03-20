@@ -36,6 +36,13 @@ select {
 	font: inherit;
 }
 
+input {
+	background: none;
+	border: none;
+	box-shadow: none;
+	outline: none;
+}
+
 button {
 	background: none;
 	border: none;

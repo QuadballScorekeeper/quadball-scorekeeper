@@ -30,9 +30,10 @@
 	.icon-input {
 		border: 1px solid var(--border-strong);
 		border-radius: 0.5rem;
-		padding: 0.75rem 1rem;
+		padding: 0.25rem;
 		display: grid;
 		grid-template-columns: auto 1fr auto;
 		align-items: center;
+		background-color: var(--surface-2);
 	}
 </style>

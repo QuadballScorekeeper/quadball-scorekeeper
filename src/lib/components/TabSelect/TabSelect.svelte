@@ -1,6 +1,7 @@
 <script lang="ts">
 	let { tabs, activeTab = $bindable() }: { tabs: string[]; activeTab: string | undefined } =
 		$props();
+	activeTab = activeTab ?? tabs[0];
 
 	function setActiveTab(value: string) {
 		activeTab = value;

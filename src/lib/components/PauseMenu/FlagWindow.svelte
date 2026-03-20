@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Game } from '$lib/client/Game.svelte';
 	import { TabSelect } from '$lib/components/TabSelect';
+	import { Button } from '../ui/Button';
+	import { Input } from '../ui/Input';
 
 	let { game }: { game: Game } = $props();
 	const teamOptions = [game.homeTeam.name, game.awayTeam.name];
@@ -26,16 +28,8 @@
 		<TabSelect tabs={teamOptions} bind:activeTab={team} />
 		<form class="flag-form" onsubmit={addCatch}>
 			<input type="hidden" required bind:value={team} />
-			<input
-				class="number"
-				type="text"
-				inputmode="numeric"
-				pattern="[0-9]+"
-				required
-				placeholder="Number"
-				bind:value={player}
-			/>
-			<button type="submit">Save</button>
+			<Input type="number" required placeholder="Number" bind:value={player} />
+			<Button type="submit">Save</Button>
 		</form>
 	{/if}
 </div>
@@ -45,7 +39,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: center;
 		padding: 1rem;
 		width: 100%;
 		gap: 1rem;
@@ -53,19 +46,9 @@
 	}
 
 	.flag-form {
-		display: flex;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
 		width: 100%;
 		gap: 1rem;
-	}
-
-	.number,
-	button {
-		border-radius: 0.5rem;
-		width: 100%;
-	}
-
-	button {
-		background-color: var(--fg-dark);
-		color: var(--bg-light);
 	}
 </style>
