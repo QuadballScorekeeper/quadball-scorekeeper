@@ -46,13 +46,11 @@
 			const freq = 100;
 			const interval = setInterval(() => {
 				// Calculate elapsed game time since last event and update game time
-				const elapsedSinceLastEvent = Date.now() - game.getLastEventTime();
-				game.gameTime = game.getLastEventGameTime() + elapsedSinceLastEvent;
 
-				// Find the most recent timeout event and calculate remaining time based on game time
+				// Find the most recent timeout event and calculate remaining time
 				const timeoutEvent = game.events.findLast((event) => event.eventType === 'timeout');
 				if (timeoutEvent) {
-					const elapsedGameTime = game.gameTime - timeoutEvent.gameTime;
+					const elapsedGameTime = Date.now() - timeoutEvent.timestamp.getTime();
 					timeoutTimeLeft = Math.max(0, minute - elapsedGameTime);
 					if (timeoutTimeLeft <= 0) {
 						game.status = 'paused';
