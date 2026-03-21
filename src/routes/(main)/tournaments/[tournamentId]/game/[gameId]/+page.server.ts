@@ -1,7 +1,7 @@
 import { db } from '$lib/server/db/client';
-import { game } from '$lib/server/db/schema';
+import { game, gameEvent } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 
 export const load = async ({ params }) => {
 	const gameId = Number(params.gameId);
@@ -20,7 +20,9 @@ export const load = async ({ params }) => {
 					players: true
 				}
 			},
-			events: true
+			events: {
+				orderBy: asc(gameEvent.eventNum)
+			}
 		}
 	});
 	if (gameInfo == undefined) throw error(400, 'unable to find game');
