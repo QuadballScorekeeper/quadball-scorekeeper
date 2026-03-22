@@ -131,7 +131,7 @@ export const gameEvent = pgTable(
 		eventNum: integer().notNull(),
 		eventType: eventTypeEnum().notNull(),
 		team: integer().references(() => team.id, { onDelete: 'cascade' }),
-		player: integer().references(() => player.id, { onDelete: 'cascade' }),
+		player: integer(), //.references(() => player.id, { onDelete: 'cascade' }),
 		timestamp: timestamp().notNull()
 	},
 	(table) => [primaryKey({ columns: [table.game, table.eventNum] })]
@@ -139,8 +139,8 @@ export const gameEvent = pgTable(
 
 export const gameEventRelations = relations(gameEvent, ({ one }) => ({
 	game: one(game, { fields: [gameEvent.game], references: [game.id] }),
-	team: one(team, { fields: [gameEvent.team], references: [team.id] }),
-	player: one(player, { fields: [gameEvent.player], references: [player.id] })
+	team: one(team, { fields: [gameEvent.team], references: [team.id] })
+	// player: one(player, { fields: [gameEvent.player], references: [player.id] })
 }));
 
 export type SelectGameEvent = InferSelectModel<typeof gameEvent>;
