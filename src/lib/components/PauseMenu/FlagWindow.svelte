@@ -8,13 +8,7 @@
 	const teamOptions = [game.homeTeam.name, game.awayTeam.name];
 	let team = $state(undefined);
 	let player = $state(undefined);
-	// const RUNNER_FLOOR = 20 * 60 * 1000;
-	const RUNNER_FLOOR = 0;
-
-	function addCatch(event: Event) {
-		event.preventDefault();
-		game.addCatch(team == teamOptions[0], player!);
-	}
+	const RUNNER_FLOOR = 20 * 60 * 1000;
 </script>
 
 <div class="flag-window">
@@ -26,11 +20,10 @@
 		<p>Add an option to remove the catch here?</p>
 	{:else}
 		<TabSelect tabs={teamOptions} bind:activeTab={team} />
-		<form class="flag-form" onsubmit={addCatch}>
-			<input type="hidden" required bind:value={team} />
+		<div class="flag-form">
 			<Input type="number" required placeholder="Number" bind:value={player} />
-			<Button type="submit">Save</Button>
-		</form>
+			<Button onclick={() => game.addCatch(team == teamOptions[0], player)}>Save</Button>
+		</div>
 	{/if}
 </div>
 

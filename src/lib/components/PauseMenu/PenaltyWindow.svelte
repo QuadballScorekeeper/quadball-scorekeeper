@@ -16,25 +16,17 @@
 	const teamOptions = [game.homeTeam.name, game.awayTeam.name];
 	let team = $state(undefined);
 	let player = $state(undefined);
-
-	function addPenalty(event: Event) {
-		event.preventDefault();
-		game.addPenalty(team == teamOptions[0], player!, penaltyString!);
-		penalty = undefined;
-		player = undefined;
-		team = undefined;
-	}
 </script>
 
 <div class="penalty-window">
 	<TabSelect tabs={Object.keys(penaltyOptions)} bind:activeTab={penalty} />
 	<TabSelect tabs={teamOptions} bind:activeTab={team} />
-	<form onsubmit={addPenalty}>
-		<input type="hidden" required bind:value={penaltyString} />
-		<input type="hidden" required bind:value={team} />
+	<div class="penalty-form">
 		<Input type="number" required placeholder="Number" bind:value={player} />
-		<Button type="submit">Save</Button>
-	</form>
+		<Button onclick={() => game.addPenalty(team == game.homeTeam.name, player!, penaltyString!)}
+			>Save</Button
+		>
+	</div>
 </div>
 
 <style>
@@ -46,7 +38,7 @@
 		border-radius: 0.5rem;
 	}
 
-	form {
+	.penalty-form {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 1rem;
