@@ -59,7 +59,7 @@
 					{game.homeTeam.name}
 				</div>
 				<div class="time-info">
-					{game.start.toLocaleString()}
+					{game.scheduledStart.toLocaleString()}
 				</div>
 				<div class="team" dir="rtl">
 					{game.awayTeam.name}

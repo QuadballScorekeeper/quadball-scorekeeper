@@ -1,7 +1,7 @@
 import { db } from '$lib/server/db/client';
-import { player, team, tournament } from '$lib/server/db/schema';
+import { game, player, team, tournament } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, or } from 'drizzle-orm';
 import type { Actions } from './$types';
 
 const isValidHexColor = (color: string): boolean => /^#[0-9A-Fa-f]{6}$/.test(color);
@@ -13,7 +13,7 @@ export const load = async ({ params }) => {
 	const tournamentData = await db.select().from(tournament).where(eq(tournament.id, tId)).limit(1);
 
 	const teamsWithPlayers = await db.query.team.findMany({
-		where: eq(team.tournament, tId),
+		where: eq(team.tournamentId, tId),
 		with: {
 			players: {
 				orderBy: desc(player.number)
@@ -52,7 +52,7 @@ export const actions = {
 			name: teamName.toString(),
 			acronym: acronymStr,
 			color: colorStr,
-			tournament: tId
+			tournamentId: tId
 		});
 	},
 	updateTeamColor: async ({ params, request }) => {
@@ -74,13 +74,23 @@ export const actions = {
 		await db
 			.update(team)
 			.set({ color: colorStr })
-			.where(and(eq(team.id, teamId), eq(team.tournament, tId)));
+			.where(and(eq(team.id, teamId), eq(team.tournamentId, tId)));
 	},
 	deleteTeam: async ({ params, request }) => {
 		const data = await request.formData();
 		const teamId: number = Number(data.get('team'));
 		const tId: number = Number(params.tournamentId);
-		await db.delete(team).where(and(eq(team.id, teamId), eq(team.tournament, tId)));
+
+		// Games reference their teams with onDelete: 'restrict', so deleting a team that has been
+		// scheduled would fail at the database. Check first so the reason is understandable.
+		const scheduled = await db.query.game.findFirst({
+			where: or(eq(game.homeTeamId, teamId), eq(game.awayTeamId, teamId))
+		});
+		if (scheduled) {
+			throw error(409, 'Cannot delete a team that is part of a game. Delete its games first.');
+		}
+
+		await db.delete(team).where(and(eq(team.id, teamId), eq(team.tournamentId, tId)));
 	},
 	newPlayer: async ({ request }) => {
 		const data = await request.formData();
@@ -91,7 +101,7 @@ export const actions = {
 		await db.insert(player).values({
 			name: playerName,
 			number: playerNumber,
-			team: teamId
+			teamId: teamId
 		});
 	},
 	updateTeamAcronym: async ({ params, request }) => {
@@ -113,6 +123,6 @@ export const actions = {
 		await db
 			.update(team)
 			.set({ acronym: acronymStr })
-			.where(and(eq(team.id, teamId), eq(team.tournament, tId)));
+			.where(and(eq(team.id, teamId), eq(team.tournamentId, tId)));
 	}
 } satisfies Actions;

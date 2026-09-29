@@ -33,7 +33,7 @@
 </script>
 
 <NavBar>
-	<a href="/tournaments/{data.gameInfo.tournament}">Games</a>
+	<a href="/tournaments/{data.gameInfo.tournamentId}">Games</a>
 </NavBar>
 
 <main>

@@ -6,7 +6,7 @@
 </script>
 
 <div class="game-list">
-	{#each games.toSorted((a, b) => a.start.getTime() - b.start.getTime()) as game (game.id)}
+	{#each games.toSorted((a, b) => a.scheduledStart.getTime() - b.scheduledStart.getTime()) as game (game.id)}
 		<GameCard {game} />
 	{/each}
 </div>

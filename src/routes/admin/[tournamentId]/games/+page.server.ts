@@ -12,7 +12,7 @@ export const load = async ({ params }) => {
 	});
 	if (!t) throw error(404, 'Tournament not found');
 	const teams = await db.query.team.findMany({
-		where: eq(team.tournament, tId),
+		where: eq(team.tournamentId, tId),
 		orderBy: asc(team.name)
 	});
 	const games = await db.query.game.findMany({
@@ -20,8 +20,8 @@ export const load = async ({ params }) => {
 			homeTeam: true,
 			awayTeam: true
 		},
-		where: eq(game.tournament, tId),
-		orderBy: asc(game.start)
+		where: eq(game.tournamentId, tId),
+		orderBy: asc(game.scheduledStart)
 	});
 
 	return { teams, games, tournament: t };
@@ -49,10 +49,10 @@ export const actions = {
 			const code = await generateUniqueGameCode(db);
 
 			await db.insert(game).values({
-				start: start,
+				scheduledStart: start,
 				homeTeamId: homeTeam,
 				awayTeamId: awayTeam,
-				tournament: tId,
+				tournamentId: tId,
 				code
 			});
 
@@ -71,7 +71,7 @@ export const actions = {
 		const tId: number = Number(params.tournamentId);
 
 		try {
-			await db.delete(game).where(and(eq(game.id, gameId), eq(game.tournament, tId)));
+			await db.delete(game).where(and(eq(game.id, gameId), eq(game.tournamentId, tId)));
 			return { success: true };
 		} catch (error) {
 			console.error(error);

@@ -30,7 +30,7 @@
 		<div class="game-info {game.status}">
 			<div>
 				{#if game.status == 'scheduled'}
-					{game.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+					{game.scheduledStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
 				{:else if ['live', 'timeout', 'paused'].includes(game.status)}
 					{formatGameTime(game.gameTime)}
 				{:else if game.status == 'finished'}
