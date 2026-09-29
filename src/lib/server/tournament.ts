@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db/client';
-import { tournament } from '$lib/server/db/schema';
-import { desc, eq, type InferInsertModel } from 'drizzle-orm';
+import { gameEvent, tournament } from '$lib/server/db/schema';
+import { asc, desc, eq, type InferInsertModel } from 'drizzle-orm';
 
 export async function getAllTournaments() {
 	return db.query.tournament.findMany({
@@ -24,7 +24,8 @@ export async function getTournament(tournamentId: number) {
 							players: true
 						}
 					},
-					events: true
+					// Replaying events to rebuild game state only works in order
+					events: { orderBy: asc(gameEvent.eventNum) }
 				}
 			},
 			teams: {

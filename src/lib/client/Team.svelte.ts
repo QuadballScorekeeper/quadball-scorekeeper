@@ -1,11 +1,10 @@
 import type { SelectPlayer, SelectTeam } from '$lib/server/db/schema';
 import { Penalty, type PenaltyType } from './Penalty.svelte';
 
-export type TeamData =
-	| (SelectTeam & {
-			players: SelectPlayer[];
-	  })
-	| SelectTeam;
+/** Only what a Team actually needs, so local games don't have to fake database rows. */
+export type TeamData = Pick<SelectTeam, 'id' | 'name' | 'acronym' | 'color'> & {
+	players?: SelectPlayer[];
+};
 
 export class Team {
 	id: number;

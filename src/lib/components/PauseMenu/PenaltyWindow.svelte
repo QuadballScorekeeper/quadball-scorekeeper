@@ -13,7 +13,7 @@
 	};
 	let penalty = $state(undefined);
 	let penaltyString = $derived(penalty ? penaltyOptions[penalty] : undefined);
-	const teamOptions = [game.homeTeam.name, game.awayTeam.name];
+	const teamOptions = $derived([game.homeTeam.name, game.awayTeam.name]);
 	let team = $state(undefined);
 	let player = $state(undefined);
 </script>

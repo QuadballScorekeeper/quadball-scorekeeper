@@ -67,14 +67,10 @@
 	});
 </script>
 
-<!-- <select class="button" style="width:fit-content" bind:value={game.status}>
-	{#each ['scheduled', 'live', 'paused', 'timeout', 'finished', 'cancelled'] as status (status)}
-		<option value={status}>{status}</option>
-	{/each}
-</select> -->
-
 <div class="container" role={scorekeeper ? 'button' : undefined} {onclick}>
-	<TimerBanner {game} />
+	{#if scorekeeper}
+		<TimerBanner {game} />
+	{/if}
 	<div class="timer {game.status}">
 		<div class="status">
 			{#if game.status == 'finished'}

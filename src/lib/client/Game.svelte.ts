@@ -4,7 +4,14 @@ import { GameEvent, type Score } from './GameEvent.svelte';
 import { Team, type TeamData } from './Team.svelte';
 import type { PenaltyType } from './Penalty.svelte';
 
-export type GameData = SelectGame & {
+/**
+ * 'paused' and 'timeout' are transient: they are derived by replaying the event log and are
+ * never stored, so they exist on the client only.
+ */
+export type GameStatus = SelectGame['status'] | 'paused' | 'timeout';
+
+/** Only what a Game actually needs, so local games don't have to fake database rows. */
+export type GameData = Pick<SelectGame, 'id' | 'scheduledStart' | 'status'> & {
 	homeTeam: TeamData;
 	awayTeam: TeamData;
 	events: SelectGameEvent[];
@@ -12,13 +19,15 @@ export type GameData = SelectGame & {
 
 export class Game {
 	id: SelectGame['id'];
-	start: SelectGame['start'];
-	status: SelectGame['status'] | 'paused' | 'timeout';
+	/** When the game was scheduled to kick off. Fixed; see actualStart for when it did. */
+	scheduledStart: SelectGame['scheduledStart'];
+	status: GameStatus;
 	homeTeam: Team;
 	awayTeam: Team;
 	events: GameEvent[];
 	score: Score;
-	gameStart: Date | undefined;
+	/** Timestamp of the 'start' event, undefined until the game has been started. */
+	actualStart: Date | undefined;
 	gameTime: number;
 	runnerCaught: boolean;
 	nextEvent: number;
@@ -27,8 +36,9 @@ export class Game {
 
 	constructor(gameData: GameData) {
 		this.id = gameData.id;
-		this.start = gameData.start;
-		this.status = $state(gameData.status);
+		this.scheduledStart = gameData.scheduledStart;
+		// Every other status is derived from the events replayed below
+		this.status = $state(gameData.status == 'cancelled' ? 'cancelled' : 'scheduled');
 		this.homeTeam = new Team(gameData.homeTeam);
 		this.awayTeam = new Team(gameData.awayTeam);
 
@@ -39,6 +49,7 @@ export class Game {
 			away: this.awayTeam.score,
 			catch: (this.homeTeam.catch && 'home') || (this.awayTeam.catch && 'away')
 		});
+		this.actualStart = $state(undefined);
 		this.setScore = $state(undefined);
 		this.runnerCaught = $derived(this.homeTeam.catch || this.awayTeam.catch);
 		this.nextEvent = 0;
@@ -51,20 +62,69 @@ export class Game {
 		});
 	}
 
-	public replayEvents(events: SelectGameEvent[]) {
-		const eventTeam = (teamId: number) => {
-			if (teamId == this.homeTeam.id) return this.homeTeam;
-			if (teamId == this.awayTeam.id) return this.awayTeam;
-			throw Error('Invalid team ID: ' + teamId);
-		};
-		const eventOtherTeam = (teamId: number) => {
-			if (teamId == this.awayTeam.id) return this.homeTeam;
-			if (teamId == this.homeTeam.id) return this.awayTeam;
-			throw Error('Invalid team ID: ' + teamId);
-		};
+	private teamOf(teamId: SelectGameEvent['teamId']) {
+		if (teamId == this.homeTeam.id) return this.homeTeam;
+		if (teamId == this.awayTeam.id) return this.awayTeam;
+		throw Error('Invalid team ID: ' + teamId);
+	}
 
-		let lastEventTime = this.start.getTime();
+	private opponentOf(teamId: SelectGameEvent['teamId']) {
+		return this.teamOf(teamId) == this.homeTeam ? this.awayTeam : this.homeTeam;
+	}
+
+	/**
+	 * Fold a single event into the game state. The one place where an event type decides what
+	 * happens, so replaying a log, receiving a live event and scoring locally cannot diverge.
+	 */
+	private applyEvent(event: SelectGameEvent) {
+		switch (event.eventType) {
+			case 'timeout':
+				this.teamOf(event.teamId).timeoutAvailable = false;
+				this.status = 'timeout';
+				break;
+			case 'pause':
+				this.status = 'paused';
+				break;
+			case 'resume':
+				this.status = 'live';
+				break;
+			case 'goal':
+				this.teamOf(event.teamId).goals++;
+				this.opponentOf(event.teamId).releaseFirstPenalty();
+				break;
+			case 'catch': {
+				const team = this.teamOf(event.teamId);
+				const opponent = this.opponentOf(event.teamId);
+				team.catch = true;
+				opponent.releaseFirstPenalty();
+				// Catching from behind takes the game to overtime with a score to chase
+				if (team.score <= opponent.score) this.setScore = opponent.score + 3;
+				break;
+			}
+			case 'blue_card':
+			case 'yellow_card':
+			case 'red_card':
+			case 'ejection':
+				this.teamOf(event.teamId).addPenalty(event.eventType, event.playerNumber!, this.gameTime);
+				break;
+			case 'start':
+				this.status = 'live';
+				// Events arriving over the stream have been through JSON, so may carry a string
+				this.actualStart = new Date(event.timestamp);
+				break;
+			case 'end':
+				this.status = 'finished';
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	public replayEvents(events: SelectGameEvent[]) {
+		let lastEventTime = this.scheduledStart.getTime();
 		for (const event of events) {
+			// Only time between events of a running game counts towards the game clock
 			if (this.status == 'live') {
 				const elapsedTime = event.timestamp.getTime() - lastEventTime;
 				this.gameTime += elapsedTime;
@@ -72,41 +132,7 @@ export class Game {
 				this.awayTeam.removePenaltyTimes(elapsedTime);
 			}
 
-			switch (event.eventType) {
-				case 'timeout':
-					eventTeam(event.team!).timeoutAvailable = false;
-					this.status = 'timeout';
-					break;
-				case 'pause':
-					this.status = 'paused';
-					break;
-				case 'resume':
-					this.status = 'live';
-					break;
-				case 'goal':
-					eventTeam(event.team!).goals++;
-					eventOtherTeam(event.team!).releaseFirstPenalty();
-					break;
-				case 'catch':
-					eventTeam(event.team!).catch = true;
-					eventOtherTeam(event.team!).releaseFirstPenalty();
-					break;
-				case 'blue_card':
-				case 'yellow_card':
-				case 'red_card':
-				case 'ejection':
-					eventTeam(event.team!).addPenalty(event.eventType, event.player!, this.gameTime);
-					break;
-				case 'start':
-					this.status = 'live';
-					break;
-				case 'end':
-					this.status = 'finished';
-					break;
-
-				default:
-					break;
-			}
+			this.applyEvent(event);
 
 			lastEventTime = event.timestamp.getTime();
 			this.events.push(new GameEvent(event, this.gameTime, this.score));
@@ -121,92 +147,37 @@ export class Game {
 		}
 	}
 
+	/** Apply an event that came in from another scorekeeper over the event stream. */
 	public updateFromEvent(event: GameEvent) {
-		// Helper functions for team lookup
-		const eventTeam = (teamId: number) => {
-			if (teamId == this.homeTeam.id) return this.homeTeam;
-			if (teamId == this.awayTeam.id) return this.awayTeam;
-			throw Error('Invalid team ID: ' + teamId);
-		};
-		const eventOtherTeam = (teamId: number) => {
-			if (teamId == this.awayTeam.id) return this.homeTeam;
-			if (teamId == this.homeTeam.id) return this.awayTeam;
-			throw Error('Invalid team ID: ' + teamId);
-		};
-
-		// Update game time from event (already calculated by sender)
+		// Game time was already calculated by the sender
 		this.gameTime = event.gameTime;
 
-		// Add event to array
 		this.events.push(event);
-
-		// Process event to update state
-		switch (event.eventType) {
-			case 'timeout':
-				eventTeam(event.team!).timeoutAvailable = false;
-				this.status = 'timeout';
-				break;
-			case 'pause':
-				this.status = 'paused';
-				break;
-			case 'resume':
-				this.status = 'live';
-				break;
-			case 'goal':
-				eventTeam(event.team!).goals++;
-				eventOtherTeam(event.team!).releaseFirstPenalty();
-				break;
-			case 'catch':
-				eventTeam(event.team!).catch = true;
-				eventOtherTeam(event.team!).releaseFirstPenalty();
-				break;
-			case 'blue_card':
-			case 'yellow_card':
-			case 'red_card':
-			case 'ejection':
-				eventTeam(event.team!).addPenalty(event.eventType, event.player!, this.gameTime);
-				break;
-			case 'start':
-				this.status = 'live';
-				break;
-			case 'end':
-				this.status = 'finished';
-				break;
-			default:
-				break;
-		}
-
-		// Update next event number
+		this.applyEvent(event);
 		this.nextEvent = event.eventNum + 1;
 	}
 
 	public async addEvent(
 		eventType: SelectGameEvent['eventType'],
-		player?: SelectGameEvent['player'],
-		team?: SelectGameEvent['team']
+		playerNumber?: SelectGameEvent['playerNumber'],
+		teamId?: SelectGameEvent['teamId']
 	) {
-		const timestamp = Date.now();
-		const newEvent = new GameEvent(
-			{
-				game: this.id,
-				eventNum: this.nextEvent,
-				eventType: eventType,
-				team: team ?? null,
-				player: player ?? null,
-				timestamp: new SvelteDate(timestamp)
-			},
-			this.gameTime,
-			this.score
-		);
+		const row: SelectGameEvent = {
+			gameId: this.id,
+			eventNum: this.nextEvent,
+			eventType: eventType,
+			teamId: teamId ?? null,
+			playerNumber: playerNumber ?? null,
+			timestamp: new SvelteDate()
+		};
 
+		this.applyEvent(row);
+
+		const newEvent = new GameEvent(row, this.gameTime, this.score);
 		this.events.push(newEvent);
 		this.nextEvent++;
 
-		await fetch('/api/events', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ newEvent })
-		});
+		await this.persistEvent(newEvent);
 	}
 
 	public async removeEvent(eventNum: SelectGameEvent['eventNum']) {
@@ -218,14 +189,34 @@ export class Game {
 
 		this.events.splice(index, 1);
 
-		await fetch(`/api/events`, {
-			method: 'DELETE',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ game: this.id, eventNum })
-		});
-
 		// Recalculate game state by replaying all remaining events
 		this.recalculateGameState(this.events);
+
+		await this.persistEventRemoval(eventNum);
+	}
+
+	protected async persistEvent(event: GameEvent) {
+		await fetch('/api/events', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ newEvent: event })
+		});
+	}
+
+	protected async persistEventRemoval(eventNum: SelectGameEvent['eventNum']) {
+		await fetch('/api/events', {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ gameId: this.id, eventNum })
+		});
+	}
+
+	protected async persistStatus(status: SelectGame['status']) {
+		await fetch(`/api/games/${this.id}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ status })
+		});
 	}
 
 	protected recalculateGameState(events: GameEvent[]) {
@@ -242,6 +233,7 @@ export class Game {
 		this.awayTeam.timeoutAvailable = true;
 		this.events = [];
 		this.nextEvent = 0;
+		this.actualStart = undefined;
 		this.setScore = undefined;
 
 		// Replay all events
@@ -249,40 +241,25 @@ export class Game {
 	}
 
 	public async startGame() {
-		this.status = 'live';
-		this.start = new SvelteDate();
-		this.addEvent('start');
-		await fetch(`/api/games/${this.id}`, {
-			method: 'PUT',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ start: this.start, status: this.status })
-		});
+		await this.addEvent('start');
+		await this.persistStatus('live');
 	}
 
 	public async endGame() {
-		this.addEvent('end');
-		this.status = 'finished';
-		await fetch(`/api/games/${this.id}`, {
-			method: 'PUT',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ start: this.start, status: this.status })
-		});
+		await this.addEvent('end');
+		await this.persistStatus('finished');
 	}
 
 	public resumeGame() {
-		this.status = 'live';
 		this.addEvent('resume');
 	}
 
 	public pauseGame() {
-		this.status = 'paused';
 		this.addEvent('pause');
 	}
 
 	public useTimeout(home: boolean) {
 		const team = home ? this.homeTeam : this.awayTeam;
-		team.timeoutAvailable = false;
-		this.status = 'timeout';
 		this.addEvent('timeout', null, team.id);
 	}
 
@@ -291,49 +268,42 @@ export class Game {
 		team.timeoutAvailable = true;
 	}
 
-	public addCatch(home: boolean, player?: number) {
+	public addCatch(home: boolean, playerNumber?: number) {
 		const team = home ? this.homeTeam : this.awayTeam;
 		const otherTeam = home ? this.awayTeam : this.homeTeam;
-		team.catch = true;
-		otherTeam.releaseFirstPenalty();
-		this.addEvent('catch', player ?? null, team.id);
+		this.addEvent('catch', playerNumber ?? null, team.id);
 
-		if (team.score > otherTeam.score) {
-			this.endGame();
-		} else {
-			this.setScore = otherTeam.score + 3;
-		}
+		// Catching in the lead ends the game, otherwise applyEvent has set an overtime score
+		if (team.score > otherTeam.score) this.endGame();
 	}
 
-	public addGoal(home: boolean, player?: number) {
+	public addGoal(home: boolean, playerNumber?: number) {
 		const team = home ? this.homeTeam : this.awayTeam;
-		const otherTeam = home ? this.awayTeam : this.homeTeam;
-		team.goals++;
-		otherTeam.releaseFirstPenalty();
-		this.addEvent('goal', player ?? null, team.id);
+		this.addEvent('goal', playerNumber ?? null, team.id);
 		if (this.setScore && team.score >= this.setScore) this.endGame();
 	}
 
-	public addPenalty(home: boolean, player: number, penaltyType: PenaltyType) {
+	public addPenalty(home: boolean, playerNumber: number, penaltyType: PenaltyType) {
 		const team = home ? this.homeTeam : this.awayTeam;
-		team.addPenalty(penaltyType, player, this.gameTime);
-		this.addEvent(penaltyType, player, team.id);
+		this.addEvent(penaltyType, playerNumber, team.id);
 	}
 
 	public removeLastGoal(home: boolean) {
 		const team = home ? this.homeTeam : this.awayTeam;
 		if (team.goals < 1) return;
 
-		team.goals--;
 		const lastGoal = this.events.findLast(
-			(event) => event.eventType == 'goal' && event.team == team.id
+			(event) => event.eventType == 'goal' && event.teamId == team.id
 		);
-		this.removeEvent(lastGoal!.eventNum);
+		if (!lastGoal) return;
+
+		this.removeEvent(lastGoal.eventNum);
 	}
 
 	public getLastEventTime(): number {
 		const lastEvent = this.events[this.events.length - 1];
-		return lastEvent ? new Date(lastEvent.timestamp).getTime() : this.start.getTime();
+		if (lastEvent) return new Date(lastEvent.timestamp).getTime();
+		return (this.actualStart ?? this.scheduledStart).getTime();
 	}
 
 	public getLastEventGameTime(): number {

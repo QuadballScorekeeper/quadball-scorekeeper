@@ -5,8 +5,12 @@
 	import { Button } from '$lib/components/ui/Button';
 	import { Delete, Edit } from '$lib/icons';
 
-	let { game, event, scorekeeper = false }: { game: Game; event: GameEvent; scorekeeper?: boolean } = $props();
-	const home = game.homeTeam.id == event.team;
+	let {
+		game,
+		event,
+		scorekeeper = false
+	}: { game: Game; event: GameEvent; scorekeeper?: boolean } = $props();
+	const home = game.homeTeam.id == event.teamId;
 
 	let slide = $state(false);
 </script>
@@ -20,7 +24,7 @@
 		<div class="info-home">
 			{#if home}
 				{event.getIcon()}
-				{event.player ? '#' + event.player : ''}
+				{event.playerNumber ? '#' + event.playerNumber : ''}
 			{/if}
 		</div>
 		<div class="score-time">
@@ -35,7 +39,7 @@
 		</div>
 		<div class="info-away">
 			{#if !home}
-				{event.player ? '#' + event.player : ''}
+				{event.playerNumber ? '#' + event.playerNumber : ''}
 				{event.getIcon()}
 			{/if}
 		</div>

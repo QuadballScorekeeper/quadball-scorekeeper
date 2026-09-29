@@ -6,15 +6,12 @@
 		home,
 		scorekeeper = false
 	}: { game: Game; home: boolean; scorekeeper?: boolean } = $props();
-	let team = home ? game.homeTeam : game.awayTeam;
+
+	let team = $derived(home ? game.homeTeam : game.awayTeam);
 
 	function scoreGoal() {
 		game.addGoal(home);
 	}
-
-	// function annulGoal() {
-	// 	game.removeLastGoal(home);
-	// }
 </script>
 
 <button

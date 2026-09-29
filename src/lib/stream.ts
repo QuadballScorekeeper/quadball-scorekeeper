@@ -12,7 +12,7 @@ export function removeGameViewer(gameId: number, stream: ReadableStreamDefaultCo
 }
 
 export function broadcastGameEvent(event: GameEvent) {
-	const streams = streamConnections.get(event.game);
+	const streams = streamConnections.get(event.gameId);
 	if (!streams) return;
 	console.log('sending', event.eventType, 'event to all connections!');
 

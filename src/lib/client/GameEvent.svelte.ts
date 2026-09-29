@@ -8,20 +8,20 @@ export type Score = {
 
 export class GameEvent {
 	eventNum: SelectGameEvent['eventNum'];
-	game: SelectGameEvent['game'];
+	gameId: SelectGameEvent['gameId'];
 	eventType: SelectGameEvent['eventType'];
-	team: SelectGameEvent['team'];
-	player: SelectGameEvent['player'];
+	teamId: SelectGameEvent['teamId'];
+	playerNumber: SelectGameEvent['playerNumber'];
 	timestamp: SelectGameEvent['timestamp'];
 	gameTime: number;
 	score: Score;
 
 	constructor(gameEventRow: SelectGameEvent, gameTime: number, score: Score) {
 		this.eventNum = gameEventRow.eventNum;
-		this.game = gameEventRow.game;
+		this.gameId = gameEventRow.gameId;
 		this.eventType = gameEventRow.eventType;
-		this.team = gameEventRow.team;
-		this.player = gameEventRow.player;
+		this.teamId = gameEventRow.teamId;
+		this.playerNumber = gameEventRow.playerNumber;
 		this.timestamp = gameEventRow.timestamp;
 		this.gameTime = gameTime;
 		this.score = score;

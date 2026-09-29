@@ -3,14 +3,7 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { faker } from '@faker-js/faker';
-import {
-	tournament,
-	team,
-	player,
-	game,
-	gameEvent,
-	eventTypeEnum
-} from '../src/lib/server/db/schema';
+import { tournament, team, player, game, gameEvent } from '../src/lib/server/db/schema';
 import { generateUniqueGameCode } from '../src/lib/server/gameCode';
 import { sql } from 'drizzle-orm';
 
@@ -94,7 +87,7 @@ async function main() {
 			teamRows.push({
 				name: teamName,
 				acronym: finalAcronym,
-				tournament: t.id
+				tournamentId: t.id
 			});
 		}
 	}
@@ -115,7 +108,7 @@ async function main() {
 			playerRows.push({
 				name: faker.person.fullName(),
 				number: num,
-				team: tm.id
+				teamId: tm.id
 			});
 		}
 	}
@@ -125,15 +118,15 @@ async function main() {
 	const gameRows: (typeof game.$inferInsert)[] = [];
 	for (const t of insertedTournaments) {
 		for (let i = 0; i < GAMES_PER_TOURNAMENT; i++) {
-			const teamsInTournament = insertedTeams.filter((team) => team.tournament == t.id);
+			const teamsInTournament = insertedTeams.filter((team) => team.tournamentId == t.id);
 			const teams = faker.helpers.arrayElements(teamsInTournament, 2);
 
 			// Generate unique game code
 			const code = await generateUniqueGameCode(db);
 
 			gameRows.push({
-				start: faker.date.between({ from: t.start, to: t.end }),
-				tournament: t.id,
+				scheduledStart: faker.date.between({ from: t.start, to: t.end }),
+				tournamentId: t.id,
 				status: 'finished' as const,
 				awayTeamId: teams[0].id,
 				homeTeamId: teams[1].id,
@@ -154,7 +147,9 @@ async function main() {
 
 	// ---- GameEvents (populate each game with a few random events)
 	const eventRows: (typeof gameEvent.$inferInsert)[] = [];
-	const eventTypes = Object.values(eventTypeEnum.enumValues); // ['goal','penalty',...]
+	// Only events a team can be credited with. Clock events are added around them below, so that
+	// replaying a seeded game produces a coherent finished game.
+	const inPlayEventTypes = ['goal', 'blue_card', 'yellow_card', 'red_card'] as const;
 	for (const g of insertedGames) {
 		// pick a random team from the tournament that the game belongs to
 		const teamsInGame = insertedTeams.filter(
@@ -162,36 +157,38 @@ async function main() {
 		);
 
 		eventRows.push({
-			game: g.id,
+			gameId: g.id,
 			eventNum: 0,
-			eventType: 'resume',
-			team: null,
-			player: null,
-			timestamp: g.start
+			eventType: 'start',
+			teamId: null,
+			playerNumber: null,
+			timestamp: g.scheduledStart
 		});
 		for (let i = 1; i < EVENTS_PER_GAME; i++) {
 			const evTeam = faker.helpers.arrayElement(teamsInGame);
 			const evPlayer = faker.helpers.arrayElement(
-				insertedPlayers.filter((p) => p.team === evTeam.id)
+				insertedPlayers.filter((p) => p.teamId === evTeam.id)
 			);
 
 			eventRows.push({
-				game: g.id,
+				gameId: g.id,
 				eventNum: i,
-				eventType: faker.helpers.arrayElement(eventTypes) as any,
-				team: evTeam.id,
-				player: evPlayer.id,
-				timestamp: new Date(g.start.getTime() + i * 27 * 1000) // 27‑second intervals
+				eventType: faker.helpers.arrayElement(inPlayEventTypes),
+				teamId: evTeam.id,
+				playerNumber: evPlayer.number,
+				timestamp: new Date(g.scheduledStart.getTime() + i * 27 * 1000) // 27‑second intervals
 			});
 		}
 
 		eventRows.push({
-			game: g.id,
+			gameId: g.id,
 			eventNum: EVENTS_PER_GAME,
-			eventType: 'pause',
-			team: null,
-			player: null,
-			timestamp: new Date(g.start.getTime() + faker.number.int({ min: 15, max: 30 }) * 60 * 1000)
+			eventType: 'end',
+			teamId: null,
+			playerNumber: null,
+			timestamp: new Date(
+				g.scheduledStart.getTime() + faker.number.int({ min: 15, max: 30 }) * 60 * 1000
+			)
 		});
 	}
 	await db.insert(gameEvent).values(eventRows);

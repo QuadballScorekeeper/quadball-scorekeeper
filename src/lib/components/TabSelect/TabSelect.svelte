@@ -1,11 +1,16 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+
 	let { tabs, activeTab = $bindable() }: { tabs: string[]; activeTab: string | undefined } =
 		$props();
-	activeTab = activeTab ?? tabs[0];
 
 	function setActiveTab(value: string) {
 		activeTab = value;
 	}
+
+	onMount(() => {
+		activeTab = activeTab ?? tabs[0];
+	});
 </script>
 
 <div class="tab">

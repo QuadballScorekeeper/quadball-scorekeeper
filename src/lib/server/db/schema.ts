@@ -13,14 +13,9 @@ import {
 } from 'drizzle-orm/pg-core';
 const DEFAULT_TEAM_COLOR = '#808080';
 
-export const gameStatusEnum = pgEnum('game_status', [
-	'scheduled',
-	'live',
-	'finished',
-	'cancelled',
-	'timeout',
-	'paused'
-]);
+// Only the states that outlive a page load. 'paused' and 'timeout' are transient and derived
+// from the event log by the client, see GameStatus in $lib/client/Game.svelte.ts
+export const gameStatusEnum = pgEnum('game_status', ['scheduled', 'live', 'finished', 'cancelled']);
 
 export const eventTypeEnum = pgEnum('event_type', [
 	'goal',
@@ -56,21 +51,21 @@ export const team = pgTable(
 		name: text().notNull(),
 		acronym: text().notNull(),
 		color: text().notNull().default(DEFAULT_TEAM_COLOR),
-		tournament: integer()
+		tournamentId: integer()
 			.notNull()
 			.references(() => tournament.id, { onDelete: 'cascade' })
 	},
 	(table) => [
-		index().on(table.tournament),
-		unique().on(table.tournament, table.name),
-		unique().on(table.tournament, table.acronym)
+		index().on(table.tournamentId),
+		unique().on(table.tournamentId, table.name),
+		unique().on(table.tournamentId, table.acronym)
 	]
 );
 
 export type SelectTeam = InferSelectModel<typeof team>;
 
 export const teamRelations = relations(team, ({ one, many }) => ({
-	tournament: one(tournament, { fields: [team.tournament], references: [tournament.id] }),
+	tournament: one(tournament, { fields: [team.tournamentId], references: [tournament.id] }),
 	players: many(player)
 }));
 
@@ -80,15 +75,15 @@ export const player = pgTable(
 		id: serial().primaryKey(),
 		name: text().notNull(),
 		number: integer().notNull(),
-		team: integer()
+		teamId: integer()
 			.notNull()
 			.references(() => team.id, { onDelete: 'cascade' })
 	},
-	(table) => [index().on(table.team), unique().on(table.team, table.number)]
+	(table) => [index().on(table.teamId), unique().on(table.teamId, table.number)]
 );
 
 export const playerRelations = relations(player, ({ one }) => ({
-	team: one(team, { fields: [player.team], references: [team.id] })
+	team: one(team, { fields: [player.teamId], references: [team.id] })
 }));
 
 export type SelectPlayer = InferSelectModel<typeof player>;
@@ -97,24 +92,26 @@ export const game = pgTable(
 	'game',
 	{
 		id: serial().primaryKey(),
-		start: timestamp().notNull(),
-		tournament: integer()
+		// When the game is scheduled to kick off. Never mutated once the game starts - the actual
+		// kickoff is the timestamp of the 'start' event.
+		scheduledStart: timestamp().notNull(),
+		tournamentId: integer()
 			.notNull()
 			.references(() => tournament.id, { onDelete: 'cascade' }),
-		status: gameStatusEnum('scheduled').default('scheduled').notNull(),
+		status: gameStatusEnum().default('scheduled').notNull(),
 		homeTeamId: integer()
 			.notNull()
-			.references(() => team.id, { onDelete: 'cascade' }),
+			.references(() => team.id, { onDelete: 'restrict' }),
 		awayTeamId: integer()
 			.notNull()
-			.references(() => team.id, { onDelete: 'cascade' }),
+			.references(() => team.id, { onDelete: 'restrict' }),
 		code: text().notNull().unique()
 	},
-	(table) => [index().on(table.tournament)]
+	(table) => [index().on(table.tournamentId)]
 );
 
 export const gameRelations = relations(game, ({ one, many }) => ({
-	tournament: one(tournament, { fields: [game.tournament], references: [tournament.id] }),
+	tournament: one(tournament, { fields: [game.tournamentId], references: [tournament.id] }),
 	events: many(gameEvent),
 	homeTeam: one(team, { fields: [game.homeTeamId], references: [team.id] }),
 	awayTeam: one(team, { fields: [game.awayTeamId], references: [team.id] })
@@ -125,22 +122,23 @@ export type SelectGame = InferSelectModel<typeof game>;
 export const gameEvent = pgTable(
 	'game_event',
 	{
-		game: integer()
+		gameId: integer()
 			.notNull()
 			.references(() => game.id, { onDelete: 'cascade' }),
 		eventNum: integer().notNull(),
 		eventType: eventTypeEnum().notNull(),
-		team: integer().references(() => team.id, { onDelete: 'cascade' }),
-		player: integer(), //.references(() => player.id, { onDelete: 'cascade' }),
+		teamId: integer().references(() => team.id, { onDelete: 'restrict' }),
+		// Jersey number, snapshotted rather than a reference to player.id, so that history stays
+		// accurate when a roster is edited after the game.
+		playerNumber: integer(),
 		timestamp: timestamp().notNull()
 	},
-	(table) => [primaryKey({ columns: [table.game, table.eventNum] })]
+	(table) => [primaryKey({ columns: [table.gameId, table.eventNum] })]
 );
 
 export const gameEventRelations = relations(gameEvent, ({ one }) => ({
-	game: one(game, { fields: [gameEvent.game], references: [game.id] }),
-	team: one(team, { fields: [gameEvent.team], references: [team.id] })
-	// player: one(player, { fields: [gameEvent.player], references: [player.id] })
+	game: one(game, { fields: [gameEvent.gameId], references: [game.id] }),
+	team: one(team, { fields: [gameEvent.teamId], references: [team.id] })
 }));
 
 export type SelectGameEvent = InferSelectModel<typeof gameEvent>;
