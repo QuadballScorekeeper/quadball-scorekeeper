@@ -1,64 +1,98 @@
-# Game events
+# How a game is played
 
-Here is a list of all event that can happen during a game
-They are used to build up the logical structure of games
+Domain reference for anyone — human or agent — touching game logic. It describes the rules we
+actually play (IQA 2023-2024 rulebook) and how this app models them. The executable truth is
+`applyEvent` in `src/lib/client/Game.svelte.ts`; if code and this document disagree, one of them
+is wrong.
 
-## GoalScored \[timestamp, team, number?\]
+## The real game, briefly
 
-Goal scored for **team**, potentially with **number** of scoring player
+Quadball is played by two teams of seven: three chasers and a keeper who try to throw the
+quadball (a volleyball) through the opponent's three hoops, two beaters who disrupt with
+bludgers (dodgeballs), and a seeker who joins later to chase the flag (a tennis ball) carried by
+a neutral flag runner.
 
-## Penalty \[timestamp, team, type, number\]
+Scoring is counted in **goal units**: a goal through a hoop scores 1, a flag catch scores 3.
+The 10/30-point display from older rulebook versions is a holdover and is not used here. A
+caught flag is shown as a `*` next to the team's score.
 
-Penalty of **type** \{blue | yellow | red | ejection\} given to player **number** on team **team**
+## Phases and clock
 
-## PenaltyRelease \[**number**\]
+Statuses that outlive a page load are stored on the game row: `scheduled`, `live`, `finished`,
+`cancelled`. `paused` and `timeout` are transient — derived from the event log by the client,
+never stored.
 
-Relase of player **number**
+- One count-up clock, no halves or periods. The clock only advances while the game is `live`;
+  pause, timeout and everything before `start` do not move it.
+- Timeline reminders (banner, plus planned events): 18:30 get the seekers, 19:00 flag release,
+  20:00 seeker release. A catch cannot be recorded before 20:00 of game time.
+- After seeker release the flag runner takes a handicap every 5 minutes (25:00, 30:00, 35:00 …).
+  Shown as banner reminders only; not tracked as events.
+- Each team has one 1-minute timeout. The clock stops, and after the minute the game flips back
+  to `paused` — each client derives this from the timeout event's timestamp, no event is stored.
 
-Should automatically be created when appropriate.
+## Scoring and the end of the game
 
-### Yellow and blue cards:
+- Score = goals + 3 × catch, per team.
+- A catch ends the game immediately if the catching team is ahead afterwards.
+- A catch that ties or leaves the catching team behind starts **overtime**: the banner shows a
+  set score (opponent's score + 3) and the game ends when either team reaches it.
 
-First of these two to occur:
+## Actions we keep track of (stored events)
 
-- 1 minute after card was given
-- When opposing team scores (if no other yellow/blue on same team with less time remaining)
+The `game_event` table is the only record of a game; events are ordered per game by `eventNum`
+(see `eventTypeEnum` in `src/lib/server/db/schema.ts`). `team` is required where the action
+belongs to a team; `player` is a jersey number.
 
-### Red cards:
+| Event         | team | player | Effect                                                                                                 |
+| ------------- | ---- | ------ | ------------------------------------------------------------------------------------------------------ |
+| `start`       | no   | no     | Kicks off at the recorded timestamp; status becomes `live`, the clock starts                           |
+| `end`         | no   | no     | Status becomes `finished`                                                                              |
+| `pause`       | no   | no     | Clock stops (status `paused`)                                                                          |
+| `resume`      | no   | no     | Clock restarts (status `live`)                                                                         |
+| `timeout`     | yes  | no     | Burns the team's only timeout; clock stops for up to a minute                                          |
+| `goal`        | yes  | opt.   | +1 goal for the team; in overtime, reaching the set score ends the game                                |
+| `catch`       | yes  | opt.   | +3 score, shown with `*`; ahead → game over, tied/behind → overtime with set score                     |
+| `blue_card`   | yes  | yes    | 1-minute penalty for the player                                                                        |
+| `yellow_card` | yes  | yes    | 1-minute penalty; a second yellow for the same player means ejection (not yet implemented — see below) |
+| `red_card`    | yes  | yes    | 2-minute penalty, never released early                                                                 |
+| `ejection`    | yes  | yes    | Player is out for the rest of the game; no penalty countdown                                           |
 
-- 2 minutes after card was given
+## Penalty rules
 
-### Ejection:
+- Blue and yellow cards: released at 1 minute of game time, or early whenever the opposing team
+  scores (a goal or a catch). The active non-red penalty with the least time left is released,
+  so an older card is never leapfrogged by a newer one.
+- Red card: serves the full 2 minutes, no early release.
+- Ejection: nothing to release; only the event log entry remains.
+- Penalty clocks share the game clock — they only tick while the game is `live`.
+- `playerNumber` is a jersey-number snapshot on purpose, not a reference to `player.id`, so
+  history stays accurate when a roster is edited after the game. Do not "fix" this.
 
-- N/A
+## Derived state — never store these
 
-## Timeout \[timestamp, team\]
+Score, penalty remaining time and releases, `paused`/`timeout` status, the overtime set score
+and the game clock are all recomputed by replaying the event log. Anything replayable is never
+stored. Deleting an event (the scorekeeper's undo) just deletes the row and replays everything.
 
-Timeout used by **team**
+## Planned, not yet implemented
 
-## GetSeekers \[\]
+- `get_seekers` (18:30), `flag_release` (19:00), `seeker_release` (20:00): automatic markers so
+  a replayed game shows the full timeline.
+- `penalty_release`: auto-created when a penalty is released; today releases are purely derived.
+- Yellow escalation: two yellow cards for the same player mean ejection. The scorekeeper should
+  be able to see that a player is already on a yellow.
 
-Reminder for score and timekeeper to get seekers from both teams
-Should automatically be created at 18:30?
+## Rules for coding on the game model
 
-## FlagRelease \[\]
-
-Should automatically be created at 19:00 (or 18:50?)
-
-## SeekerRelease \[\]
-
-Event for release of the seekers
-Should automatically be created at 20:00 (or 19:50?)
-
-## FlagCaught \[timestamp, team\]
-
-**team** caught the flag
-
-## OvertimeStart \[set_score\]
-
-Overtime is started with set score **set_score**
-
-## GameEnd \[timestamp\]
-
-Event marking end of the game. Should be created by flag catch if catching team leads after catch
-Or when a team reaches the set score in overtime
+- `applyEvent` in `src/lib/client/Game.svelte.ts` is the single interpreter of event types.
+  Replay, live stream updates and local scoring all go through it — never apply an event's
+  effect anywhere else.
+- Replay requires events in `eventNum` order; `getGame` loads them ordered, `replayEvents`
+  assumes ascending.
+- The clock only accrues between consecutive events while the status was `live`; keep that in
+  mind when adding new event types.
+- The 20:00 catch rule and the banner reminders are UI-level (see `FlagWindow.svelte` and
+  `TimerBanner.svelte`); they are not part of the event model.
+- `start`/`end` also persist the game row's status (`live`/`finished`) — derived statuses never
+  touch the stored status.
