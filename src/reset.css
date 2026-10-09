@@ -1,4 +1,5 @@
-/* Modern CSS Reset */
+/* CSS Reset */
+
 *,
 *::before,
 *::after {
@@ -7,12 +8,18 @@
 
 * {
 	margin: 0;
+	padding: 0;
+	border: 0;
+	color: inherit;
+	background-color: inherit;
+	font: inherit;
+	text-decoration: none;
 }
 
-html,
-body {
-	width: 100%;
-	height: 100%;
+@media (prefers-reduced-motion: no-preference) {
+	html {
+		interpolate-size: allow-keywords;
+	}
 }
 
 body {
@@ -29,26 +36,6 @@ svg {
 	max-width: 100%;
 }
 
-input,
-button,
-textarea,
-select {
-	font: inherit;
-}
-
-input {
-	background: none;
-	border: none;
-	box-shadow: none;
-	outline: none;
-}
-
-button {
-	background: none;
-	border: none;
-	box-shadow: none;
-}
-
 p,
 h1,
 h2,
@@ -59,17 +46,19 @@ h6 {
 	overflow-wrap: break-word;
 }
 
-a {
-	color: inherit;
-	text-decoration: none;
+p {
+	text-wrap: pretty;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	text-wrap: balance;
 }
 
-ul,
-ol {
-	list-style: none;
-	padding: 0;
-}
-
-html {
-	color-scheme: light dark;
+#root,
+#__next {
+	isolation: isolate;
 }

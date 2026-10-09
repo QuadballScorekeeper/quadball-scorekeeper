@@ -58,9 +58,14 @@
 
 	--text-xs: 0.75rem;
 	--text-s: 0.875rem;
+	--text-l: 1.25rem;
 	--text-xl: 2.125rem;
 	--font-mono: Roboto Mono;
 	--font-default: Roboto;
+}
+
+html {
+	color-scheme: light dark;
 }
 
 body {
@@ -89,10 +94,6 @@ main {
 	width: 100%;
 	margin-inline: auto;
 	padding: 1rem 1.5rem;
-}
-
-li {
-	background-color: var(--surface-0);
 }
 
 input {
