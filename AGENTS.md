@@ -21,7 +21,7 @@ SvelteKit 2 + Svelte 5 (runes) + TypeScript, Drizzle ORM over PostgreSQL (embedd
 - **Event sourcing**: game state is a fold over `game_event` rows ordered by `eventNum`. `applyEvent` in `src/lib/client/Game.svelte.ts` is the single place event types are interpreted — replay, live updates, and local scoring all go through it. Don't handle event types elsewhere.
 - `docs/game_events.md` is the gameplay reference — how a game is played, the stored-event table, penalty/overtime rules, and what is derived vs planned. Read it before changing game logic; derived state (penalty releases, paused/timeout, overtime) must never be stored.
 - `gameEvent.playerNumber` is a jersey-number snapshot on purpose (not a FK to `player`), so history survives roster edits. Don't "fix" this.
-- **No user accounts** (auth was removed; `bcrypt` is a leftover dep). Scorekeepers authorize per game: enter its 6-char code (`/api/games/code/[code]`) → cookie `game_${gameId}_code` → `authorizeGame` in `src/lib/server/game.ts`.
+- **No auth anywhere** (user accounts and per-game codes were both removed; `bcrypt` is a leftover dep). Scorekeepers pick a game from the list on `/scorekeeper`; anyone who can reach the site can scorekeep any game.
 - **Live updates are SSE** via `/api/games/[gameId]/stream`; `src/lib/stream.ts` keeps connections in an in-memory module-level Map — single-instance only.
 - **Local games** (`/scorekeeper/local`) run offline in browser localStorage, with negative entity IDs (-1/-2) so they never fake DB rows.
 - **Admin CRUD** at `/admin/[tournamentId]` is fully functional but deliberately unlinked (button commented out in `src/routes/+page.svelte`).

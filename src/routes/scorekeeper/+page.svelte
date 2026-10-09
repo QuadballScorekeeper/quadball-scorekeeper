@@ -3,65 +3,31 @@
 	import { NavBar } from '$lib/components/NavBar';
 	import { Button } from '$lib/components/ui/Button';
 
-	let code = $state('');
-	let error = $state('');
-	let loading = $state(false);
-
-	async function handleSubmit(e: Event) {
-		e.preventDefault();
-		error = '';
-		loading = true;
-
-		try {
-			const res = await fetch(`/api/games/code/${code.toUpperCase()}`);
-
-			if (res.ok) {
-				const { gameId } = await res.json();
-				goto(`/scorekeeper/${gameId}`);
-			} else {
-				error = 'Invalid code';
-			}
-		} catch (err) {
-			error = 'An error occurred';
-			console.error(err);
-		} finally {
-			loading = false;
-		}
-	}
-
-	function handleInput(e: Event) {
-		const target = e.target as HTMLInputElement;
-		// Auto-capitalize and limit to 6 characters
-		code = target.value.toUpperCase().slice(0, 6);
-	}
+	let { data } = $props();
+	let games = $derived(data.games);
 </script>
 
 <NavBar />
 
 <main>
-	<h1>Enter Game Code</h1>
-	<p>Get the 6-digit code from your tournament admin</p>
-
-	<form onsubmit={handleSubmit}>
-		<input
-			type="text"
-			value={code}
-			oninput={handleInput}
-			placeholder="Enter code"
-			required
-			pattern="[A-Z0-9]&#123;6&#125;"
-			maxlength="6"
-			autocomplete="off"
-		/>
-
-		{#if error}
-			<p class="error">{error}</p>
-		{/if}
-
-		<Button type="submit" disabled={loading || code.length !== 6}>
-			{loading ? 'Checking...' : 'Start Scorekeeping'}
-		</Button>
-	</form>
+	<h1>Select game to scorekeep:</h1>
+	<ul>
+		{#each games as game (game.id)}
+			<li>
+				<a href="/scorekeeper/{game.id}">
+					<strong class="home-team">
+						{game.homeTeam.name}
+					</strong>
+					<div class="game-time">
+						{game.scheduledStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+					</div>
+					<strong class="away-team">
+						{game.awayTeam.name}
+					</strong>
+				</a>
+			</li>
+		{/each}
+	</ul>
 
 	<div class="divider">
 		<span>or</span>
@@ -91,34 +57,36 @@
 		font-size: var(--text-s);
 	}
 
-	form {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		max-width: 20rem;
+	ul {
+		display: grid;
+		gap: 0.5rem;
 	}
 
-	input {
-		padding: 0.75rem 1rem;
-		border: 1px solid var(--border-default);
-		border-radius: 0.375rem;
-		font-size: 1.25rem;
-		font-family: var(--font-mono);
-		text-transform: uppercase;
-		letter-spacing: 0.25rem;
+	li {
+		border-radius: 0.5rem;
+		padding: 0.25rem 0.5rem;
+
+		a {
+			display: flex;
+			gap: 0.25rem;
+		}
+	}
+
+	.home-team {
+		flex-grow: 2;
+		flex-basis: 0;
+	}
+
+	.game-time {
+		flex-grow: 1;
+		flex-basis: 0;
 		text-align: center;
-		background-color: var(--surface-0);
-		color: var(--text-default);
 	}
 
-	input:focus {
-		outline: 2px solid var(--blue-500);
-		outline-offset: 2px;
-	}
-
-	.error {
-		color: var(--error);
-		font-size: var(--text-s);
+	.away-team {
+		flex-grow: 2;
+		flex-basis: 0;
+		text-align: right;
 	}
 
 	.divider {

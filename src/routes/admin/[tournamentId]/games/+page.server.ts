@@ -3,7 +3,6 @@ import { game, team, tournament } from '$lib/server/db/schema';
 import { and, asc, eq } from 'drizzle-orm';
 import type { Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
-import { generateUniqueGameCode } from '$lib/server/gameCode';
 
 export const load = async ({ params }) => {
 	const tId = Number(params.tournamentId);
@@ -31,7 +30,7 @@ export const actions = {
 	newGame: async ({
 		params,
 		request
-	}): Promise<{ success: true; code: string } | ReturnType<typeof fail<{ error: string }>>> => {
+	}): Promise<{ success: true } | ReturnType<typeof fail<{ error: string }>>> => {
 		const tId: number = Number(params.tournamentId);
 		const data = await request.formData();
 		const homeTeam: number = Number(data.get('homeTeam'));
@@ -45,18 +44,14 @@ export const actions = {
 		const start: Date = new Date(data.get('start')!.toString());
 
 		try {
-			// Generate unique game code
-			const code = await generateUniqueGameCode(db);
-
 			await db.insert(game).values({
 				scheduledStart: start,
 				homeTeamId: homeTeam,
 				awayTeamId: awayTeam,
-				tournamentId: tId,
-				code
+				tournamentId: tId
 			});
 
-			return { success: true, code };
+			return { success: true };
 		} catch (error) {
 			console.error(error);
 			return fail(500, { error: 'Failed to create game' });

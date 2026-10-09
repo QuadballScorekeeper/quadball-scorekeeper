@@ -3,18 +3,13 @@ import { db } from '$lib/server/db/client';
 import { game, gameStatusEnum, type SelectGame } from '$lib/server/db/schema';
 import { json } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
-import { authorizeGame } from '$lib/server/game';
 
 function isPersistedStatus(value: unknown): value is SelectGame['status'] {
 	return gameStatusEnum.enumValues.includes(value as SelectGame['status']);
 }
 
-export const PUT: RequestHandler = async ({ params, request, cookies }) => {
+export const PUT: RequestHandler = async ({ params, request }) => {
 	const gameId = Number(params.gameId);
-
-	if (!(await authorizeGame(gameId, cookies))) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
 
 	const { status }: { status: unknown } = await request.json();
 

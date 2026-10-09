@@ -136,29 +136,16 @@ async function main() {
 			const teamsInTournament = insertedTeams.filter((team) => team.tournamentId == t.id);
 			const teams = faker.helpers.arrayElements(teamsInTournament, 2);
 
-			// Generate unique game code
-			const code = await generateUniqueGameCode(db);
-
 			gameRows.push({
 				scheduledStart: faker.date.between({ from: t.start, to: t.end }),
 				tournamentId: t.id,
 				status: 'finished' as const,
 				awayTeamId: teams[0].id,
-				homeTeamId: teams[1].id,
-				code
+				homeTeamId: teams[1].id
 			});
 		}
 	}
 	const insertedGames = await db.insert(game).values(gameRows).returning();
-
-	// Log some game codes for testing
-	console.log('\n📋 Sample game codes:');
-	insertedGames.slice(0, 3).forEach((g) => {
-		const homeTeam = insertedTeams.find((t) => t.id === g.homeTeamId);
-		const awayTeam = insertedTeams.find((t) => t.id === g.awayTeamId);
-		console.log(`  ${g.code} - ${homeTeam?.name} vs ${awayTeam?.name}`);
-	});
-	console.log('');
 
 	// ---- GameEvents (populate each game with a few random events)
 	const eventRows: (typeof gameEvent.$inferInsert)[] = [];

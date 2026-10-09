@@ -6,16 +6,6 @@
 	let teams = $derived(data.teams);
 	let startDate: Date = $derived(tournament.start);
 	let start = $derived(startDate?.toISOString().split('Z')[0]);
-
-	let copiedCode = $state<string | null>(null);
-
-	function copyCode(code: string) {
-		navigator.clipboard.writeText(code);
-		copiedCode = code;
-		setTimeout(() => {
-			copiedCode = null;
-		}, 2000);
-	}
 </script>
 
 <main>
@@ -45,8 +35,8 @@
 			<p class="error">{form.error}</p>
 		{/if}
 
-		{#if form && 'success' in form && 'code' in form}
-			<p class="success">Game created! Code: <strong>{form.code}</strong></p>
+		{#if form && 'success' in form}
+			<p class="success">Game created!</p>
 		{/if}
 
 		<button type="submit">Add game</button>
@@ -63,17 +53,6 @@
 				</div>
 				<div class="team" dir="rtl">
 					{game.awayTeam.name}
-				</div>
-				<div class="game-code">
-					<code>{game.code}</code>
-					<button
-						type="button"
-						class="copy-btn"
-						onclick={() => copyCode(game.code)}
-						title="Copy code"
-					>
-						{copiedCode === game.code ? '✓' : '📋'}
-					</button>
 				</div>
 				<a href="/scorekeeper/{game.id}" class="scorekeep-link">Scorekeep</a>
 				<form method="POST" action="?/deleteGame">
@@ -136,36 +115,6 @@
 	.time-info {
 		width: fit-content;
 		flex-basis: 0;
-	}
-
-	.game-code {
-		display: flex;
-		align-items: center;
-		gap: 0.25rem;
-		padding: 0.25rem 0.5rem;
-		background-color: var(--surface-1);
-		border-radius: 0.25rem;
-	}
-
-	code {
-		font-family: var(--font-mono);
-		font-size: var(--text-s);
-		font-weight: 600;
-		letter-spacing: 0.05rem;
-	}
-
-	.copy-btn {
-		padding: 0.25rem;
-		font-size: 0.875rem;
-		background: none;
-		border: none;
-		cursor: pointer;
-		opacity: 0.7;
-		transition: opacity 0.2s;
-	}
-
-	.copy-btn:hover {
-		opacity: 1;
 	}
 
 	.scorekeep-link {

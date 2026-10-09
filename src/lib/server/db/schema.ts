@@ -104,8 +104,7 @@ export const game = pgTable(
 			.references(() => team.id, { onDelete: 'restrict' }),
 		awayTeamId: integer()
 			.notNull()
-			.references(() => team.id, { onDelete: 'restrict' }),
-		code: text().notNull().unique()
+			.references(() => team.id, { onDelete: 'restrict' })
 	},
 	(table) => [index().on(table.tournamentId)]
 );

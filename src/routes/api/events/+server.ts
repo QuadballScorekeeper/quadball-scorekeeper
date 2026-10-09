@@ -4,16 +4,10 @@ import { gameEvent, type InsertGameEvent } from '$lib/server/db/schema';
 import { json } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
 import { broadcastGameEvent } from '$lib/stream';
-import { authorizeGame } from '$lib/server/game';
 import type { GameEvent } from '$lib/client/GameEvent.svelte';
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
+export const POST: RequestHandler = async ({ request }) => {
 	const { newEvent }: { newEvent: GameEvent } = await request.json();
-	const gameId = newEvent.gameId;
-
-	if (!(await authorizeGame(gameId, cookies))) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
 
 	newEvent.timestamp = new Date(newEvent.timestamp);
 	try {
@@ -28,16 +22,12 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	return json({ success: true }, { status: 200 });
 };
 
-export const DELETE: RequestHandler = async ({ request, cookies }) => {
+export const DELETE: RequestHandler = async ({ request }) => {
 	const {
 		gameId,
 		eventNum
 	}: { gameId: InsertGameEvent['gameId']; eventNum: InsertGameEvent['eventNum'] } =
 		await request.json();
-
-	if (!(await authorizeGame(gameId, cookies))) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
 
 	try {
 		await db
