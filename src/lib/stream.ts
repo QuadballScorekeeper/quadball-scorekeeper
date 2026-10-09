@@ -11,20 +11,31 @@ export function removeGameViewer(gameId: number, stream: ReadableStreamDefaultCo
 	streamConnections.get(gameId)!.delete(stream);
 }
 
-export function broadcastGameEvent(event: GameEvent) {
-	const streams = streamConnections.get(event.gameId);
+function broadcast(gameId: number, message: string) {
+	const streams = streamConnections.get(gameId);
 	if (!streams) return;
-	console.log('sending', event.eventType, 'event to all connections!');
-
-	const eventData = JSON.stringify(event);
 
 	streams.forEach((stream) => {
 		try {
-			console.log('sending', event.eventType, 'event to single stream');
-			stream.enqueue(`data: ${eventData}\n\n`);
+			stream.enqueue(message);
 		} catch (error) {
 			console.error('Could not enqueue to stream, got error: ', error);
 			streams.delete(stream);
 		}
 	});
+}
+
+export function broadcastGameEvent(event: GameEvent) {
+	console.log('sending', event.eventType, 'event to all connections!');
+	broadcast(event.gameId, `data: ${JSON.stringify(event)}\n\n`);
+}
+
+/**
+ * Tell a game's viewers that the event log changed (an event was edited or removed), so they
+ * refetch it and rebuild their state. Sent as a named SSE event, so it doesn't interfere
+ * with the default 'message' events.
+ */
+export function broadcastEventsChanged(gameId: number) {
+	console.log('sending events-changed notification to all connections!');
+	broadcast(gameId, `event: events-changed\ndata: {}\n\n`);
 }

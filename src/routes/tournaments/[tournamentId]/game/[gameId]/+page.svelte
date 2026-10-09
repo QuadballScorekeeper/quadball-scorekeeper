@@ -13,6 +13,18 @@
 	onMount(() => {
 		const eventSource = new EventSource(`/api/games/${params.gameId}/stream`);
 
+		// New events are applied directly; edits and removals only arrive as a signal that
+		// the log changed, so the authoritative copy is fetched and the state rebuilt
+		async function reloadEvents() {
+			try {
+				const response = await fetch(`/api/events?gameId=${params.gameId}`);
+				if (!response.ok) throw new Error(`HTTP ${response.status}`);
+				game.reloadEvents(await response.json());
+			} catch (err) {
+				console.error('Error reloading game events:', err);
+			}
+		}
+
 		eventSource.onmessage = (message) => {
 			try {
 				const event = GameEvent.from(JSON.parse(message.data));
@@ -20,6 +32,16 @@
 			} catch (err) {
 				console.error('Error processing game event:', err);
 			}
+		};
+
+		eventSource.addEventListener('events-changed', reloadEvents);
+
+		// The stream can drop messages while disconnected, so resync once it's back.
+		// The first open follows the initial load, which already has the full log.
+		let connected = false;
+		eventSource.onopen = () => {
+			if (connected) reloadEvents();
+			else connected = true;
 		};
 
 		eventSource.onerror = (error) => {

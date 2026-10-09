@@ -149,12 +149,26 @@ export class Game {
 
 	/** Apply an event that came in from another scorekeeper over the event stream. */
 	public updateFromEvent(event: GameEvent) {
+		// Events arriving over the stream have been through JSON, so the timestamp is a
+		// string — normalize it so GameEvent.timestamp is always an actual Date
+		event.timestamp = new SvelteDate(event.timestamp);
+
 		// Game time was already calculated by the sender
 		this.gameTime = event.gameTime;
 
 		this.events.push(event);
 		this.applyEvent(event);
 		this.nextEvent = event.eventNum + 1;
+	}
+
+	/**
+	 * Rebuild the whole game state from a fresh event log, e.g. fetched after the scorekeeper
+	 * edited or removed an event. The payload has been through JSON, so timestamps are strings.
+	 */
+	public reloadEvents(events: SelectGameEvent[]) {
+		this.recalculateGameState(
+			events.map((event) => ({ ...event, timestamp: new SvelteDate(event.timestamp) }))
+		);
 	}
 
 	public async addEvent(
@@ -219,7 +233,7 @@ export class Game {
 		});
 	}
 
-	protected recalculateGameState(events: GameEvent[]) {
+	protected recalculateGameState(events: SelectGameEvent[]) {
 		// Reset game state
 		this.status = 'scheduled';
 		this.gameTime = 0;
