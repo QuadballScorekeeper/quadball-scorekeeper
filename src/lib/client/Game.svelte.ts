@@ -110,7 +110,7 @@ export class Game {
 			case 'start':
 				this.status = 'live';
 				// Events arriving over the stream have been through JSON, so may carry a string
-				this.actualStart = new Date(event.timestamp);
+				this.actualStart = new SvelteDate(event.timestamp);
 				break;
 			case 'end':
 				this.status = 'finished';
@@ -302,7 +302,7 @@ export class Game {
 
 	public getLastEventTime(): number {
 		const lastEvent = this.events[this.events.length - 1];
-		if (lastEvent) return new Date(lastEvent.timestamp).getTime();
+		if (lastEvent) return new SvelteDate(lastEvent.timestamp).getTime();
 		return (this.actualStart ?? this.scheduledStart).getTime();
 	}
 
