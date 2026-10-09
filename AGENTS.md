@@ -14,6 +14,8 @@ SvelteKit 2 + Svelte 5 (runes) + TypeScript, Drizzle ORM over PostgreSQL (embedd
 ## Database gotchas
 
 - The `DATABASE_URL` scheme selects the backend: `pglite://<dir>` = embedded Postgres persisted to `<dir>` (gitignored `./.pgdata` by default), `pglite://:memory:` = ephemeral, anything else = real Postgres. `parseDatabaseUrl` in `src/lib/server/db/url.ts` is the single parser; `client.ts`, `drizzle.config.ts` and `scripts/seed.ts` all branch on it. In `client.ts` the PGlite instance is cast to the postgres-js type — same pg dialect and relational API, only raw `db.execute()` result shapes differ (unused).
+- **Only one PGlite instance may use a data dir at a time.** Never run `db:push`/`db:seed` while the dev server is running on the same `pglite://` dir — two embedded Postgreses writing the same files corrupt the WAL. There is no cross-process lock; the dev server must be stopped first.
+- If every query fails with a wasm `RuntimeError: Aborted()` (surfacing as drizzle "Failed query" 500s), the data dir's WAL is corrupted (unclean shutdown / concurrent instance). PGlite ships no `pg_resetwal`; the fix is to stop the dev server, `rm -rf .pgdata`, then `npm run db:push && npm run db:seed`. `client.ts` closes PGlite on SIGINT/SIGTERM to prevent this; keep that behavior.
 - `npm run db:seed` reads `DATABASE_URL` from `.env` (`tsx --env-file`) and supports both backends. It **truncates all five tables** first.
 
 ## Architecture

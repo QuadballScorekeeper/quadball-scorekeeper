@@ -15,8 +15,21 @@ if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
 // db.execute() result shapes differ, and the app doesn't use those.
 function createDb(connection: DatabaseConnection): PostgresJsDatabase<typeof schema> {
 	if (connection.kind === 'pglite') {
-		const pglite = drizzlePglite(new PGlite(connection.dataDir), { schema });
-		return pglite as unknown as PostgresJsDatabase<typeof schema>;
+		const pglite = new PGlite(connection.dataDir);
+		// A hard-killed embedded Postgres can leave a corrupted WAL that PANICs on the next
+		// startup ("could not locate a valid checkpoint record"), so shut it down cleanly when
+		// the process is asked to terminate (e.g. Ctrl+C on `vite dev`).
+		if (typeof process !== 'undefined') {
+			for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+				process.once(signal, () => {
+					pglite
+						.close()
+						.catch(() => {})
+						.finally(() => process.kill(process.pid, signal));
+				});
+			}
+		}
+		return drizzlePglite(pglite, { schema }) as unknown as PostgresJsDatabase<typeof schema>;
 	}
 	return drizzle(postgres(connection.url), { schema });
 }
