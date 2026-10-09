@@ -59,7 +59,7 @@
 							style="text-transform: uppercase"
 							required
 						/>
-						<Button type="submit" size="small">Update</Button>
+						<Button type="submit">Update</Button>
 					</form>
 				</div>
 
