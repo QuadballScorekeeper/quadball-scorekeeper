@@ -1,19 +1,34 @@
 // src/scripts/seed.ts
 //
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
+import { PGlite } from '@electric-sql/pglite';
 import { faker } from '@faker-js/faker';
-import { tournament, team, player, game, gameEvent } from '../src/lib/server/db/schema';
-import { generateUniqueGameCode } from '../src/lib/server/gameCode';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle as drizzlePglite } from 'drizzle-orm/pglite';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
 import { sql } from 'drizzle-orm';
+import { tournament, team, player, game, gameEvent } from '../src/lib/server/db/schema';
+import { parseDatabaseUrl } from '../src/lib/server/db/url';
 
 // ------------------------------------------------------------------
-// 1️⃣ Set up DB connection
-const DATABASE_URL = 'postgres://testuser:testpassword@localhost:5432/testdb';
-const pool = new Pool({
-	connectionString: DATABASE_URL // e.g. postgres://user:pw@localhost:5432/db
-});
-const db = drizzle(pool);
+// 1️⃣ Set up DB connection from DATABASE_URL (run via `npm run db:seed`)
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) throw new Error('DATABASE_URL is not set');
+
+const connection = parseDatabaseUrl(DATABASE_URL);
+
+let db: NodePgDatabase;
+let close: () => Promise<unknown>;
+if (connection.kind === 'pglite') {
+	// PGlite speaks the same pg dialect, so present it under the node-postgres type.
+	const client = new PGlite(connection.dataDir);
+	db = drizzlePglite(client) as unknown as NodePgDatabase;
+	close = () => client.close();
+} else {
+	const pool = new Pool({ connectionString: connection.url });
+	db = drizzle(pool);
+	close = () => pool.end();
+}
 
 // ------------------------------------------------------------------
 // 1️⃣.5 Reset the DB
@@ -194,7 +209,7 @@ async function main() {
 	await db.insert(gameEvent).values(eventRows);
 
 	console.log('✅ Seed completed!');
-	await pool.end();
+	await close();
 }
 
 // ------------------------------------------------------------------

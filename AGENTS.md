@@ -2,19 +2,19 @@
 
 ## Stack
 
-SvelteKit 2 + Svelte 5 (runes) + TypeScript, Drizzle ORM over PostgreSQL. Node 24 (`.nvmrc`), npm.
+SvelteKit 2 + Svelte 5 (runes) + TypeScript, Drizzle ORM over PostgreSQL (embedded PGlite for local dev). Node 24 (`.nvmrc`), npm.
 
 ## Commands & verification
 
-- `npm run dev` — needs `DATABASE_URL` in `.env` (copy `.env.example`) pointing at a reachable Postgres; the app throws at startup without it.
+- `npm run dev` — needs `DATABASE_URL` in `.env` (copy `.env.example`); the app throws at startup without it. The default `pglite://./.pgdata` runs an embedded in-process Postgres (no server needed); a `postgres://` URL works as before.
 - `npm run check` — svelte-check typecheck. `npm run lint` — `prettier --check .` then `eslint .`. Run `npm run format` before linting.
 - **There is no test suite or test framework.** The CI badges in the README reference workflows that don't exist in this repo. Verification = `check` + `lint`.
 - Schema changes: edit `src/lib/server/db/schema.ts`, then `npm run db:push` (drizzle-kit auto-loads root `.env`). No migrations are committed — the `drizzle/` output dir is untracked/unused.
 
 ## Database gotchas
 
-- `npm run db:seed` ignores `.env`: `scripts/seed.ts` hardcodes `postgres://testuser:testpassword@localhost:5432/testdb` and **truncates all five tables** first. Edit the URL in the script before running.
-- The seed uses `pg`/node-postgres while the app uses `postgres-js`; `generateUniqueGameCode` accepts either.
+- The `DATABASE_URL` scheme selects the backend: `pglite://<dir>` = embedded Postgres persisted to `<dir>` (gitignored `./.pgdata` by default), `pglite://:memory:` = ephemeral, anything else = real Postgres. `parseDatabaseUrl` in `src/lib/server/db/url.ts` is the single parser; `client.ts`, `drizzle.config.ts` and `scripts/seed.ts` all branch on it. In `client.ts` the PGlite instance is cast to the postgres-js type — same pg dialect and relational API, only raw `db.execute()` result shapes differ (unused).
+- `npm run db:seed` reads `DATABASE_URL` from `.env` (`tsx --env-file`) and supports both backends. It **truncates all five tables** first.
 
 ## Architecture
 

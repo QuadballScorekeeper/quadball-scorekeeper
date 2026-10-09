@@ -13,7 +13,16 @@ Currently supporting:
 
 ## Developing
 
-Once you've cloned the repository, install dependencies with `npm install` (or `pnpm install` or `yarn`), then start a development server:
+Once you've cloned the repository, install dependencies with `npm install` (or `pnpm install` or `yarn`), copy `.env.example` to `.env`, then push the schema and seed some data:
+
+```bash
+npm run db:push
+npm run db:seed
+```
+
+No database server is needed: the default `DATABASE_URL` uses [PGlite](https://pglite.dev), an embedded in-process Postgres persisted to `./.pgdata`. Point `DATABASE_URL` at a `postgres://` connection string to use a real Postgres instead.
+
+Then start a development server:
 
 ```bash
 npm run dev
