@@ -209,6 +209,27 @@ export class Game {
 		await this.persistEventRemoval(eventNum);
 	}
 
+	/**
+	 * Edit the player number of an event. The whole game state is recalculated afterwards, since
+	 * penalties are keyed by player number and must be re-derived from the event log.
+	 */
+	public async editEvent(
+		eventNum: SelectGameEvent['eventNum'],
+		playerNumber: SelectGameEvent['playerNumber']
+	) {
+		const event = this.events.find((event) => event.eventNum == eventNum);
+		if (!event) {
+			console.error('Trying to edit non-existent event??');
+			return;
+		}
+
+		event.playerNumber = playerNumber;
+
+		this.recalculateGameState(this.events);
+
+		await this.persistEventEdit(event);
+	}
+
 	protected async persistEvent(event: GameEvent) {
 		await fetch('/api/events', {
 			method: 'POST',
@@ -222,6 +243,18 @@ export class Game {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ gameId: this.id, eventNum })
+		});
+	}
+
+	protected async persistEventEdit(event: GameEvent) {
+		await fetch('/api/events', {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				gameId: event.gameId,
+				eventNum: event.eventNum,
+				playerNumber: event.playerNumber
+			})
 		});
 	}
 

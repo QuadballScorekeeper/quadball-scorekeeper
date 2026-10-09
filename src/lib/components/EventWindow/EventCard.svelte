@@ -2,24 +2,31 @@
 	import type { Game } from '$lib/client/Game.svelte';
 	import { GameEvent } from '$lib/client/GameEvent.svelte';
 	import { formatGameTime } from '$lib/utils';
-	import { Button } from '$lib/components/ui/Button';
-	import { Delete, Edit } from '$lib/icons';
+	import EventModal from './EventModal.svelte';
 
 	let {
 		game,
 		event,
 		scorekeeper = false
 	}: { game: Game; event: GameEvent; scorekeeper?: boolean } = $props();
-	const home = game.homeTeam.id == event.teamId;
+	const home = $derived(game.homeTeam.id == event.teamId);
+	const team = $derived(home ? game.homeTeam : game.awayTeam);
 
-	let slide = $state(false);
+	let open = $state(false);
+
+	function openModal() {
+		if (!scorekeeper) {
+			return;
+		}
+		open = true;
+	}
 </script>
 
-<div class="event-container" class:slide>
+<div>
 	<button
 		class="event {home ? 'home' : 'away'}"
-		style="--team-color: {home ? game.homeTeam.color : game.awayTeam.color}"
-		onclick={() => (slide = !slide)}
+		style="--team-color: {team.color}"
+		onclick={openModal}
 	>
 		<div class="info-home">
 			{#if home}
@@ -44,38 +51,11 @@
 			{/if}
 		</div>
 	</button>
-	{#if scorekeeper}
-		<div class="button-group">
-			<Button
-				onclick={() => {
-					game.removeEvent(event.eventNum);
-				}}
-				variant="destructive"
-			>
-				<Delete />
-			</Button>
-			<Button variant="secondary">
-				<Edit />
-			</Button>
-		</div>
-	{/if}
+
+	<EventModal bind:open {game} {event} />
 </div>
 
 <style>
-	.event-container {
-		display: grid;
-		grid-template-columns: 100% 7rem;
-		transition: transform 200ms;
-		&.slide {
-			transform: translate(-7rem, 0);
-		}
-	}
-	.button-group {
-		display: flex;
-		gap: 0.5rem;
-		padding: 0.25rem 0.75rem;
-	}
-
 	.event {
 		background-color: var(--surface-0);
 		border-radius: 0.25rem;

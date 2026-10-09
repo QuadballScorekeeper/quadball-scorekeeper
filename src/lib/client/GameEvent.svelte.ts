@@ -51,4 +51,25 @@ export class GameEvent {
 				return this.eventType;
 		}
 	}
+
+	public getLabel() {
+		switch (this.eventType) {
+			case 'goal':
+				return 'Goal';
+			case 'catch':
+				return 'Catch';
+			case 'timeout':
+				return 'Timeout';
+			case 'blue_card':
+				return 'Blue card';
+			case 'yellow_card':
+				return 'Yellow card';
+			case 'red_card':
+				return 'Red card';
+			case 'ejection':
+				return 'Ejection';
+			default:
+				return this.eventType;
+		}
+	}
 }

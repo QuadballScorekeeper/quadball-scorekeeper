@@ -180,6 +180,10 @@ export class LocalGame extends Game {
 		this.saveToLocalStorage();
 	}
 
+	protected override async persistEventEdit() {
+		this.saveToLocalStorage();
+	}
+
 	protected override async persistStatus() {
 		this.saveToLocalStorage();
 	}

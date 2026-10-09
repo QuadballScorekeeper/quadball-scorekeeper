@@ -62,3 +62,29 @@ export const DELETE: RequestHandler = async ({ request }) => {
 
 	return json({ success: true }, { status: 200 });
 };
+
+export const PUT: RequestHandler = async ({ request }) => {
+	const {
+		gameId,
+		eventNum,
+		playerNumber
+	}: {
+		gameId: InsertGameEvent['gameId'];
+		eventNum: InsertGameEvent['eventNum'];
+		playerNumber: InsertGameEvent['playerNumber'];
+	} = await request.json();
+
+	try {
+		await db
+			.update(gameEvent)
+			.set({ playerNumber })
+			.where(and(eq(gameEvent.gameId, gameId), eq(gameEvent.eventNum, eventNum)));
+	} catch (error) {
+		console.error(error);
+		return json({ success: false, error: 'Error updating row' }, { status: 500 });
+	}
+
+	broadcastEventsChanged(gameId);
+
+	return json({ success: true }, { status: 200 });
+};
