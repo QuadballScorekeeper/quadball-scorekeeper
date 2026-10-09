@@ -13,7 +13,7 @@ export const load = async () => {
 		},
 		where: and(
 			eq(game.status, 'scheduled'),
-			lt(game.scheduledStart, new Date(Date.now() + 12 * 60 * 60 * 1000))
+			lt(game.scheduledStart, new Date(Date.now() + 22 * 60 * 60 * 1000))
 		),
 		orderBy: asc(game.scheduledStart)
 	});
