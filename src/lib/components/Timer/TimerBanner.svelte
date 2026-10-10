@@ -13,17 +13,18 @@
 		{ time: 30 * minute, event: 'handicap-2' },
 		{ time: 35 * minute, event: 'handicap-3' }
 	];
+
 	let nextEvent = $derived(events.find((event) => event.time > game.gameTime));
-	let remainingTime = $derived(nextEvent!.time - game.gameTime);
+	let remainingTime = $derived(nextEvent ? nextEvent.time - game.gameTime : undefined);
 </script>
 
 {#if game.setScore}
 	<div class="banner">
 		Set score: {game.setScore}
 	</div>
-{:else if remainingTime < 2 * minute}
+{:else if nextEvent && remainingTime && remainingTime < 2 * minute}
 	<div class="banner {remainingTime < 10 * 1000 ? 'highlight' : ''}">
-		<div class="message">{nextEvent!.event}</div>
+		<div class="message">{nextEvent.event}</div>
 		{formatGameTime(remainingTime)}
 	</div>
 {/if}
