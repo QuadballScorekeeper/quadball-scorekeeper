@@ -139,7 +139,6 @@ async function main() {
 			gameRows.push({
 				scheduledStart: faker.date.between({ from: t.start, to: t.end }),
 				tournamentId: t.id,
-				status: 'finished' as const,
 				awayTeamId: teams[0].id,
 				homeTeamId: teams[1].id
 			});

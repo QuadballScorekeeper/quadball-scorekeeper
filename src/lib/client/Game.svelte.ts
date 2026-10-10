@@ -5,13 +5,13 @@ import { Team, type TeamData } from './Team.svelte';
 import type { PenaltyType } from './Penalty.svelte';
 
 /**
- * 'paused' and 'timeout' are transient: they are derived by replaying the event log and are
- * never stored, so they exist on the client only.
+ * Derived on the client by replaying the event log
+ * 'cancelled' is reserved for a future cancel-game feature
  */
-export type GameStatus = SelectGame['status'] | 'paused' | 'timeout';
+export type GameStatus = 'scheduled' | 'live' | 'finished' | 'cancelled' | 'paused' | 'timeout';
 
 /** Only what a Game actually needs, so local games don't have to fake database rows. */
-export type GameData = Pick<SelectGame, 'id' | 'scheduledStart' | 'status'> & {
+export type GameData = Pick<SelectGame, 'id' | 'scheduledStart'> & {
 	homeTeam: TeamData;
 	awayTeam: TeamData;
 	events: SelectGameEvent[];
@@ -37,8 +37,8 @@ export class Game {
 	constructor(gameData: GameData) {
 		this.id = gameData.id;
 		this.scheduledStart = gameData.scheduledStart;
-		// Every other status is derived from the events replayed below
-		this.status = $state(gameData.status == 'cancelled' ? 'cancelled' : 'scheduled');
+		// Derived from the events replayed below ('cancelled' is not producible yet)
+		this.status = $state('scheduled');
 		this.homeTeam = new Team(gameData.homeTeam);
 		this.awayTeam = new Team(gameData.awayTeam);
 
@@ -258,14 +258,6 @@ export class Game {
 		});
 	}
 
-	protected async persistStatus(status: SelectGame['status']) {
-		await fetch(`/api/games/${this.id}`, {
-			method: 'PUT',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ status })
-		});
-	}
-
 	protected recalculateGameState(events: SelectGameEvent[]) {
 		// Reset game state
 		this.status = 'scheduled';
@@ -289,12 +281,10 @@ export class Game {
 
 	public async startGame() {
 		await this.addEvent('start');
-		await this.persistStatus('live');
 	}
 
 	public async endGame() {
 		await this.addEvent('end');
-		await this.persistStatus('finished');
 	}
 
 	public resumeGame() {

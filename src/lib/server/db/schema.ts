@@ -13,10 +13,6 @@ import {
 } from 'drizzle-orm/pg-core';
 const DEFAULT_TEAM_COLOR = '#808080';
 
-// Only the states that outlive a page load. 'paused' and 'timeout' are transient and derived
-// from the event log by the client, see GameStatus in $lib/client/Game.svelte.ts
-export const gameStatusEnum = pgEnum('game_status', ['scheduled', 'live', 'finished', 'cancelled']);
-
 export const eventTypeEnum = pgEnum('event_type', [
 	'goal',
 	'catch',
@@ -98,7 +94,6 @@ export const game = pgTable(
 		tournamentId: integer()
 			.notNull()
 			.references(() => tournament.id, { onDelete: 'cascade' }),
-		status: gameStatusEnum().default('scheduled').notNull(),
 		homeTeamId: integer()
 			.notNull()
 			.references(() => team.id, { onDelete: 'restrict' }),

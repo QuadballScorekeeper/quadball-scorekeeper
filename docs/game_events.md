@@ -18,9 +18,9 @@ caught flag is shown as a `*` next to the team's score.
 
 ## Phases and clock
 
-Statuses that outlive a page load are stored on the game row: `scheduled`, `live`, `finished`,
-`cancelled`. `paused` and `timeout` are transient — derived from the event log by the client,
-never stored.
+No status is stored on the game row. The client derives it from the event log: `scheduled` (no
+`start` event yet), `live`, `paused`, `timeout`, `finished`. `cancelled` is reserved for a future
+cancel-game feature; nothing can produce it yet.
 
 - One count-up clock, no halves or periods. The clock only advances while the game is `live`;
   pause, timeout and everything before `start` do not move it.
@@ -46,8 +46,8 @@ belongs to a team; `player` is a jersey number.
 
 | Event         | team | player | Effect                                                                                                 |
 | ------------- | ---- | ------ | ------------------------------------------------------------------------------------------------------ |
-| `start`       | no   | no     | Kicks off at the recorded timestamp; status becomes `live`, the clock starts                           |
-| `end`         | no   | no     | Status becomes `finished`                                                                              |
+| `start`       | no   | no     | Kicks off at the recorded timestamp; the clock starts                                                  |
+| `end`         | no   | no     | Marks the game `finished`                                                                              |
 | `pause`       | no   | no     | Clock stops (status `paused`)                                                                          |
 | `resume`      | no   | no     | Clock restarts (status `live`)                                                                         |
 | `timeout`     | yes  | no     | Burns the team's only timeout; clock stops for up to a minute                                          |
@@ -71,9 +71,8 @@ belongs to a team; `player` is a jersey number.
 
 ## Derived state — never store these
 
-Score, penalty remaining time and releases, `paused`/`timeout` status, the overtime set score
-and the game clock are all recomputed by replaying the event log. Anything replayable is never
-stored. Deleting an event (the scorekeeper's undo) just deletes the row and replays everything.
+Score, game status, penalty remaining time and releases, the overtime set score and the game
+clock are all recomputed by replaying the event log. Anything replayable is never stored. Deleting an event (the scorekeeper's undo) just deletes the row and replays everything.
 
 ## Planned, not yet implemented
 
@@ -94,5 +93,3 @@ stored. Deleting an event (the scorekeeper's undo) just deletes the row and repl
   mind when adding new event types.
 - The 20:00 catch rule and the banner reminders are UI-level (see `FlagWindow.svelte` and
   `TimerBanner.svelte`); they are not part of the event model.
-- `start`/`end` also persist the game row's status (`live`/`finished`) — derived statuses never
-  touch the stored status.

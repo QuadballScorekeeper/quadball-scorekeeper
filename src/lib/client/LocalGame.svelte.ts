@@ -46,7 +46,6 @@ export function createLocalGameData(homeTeamName: string, awayTeamName: string):
 	return {
 		id: LOCAL_GAME_ID,
 		scheduledStart: new SvelteDate(),
-		status: 'scheduled',
 		homeTeam: {
 			id: LOCAL_HOME_TEAM_ID,
 			name: homeTeamName,
@@ -122,8 +121,6 @@ export class LocalGame extends Game {
 			LocalGame.saveGameData({
 				id: this.id,
 				scheduledStart: this.scheduledStart,
-				// Anything short of a finished game is rebuilt from the events on load
-				status: this.status == 'finished' ? 'finished' : 'scheduled',
 				homeTeam: teamData(this.homeTeam),
 				awayTeam: teamData(this.awayTeam),
 				events: this.events
@@ -181,10 +178,6 @@ export class LocalGame extends Game {
 	}
 
 	protected override async persistEventEdit() {
-		this.saveToLocalStorage();
-	}
-
-	protected override async persistStatus() {
 		this.saveToLocalStorage();
 	}
 }
