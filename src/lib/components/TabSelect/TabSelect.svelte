@@ -23,9 +23,7 @@
 
 <style>
 	.tab {
-		width: 100%;
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
 		border-radius: 0.5rem;
 		padding: 0.25rem;
@@ -34,11 +32,11 @@
 	}
 
 	.tab-item {
+		width: 100%;
 		background-color: transparent;
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;
 		cursor: pointer;
-		width: 100%;
 	}
 
 	.tab-item.active {
