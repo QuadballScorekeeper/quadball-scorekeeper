@@ -22,9 +22,10 @@
 		<p class="message">{message}</p>
 	{/if}
 	<div class="actions">
-		<Button variant="secondary" onclick={() => (open = false)}>Cancel</Button>
+		<Button variant="secondary" type="button" onclick={() => (open = false)}>Cancel</Button>
 		<Button
 			variant="destructive"
+			type="button"
 			onclick={() => {
 				open = false;
 				onconfirm?.();

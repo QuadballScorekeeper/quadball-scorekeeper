@@ -69,8 +69,8 @@
 		{/if}
 		<div class="actions">
 			<Button type="submit">Save</Button>
-			<Button variant="secondary" onclick={() => (open = false)}>Cancel</Button>
-			<Button variant="destructive" onclick={remove}>Delete</Button>
+			<Button variant="secondary" type="button" onclick={() => (open = false)}>Cancel</Button>
+			<Button variant="destructive" type="button" onclick={remove}>Delete</Button>
 		</div>
 	</form>
 </Modal>

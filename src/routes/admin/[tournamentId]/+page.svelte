@@ -2,6 +2,7 @@
 	import { Button } from '$lib/components/ui/Button';
 	import { ConfirmModal } from '$lib/components/ui/Confirm';
 	import { enhance } from '$app/forms';
+	import type { SubmitFunction } from '@sveltejs/kit';
 
 	let { data } = $props();
 	let tournament = $derived(data.tournament);
@@ -15,6 +16,14 @@
 	let startString = $state(toDateInput(tournament.start));
 	let endString = $state(toDateInput(tournament.end));
 
+	// The bound fields already hold the saved values — the default enhance reset would
+	// revert them to their page-load defaults.
+	const submitSave: SubmitFunction = () => {
+		return async ({ update }) => {
+			await update({ reset: false, invalidateAll: true });
+		};
+	};
+
 	let confirmOpen = $state(false);
 	let deleteForm = $state<HTMLFormElement>();
 </script>
@@ -22,7 +31,7 @@
 <main>
 	<h1>{tournament.name}</h1>
 
-	<form method="POST" action="?/saveTournament" use:enhance class="card">
+	<form method="POST" action="?/saveTournament" use:enhance={submitSave} class="card">
 		<div class="field">
 			<label for="name">Name</label>
 			<input type="text" id="name" name="name" bind:value={name} required />

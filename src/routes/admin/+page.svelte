@@ -57,7 +57,7 @@
 				required
 			/>
 			<div class="actions">
-				<Button variant="secondary" onclick={() => (open = false)}>Cancel</Button>
+				<Button variant="secondary" type="button" onclick={() => (open = false)}>Cancel</Button>
 				<Button type="submit">Create</Button>
 			</div>
 		</form>
@@ -116,6 +116,7 @@
 		display: grid;
 		gap: 0.5rem;
 		width: 100%;
+		list-style: none;
 	}
 
 	.card {
