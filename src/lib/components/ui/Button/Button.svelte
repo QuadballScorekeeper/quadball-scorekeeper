@@ -13,7 +13,7 @@
 		variant?: 'primary' | 'secondary' | 'destructive';
 		size?: 'normal' | 'large';
 		href?: string | null;
-		onclick?: (() => void) | null;
+		onclick?: ((e: MouseEvent) => void) | null;
 		formaction?: string | null;
 		type?: 'button' | 'submit' | 'reset' | null;
 		disabled?: boolean;

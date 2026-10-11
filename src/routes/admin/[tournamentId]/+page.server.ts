@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db/client';
 import { tournament } from '$lib/server/db/schema';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import type { Actions } from './$types';
 
@@ -24,14 +24,16 @@ export const actions = {
 			.update(tournament)
 			.set({
 				name: data.get('name')!.toString(),
-				start: new Date(data.get('start')!.toString()),
-				end: new Date(data.get('end')!.toString())
+				// Date inputs submit 'YYYY-MM-DD'; parse as local midnight instead of UTC so the
+				// date survives the round trip in every timezone.
+				start: new Date(`${data.get('start')}T00:00`),
+				end: new Date(`${data.get('end')}T00:00`)
 			})
 			.where(eq(tournament.id, tId));
 	},
 	deleteTournament: async ({ params }) => {
 		const tId = Number(params.tournamentId);
-		console.log('Deleting team', tId);
 		await db.delete(tournament).where(eq(tournament.id, tId));
+		redirect(303, '/admin');
 	}
 } satisfies Actions;

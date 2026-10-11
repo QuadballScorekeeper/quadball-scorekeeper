@@ -36,4 +36,9 @@
 		align-items: center;
 		background-color: var(--surface-2);
 	}
+
+	/* The removed global input rule used to pad this; keep the same look locally. */
+	.icon-input input {
+		padding: 0.25rem;
+	}
 </style>

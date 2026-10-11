@@ -20,10 +20,14 @@
 
 	--blue-400: #02a1f0;
 	--blue-500: #007dd0;
+	--green-100: #dbf7ea;
 	--green-400: #58f39e;
 	--green-500: #09d379;
+	--green-900: #0a2f1d;
+	--red-100: #fde0e0;
 	--red-400: #f66c6a;
 	--red-500: #ca040d;
+	--red-900: #3d0d12;
 	--yellow-400: #fed728;
 	--yellow-500: #f8bf0b;
 
@@ -94,11 +98,6 @@ main {
 	width: 100%;
 	margin-inline: auto;
 	padding: 1rem 1.5rem;
-}
-
-input {
-	border: 1px solid var(--bg-dark);
-	padding: 0.25rem;
 }
 
 .numeric-xl {
